@@ -1,0 +1,4 @@
+build
+config.xml
+*.so
+*.wgt
