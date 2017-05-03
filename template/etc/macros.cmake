@@ -197,7 +197,7 @@ CHECK_LIBRARY_EXISTS(efence malloc "" HAVE_LIBEFENCE)
 IF(HAVE_LIBEFENCE)
 	MESSAGE(STATUS "Linking with ElectricFence for debugging purposes...")
 	SET(libefence_LIBRARIES "-lefence")
-	list (APPEND link_libraries libefence_LIBRARIES})
+	list (APPEND link_libraries ${libefence_LIBRARIES})
 ENDIF(HAVE_LIBEFENCE)
 ENDIF(CMAKE_BUILD_TYPE MATCHES DEBUG)
 
