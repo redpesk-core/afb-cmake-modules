@@ -24,6 +24,20 @@ set(PROJECT_PRETTY_NAME "Example")
 set(PROJECT_DESCRIPTION "AGL application example")
 set(PROJECT_URL "https://gerrit.automotivelinux.org/gerrit/apps/app-templates")
 set(PROJECT_ICON "icon.png")
+set(PROJECT_AUTHOR "Last Name, First Name")
+set(PROJECT_AUTHOR_MAIL "example.man@bigouden.bzh")
+set(PROJECT_LICENCE "APL2.0")
+
+# Where are stored config.xml.in and icon.png.in files. Template available at :
+# https://gerrit.automotivelinux.org/gerrit/#/admin/projects/apps/app-templates
+# set(PROJECT_WGT_DIR "packaging/wgt")
+
+# Where are stored your external libraries for your project. This is 3rd party library that you don't maintain
+# but used and must be built and linked.
+# set(PROJECT_LIBDIR "libs")
+
+# Where are stored data for your application. Pictures, static resources must be placed in that folder.
+# set(PROJECT_RESOURCES "data")
 
 # Compilation Mode (DEBUG, RELEASE)
 # ----------------------------------
@@ -75,11 +89,32 @@ set(LD_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib64 ${CMAKE_INSTALL_PREFIX}/lib)
 
 # Optional force binding installation
 # ------------------------------------
-set(BINDINGS_INSTALL_PREFIX /opt )
+# set(BINDINGS_INSTALL_PREFIX PrefixPath )
 
 # Optional force widget prefix generation
-# ---------------------------------------
+# ------------------------------------------------
 # set(WIDGET_PREFIX DestinationPath)
+
+# Optional Widget entry point file.
+# ---------------------------------------------------------
+ # This is the file that will be executed, loaded,...
+# at launch time by the application framework
+
+# set(WIDGET_ENTRY_POINT EntryPoint_Path)
+
+# Optional Widget Mimetype specification
+# --------------------------------------------------
+# Choose between :
+# - application/x-executable
+# - application/vnd.agl.url
+# - application/vnd.agl.service
+# - application/vnd.agl.native
+# - text/vnd.qt.qml
+# - application/vnd.agl.qml
+# - application/vnd.agl.qml.hybrid
+# - application/vnd.agl.html.hybrid
+#
+# set(WIDGET_TYPE MimeType)
 
 # Optional force binding Linking flag
 # ------------------------------------
