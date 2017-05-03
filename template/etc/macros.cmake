@@ -124,6 +124,7 @@ macro(build_widget)
 		COMMAND wgtpkg-pack -f -o ${PROJECT_NAME}.wgt ${WIDGET_DIR}
 		)
 		add_custom_target(widget DEPENDS ${PROJECT_NAME}.wgt)
+		set(ADDITIONAL_MAKE_CLEAN_FILES, "${PROJECT_NAME}.wgt")
 	else()
 		MESSAGE(FATAL_ERROR "Widget tree empty, please populate it by calling  populate_widget() macro with target you want to include into it.")
 	endif("${PROJECT_TARGETS}" MATCHES "populate_")
@@ -255,4 +256,3 @@ if(CLOSING_MESSAGE AND GLOBAL_TARGET_LIST)
 	)
 endif()
 
-set(ADDITIONAL_MAKE_CLEAN_FILES, "low-can-binding/low-can-binding.wgt")
