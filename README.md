@@ -128,7 +128,7 @@ PROJECT_TARGET_ADD(low-can-demo)
 This will make available the variable `${TARGET_NAME}` set with the specificied
 name.
 
-### search_targets
+### project_subdirs_add
 
 This macro will search in all subfolder any `CMakeLists.txt` file. If found then
 it will be added to your project. This could be use in an hybrid application by
@@ -137,10 +137,10 @@ example where the binding lay in a sub directory.
 Usage :
 
 ```cmake
-search_targets()
+project_subdirs_add()
 ```
 
-### populate_widget
+### project_targets_populate
 
 Macro use to populate widget tree. To make this works you have to specify some properties to your target :
 
@@ -158,7 +158,7 @@ Usage :
 populate_widget()
 ```
 
-### build_widget
+### project_package_build
 
 Use at project level, to gather all populated targets in the widget tree plus
 widget specifics files into a **WGT** archive. Generated under your `build`
@@ -169,3 +169,7 @@ Usage :
 ```cmake
 build_widget()
 ```
+
+### project_closing_message
+
+Will display the closing message configured in `config.cmake` file. Put it at the end of your project CMake file.
