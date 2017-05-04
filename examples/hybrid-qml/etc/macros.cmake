@@ -36,12 +36,6 @@ macro(defstr name value)
 	add_definitions(-D${name}=${value})
 endmacro(defstr)
 
-macro(setc name value)
-	if(NOT DEFINED ${name})
-	set(${name} ${value})
-	endif(NOT DEFINED ${name})
-endmacro(setc)
-
 # Dumb macro to add each directory under a path. Make sure we grab all header files!
 macro(fill_include_dir path)
 	file(GLOB_RECURSE dirlist LIST_DIRECTORIES true "${path}/*")
@@ -139,16 +133,16 @@ macro(search_targets)
 	endforeach()
 endmacro()
 
-setc(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Debug CACHE STRING "the type of build")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMP0048 1)
 
 # Include project configuration
 # ------------------------------
 project(${NAME} VERSION ${VERSION})
-setc(PROJECT_WGT_DIR "packaging/wgt")
-setc(PROJECT_LIBDIR "libs")
-setc(PROJECT_RESOURCES "data")
+set(PROJECT_WGT_DIR "packaging/wgt" CACHE PATH "Subpath to the widget directory")
+set(PROJECT_LIBDIR "libs" CACHE PATH "Subpath to libraries")
+set(PROJECT_RESOURCES "data" CACHE PATH "Subpath to data")
 
 INCLUDE(FindPkgConfig)
 INCLUDE(CheckIncludeFiles)
@@ -167,20 +161,20 @@ add_compile_options(-ffunction-sections -fdata-sections)
 add_compile_options(-fPIC)
 add_compile_options(-g)
 
-setc(CMAKE_C_FLAGS_PROFILING   "-g -O2 -pg -Wp,-U_FORTIFY_SOURCE")
-setc(CMAKE_C_FLAGS_DEBUG       "-g -O2 -ggdb -Wp,-U_FORTIFY_SOURCE")
-setc(CMAKE_C_FLAGS_RELEASE     "-O2")
-setc(CMAKE_C_FLAGS_CCOV        "-g -O2 --coverage")
+set(CMAKE_C_FLAGS_PROFILING   "-g -O2 -pg -Wp,-U_FORTIFY_SOURCE" CACHE STRING "Flags for profiling")
+set(CMAKE_C_FLAGS_DEBUG       "-g -O2 -ggdb -Wp,-U_FORTIFY_SOURCE" CACHE STRING "Flags for debugging")
+set(CMAKE_C_FLAGS_RELEASE     "-O2" CACHE STRING "Flags for releasing")
+set(CMAKE_C_FLAGS_CCOV        "-g -O2 --coverage" CACHE STRING "Flags for coverage test")
 
 set(CMAKE_CXX_FLAGS_PROFILING    "-g -O0 -pg -Wp,-U_FORTIFY_SOURCE")
 set(CMAKE_CXX_FLAGS_DEBUG        "-g -O0 -ggdb -Wp,-U_FORTIFY_SOURCE")
 set(CMAKE_CXX_FLAGS_RELEASE      "-g -O2")
 set(CMAKE_CXX_FLAGS_CCOV "-g -O2 --coverage")
 
-setc(CMAKE_INSTALL_PREFIX      "${CMAKE_SOURCE_DIR}/Install")
+set(CMAKE_INSTALL_PREFIX      "${CMAKE_SOURCE_DIR}/Install" CACHE PATH "The path where to install")
 
 # (BUG!!!) as PKG_CONFIG_PATH does not work [should be en env variable]
-setc(PKG_CONFIG_USE_CMAKE_PREFIX_PATH 1)
+set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON CACHE BOOLEAN "Flag for using prefix path")
 
 # Loop on required package and add options
 foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
