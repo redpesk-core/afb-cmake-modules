@@ -30,6 +30,14 @@
 macro(PROJECT_TARGET_ADD TARGET_NAME)
 	set(PROJECT_TARGETS ${PROJECT_TARGETS} ${TARGET_NAME} CACHE INTERNAL PROJECT_TARGETS)
 	set(TARGET_NAME ${TARGET_NAME})
+
+	# Cmake does not maintain targets list before 3.7
+	# -------------------------------------------------
+	if(${CMAKE_VERSION} VERSION_LESS 3.7)
+		set(GLOBAL_TARGET_LIST ${PROJECT_TARGETS})
+	else()
+		get_property(GLOBAL_TARGET_LIST GLOBAL PROPERTY GlobalTargetList)
+	endif()
 endmacro(PROJECT_TARGET_ADD)
 
 macro(defstr name value)
@@ -221,24 +229,17 @@ endif()
 if(EXTRA_DEPENDENCIES_ORDER)
 	set(DEPENDENCIES_TARGET ${PROJECT_NAME}_extra_dependencies)
 	add_custom_target(${DEPENDENCIES_TARGET} ALL
-		DEPENDS ${EXTRA_DEPENDENCY_ORDER} 
+		DEPENDS ${EXTRA_DEPENDENCY_ORDER}
 	)
-endif()
-
-# Cmake does not maintain targets list before 3.7
-# -------------------------------------------------
-if(${CMAKE_VERSION} VERSION_LESS 3.7)
-	set(GLOBAL_TARGET_LIST ${PROJECT_TARGETS})
-else()
-	get_property(GLOBAL_TARGET_LIST GLOBAL PROPERTY GlobalTargetList)
 endif()
 
 # Print developer helper message when everything is done
 # -------------------------------------------------------
-if(CLOSING_MESSAGE AND GLOBAL_TARGET_LIST)
-	add_custom_target(${PROJECT_NAME}_done ALL
-		DEPENDS ${DEPENDENCIES_TARGET} ${GLOBAL_TARGET_LIST}
-		COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${CLOSING_MESSAGE}"
-	)
-endif()
-
+macro(project_closing_msg)
+	if(CLOSING_MESSAGE AND GLOBAL_TARGET_LIST)
+		add_custom_target(${PROJECT_NAME}_done ALL
+			DEPENDS ${DEPENDENCIES_TARGET} ${GLOBAL_TARGET_LIST}
+			COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${CLOSING_MESSAGE}"
+		)
+	endif()
+endmacro()
