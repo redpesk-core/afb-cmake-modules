@@ -37,31 +37,6 @@ macro(defstr name value)
 endmacro(defstr)
 
 # Dumb macro to add each directory under a path. Make sure we grab all header files!
-macro(fill_include_dir path)
-	file(GLOB_RECURSE dirlist LIST_DIRECTORIES true "${path}/*")
-	foreach(filename ${dirlist})
-		if(IS_DIRECTORY ${filename})
-			include_directories(${filename})
-		endif(IS_DIRECTORY ${filename})
-	endforeach()
-endmacro(fill_include_dir)
-
-# Helper function to retrieve source files from a library repo.
-function(find_source_files path)
-	file(GLOB_RECURSE cfiles "${path}/*.[c]")
-	file(GLOB_RECURSE cppfiles "${path}/*.cpp")
-	foreach(filename ${cfiles})
-		if(NOT ${filename} MATCHES ".*([Tt]est|[Ee]xample|[Ss]ample).*")
-			string(APPEND sources "${filename};")
-		endif(NOT ${filename} MATCHES ".*([Tt]est|[Ee]xample|[Ss]ample).*")
-	endforeach()
-	foreach(filename ${cppfiles})
-		if(NOT ${filename} MATCHES ".*([Tt]est|[Ee]xample|[Ss]ample).*")
-			string(APPEND sources "${filename};")
-		endif(NOT ${filename} MATCHES ".*([Tt]est|[Ee]xample|[Ss]ample).*")
-	endforeach()
-	set(sources_files ${sources} PARENT_SCOPE)
-endfunction(find_source_files)
 
 # WGT packaging
 macro(populate_widget)
