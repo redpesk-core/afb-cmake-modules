@@ -22,6 +22,6 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/etc/config.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/etc/macros.cmake)
 
 # Add subdir targets
-search_targets()
+project_subdirs_add()
 
 build_widget()

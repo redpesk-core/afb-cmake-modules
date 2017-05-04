@@ -31,8 +31,5 @@ PROJECT_TARGET_ADD(html5-example)
 
 	# Binder exposes a unique public entry point
 	SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
-		PREFIX ""
 		LABELS "HTDOCS"
 		OUTPUT_NAME dist.prod)
-
-populate_widget()

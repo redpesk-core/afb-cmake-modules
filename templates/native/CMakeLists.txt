@@ -37,7 +37,6 @@ PROJECT_TARGET_ADD(native-example)
 
 	# Binder exposes a unique public entry point
 	SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
-		PREFIX ""
 		LABELS "EXECUTABLE"
 		OUTPUT_NAME ${TARGET_NAME})
 
@@ -50,6 +49,6 @@ PROJECT_TARGET_ADD(native-example)
 		afbwsc
 		${link_libraries})
 
-populate_widget()
+project_targets_populate()
 
-build_widget()
+project_package_build()

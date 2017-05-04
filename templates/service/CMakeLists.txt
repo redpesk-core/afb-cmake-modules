@@ -35,6 +35,6 @@ PROJECT_TARGET_ADD(service-example)
 		LABELS "BINDING"
 		OUTPUT_NAME ${TARGET_NAME})
 
-populate_widget()
+project_targets_populate()
 
-build_widget()
+project_package_build()

@@ -25,7 +25,6 @@ PROJECT_TARGET_ADD(xxxxxx-hybrid-binding)
 
 	# Binder exposes a unique public entry point
 	SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
-		PREFIX ""
 		LABELS "BINDING"
 		LINK_FLAGS ${BINDINGS_LINK_FLAG}
 		OUTPUT_NAME ${TARGET_NAME}
@@ -38,5 +37,3 @@ PROJECT_TARGET_ADD(xxxxxx-hybrid-binding)
 	# installation directory
 	INSTALL(TARGETS ${TARGET_NAME}
 		LIBRARY DESTINATION ${BINDINGS_INSTALL_DIR})
-
-	populate_widget()
