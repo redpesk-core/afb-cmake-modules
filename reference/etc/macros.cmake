@@ -19,7 +19,7 @@
 
 
 #--------------------------------------------------------------------------
-#  WARNING: 
+#  WARNING:
 #     Do not change this cmake template
 #     Customise your preferences in "./etc/config.cmake"
 #--------------------------------------------------------------------------
