@@ -2,7 +2,7 @@
 <widget xmlns="http://www.w3.org/ns/widgets" id="@PROJECT_NAME@" version="@PROJECT_VERSION@">
   <name>@PROJECT_NAME@</name>
   <icon src="icon.png"/>
-  <content src="htdocs/index.html" type="application/vnd.agl.html.hybrid"/>
+  <content src="index.html" type="text/html"/>
   <description>@PROJECT_DESCRIPTION@</description>
   <author>Romain Forlot &lt;romain.forlot@iot.bzh&gt;</author>
   <license>APL 2.0</license>
