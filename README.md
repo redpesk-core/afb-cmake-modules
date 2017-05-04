@@ -39,16 +39,27 @@ A typical project architecture would be :
 Usage
 ------
 
-Once installed, use them by customize depending on your project with file
-`\<root-path\>/etc/config.cmake`.
+Install the reference files to the root path of your project, then once
+installed, customize your project with file `\<root-path\>/etc/config.cmake`.
+
+Typically, to copy files use a command like:
+
+```bash
+cp reference/etc reference/packaging <root-path-to-your-project>
+cp reference/AGLbuild <root-path-to-your-project>
+```
 
 Specify manually your targets, you should look at samples provided in this
 repository to make yours. Then when you are ready to build, using `AGLbuild`
 that will wrap CMake build command:
 
 ```bash
-`./AGLBuild` package
+./AGLbuild package
 ```
+
+AGLbuild is not mandatory to build your project by will be used by `bitbake`
+tool when building application from a Yocto workflow that use this entry point
+to get its widget file.
 
 Or with the classic way :
 
