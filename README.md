@@ -45,7 +45,7 @@ installed, customize your project with file `\<root-path\>/etc/config.cmake`.
 Typically, to copy files use a command like:
 
 ```bash
-cp reference/etc reference/packaging <root-path-to-your-project>
+cp -r reference/etc reference/packaging <root-path-to-your-project>
 cp reference/AGLbuild <root-path-to-your-project>
 ```
 
