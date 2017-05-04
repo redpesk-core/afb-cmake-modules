@@ -36,48 +36,60 @@ macro(defstr name value)
 	add_definitions(-D${name}=${value})
 endmacro(defstr)
 
-# Dumb macro to add each directory under a path. Make sure we grab all header files!
-
 # WGT packaging
-macro(populate_widget)
-	# Declaration of a custom command that will populate widget tree with the target
-	set(POPULE_WIDGET_TARGET "populate_${TARGET_NAME}")
+macro(project_targets_populate)
+	foreach(TARGET ${PROJECT_TARGETS})
+		# Declaration of a custom command that will populate widget tree with the target
+		set(POPULE_WIDGET_TARGET "project_populate_${TARGET}")
 
-	get_target_property(T ${TARGET_NAME} LABELS)
-	get_target_property(OUT ${TARGET_NAME} OUTPUT_NAME)
+		get_target_property(T ${TARGET} LABELS)
+		get_target_property(P ${TARGET} PREFIX)
+		get_target_property(BD ${TARGET} BINARY_DIR)
+		get_target_property(OUT ${TARGET} OUTPUT_NAME)
 
-	if(${T} STREQUAL "BINDING")
-		add_custom_command(OUTPUT ${WIDGET_LIBDIR}/${TARGET_NAME}.so
-			DEPENDS ${TARGET_NAME}
-			COMMAND mkdir -p ${WIDGET_LIBDIR}
-			COMMAND cp ${OUT}.so ${WIDGET_LIBDIR}
-		)
-		add_custom_target(${POPULE_WIDGET_TARGET} ALL DEPENDS ${WIDGET_LIBDIR}/${TARGET_NAME}.so)
-	elseif(${T} STREQUAL "EXECUTABLE")
-		add_custom_command(OUTPUT ${WIDGET_BINDIR}/${TARGET_NAME}
-			DEPENDS ${TARGET_NAME}
-			COMMAND mkdir -p ${WIDGET_BINDIR}
-			COMMAND cp ${OUT} ${WIDGET_BINDIR}
-		)
-		add_custom_target(${POPULE_WIDGET_TARGET} ALL DEPENDS ${WIDGET_BINDIR}/${TARGET_NAME})
-	elseif(${T} STREQUAL "HTDOCS")
-		add_custom_command(OUTPUT ${WIDGET_HTTPDIR}
-			DEPENDS ${TARGET_NAME}
-			COMMAND cp -r ${OUT} ${WIDGET_HTTPDIR}
+		if(${P} STREQUAL "P-NOTFOUND" AND ${T} STREQUAL "BINDING")
+			set(P "lib")
+		elseif(${P} STREQUAL "P-NOTFOUND")
+			set(P "")
+		endif(${P} STREQUAL "P-NOTFOUND" AND ${T} STREQUAL "BINDING")
+
+		if(${T} STREQUAL "BINDING")
+			add_custom_command(OUTPUT ${WIDGET_LIBDIR}/${P}${TARGET}.so
+				DEPENDS ${TARGET}
+				COMMAND mkdir -p ${WIDGET_LIBDIR}
+				COMMAND cp ${BD}/${P}${OUT}.so ${WIDGET_LIBDIR}
 			)
-			add_custom_target(${POPULE_WIDGET_TARGET} ALL DEPENDS ${WIDGET_HTTPDIR})
-	elseif(${T} STREQUAL "DATA")
-		add_custom_command(OUTPUT ${WIDGET_DATADIR}
-			DEPENDS ${TARGET_NAME}
-			COMMAND cp -r ${OUT} ${WIDGET_DATADIR}
+			add_custom_target(${POPULE_WIDGET_TARGET} ALL DEPENDS ${WIDGET_LIBDIR}/${P}${TARGET}.so)
+		elseif(${T} STREQUAL "EXECUTABLE")
+			add_custom_command(OUTPUT ${WIDGET_BINDIR}/${P}${TARGET}
+				DEPENDS ${TARGET}
+				COMMAND mkdir -p ${WIDGET_BINDIR}
+				COMMAND cp ${BD}/${P}${OUT} ${WIDGET_BINDIR}
 			)
-			add_custom_target(${POPULE_WIDGET_TARGET} ALL DEPENDS ${WIDGET_HTTPDIR})
-	endif(${T} STREQUAL "BINDING")
-	PROJECT_TARGET_ADD(${POPULE_WIDGET_TARGET})
-endmacro(populate_widget)
+			add_custom_target(${POPULE_WIDGET_TARGET} ALL DEPENDS ${WIDGET_BINDIR}/${P}${TARGET})
+		elseif(${T} STREQUAL "HTDOCS")
+			add_custom_command(OUTPUT ${WIDGET_HTTPDIR}
+				DEPENDS ${TARGET}
+				COMMAND cp -r ${BD}/${P}${OUT} ${WIDGET_HTTPDIR}
+				)
+				add_custom_target(${POPULE_WIDGET_TARGET} ALL DEPENDS ${WIDGET_HTTPDIR})
+		elseif(${T} STREQUAL "DATA")
+			add_custom_command(OUTPUT ${WIDGET_DATADIR}
+				DEPENDS ${TARGET}
+				COMMAND cp -r ${BD}/${P}${OUT} ${WIDGET_DATADIR}
+				)
+				add_custom_target(${POPULE_WIDGET_TARGET} ALL DEPENDS ${WIDGET_HTTPDIR})
+		else()
+			if(${CMAKE_BUILD_TYPE} MATCHES "[Dd][Ee][Bb][Uu][Gg]")
+				MESSAGE(AUTHOR_WARNING "This target, ${TARGET}, will be not be included in the package.")
+			endif(${CMAKE_BUILD_TYPE} MATCHES "[Dd][Ee][Bb][Uu][Gg]")
+		endif(${T} STREQUAL "BINDING")
+		PROJECT_TARGET_ADD(${POPULE_WIDGET_TARGET})
+	endforeach()
+endmacro(project_targets_populate)
 
-macro(build_widget)
-	if("${PROJECT_TARGETS}" MATCHES "populate_")
+macro(project_package_build)
+	if("${PROJECT_TARGETS}" MATCHES "project_populate_")
 		if(NOT EXISTS ${WIDGET_DIR}/config.xml.in OR NOT EXISTS ${WIDGET_DIR}/${PROJECT_ICON}.in)
 			configure_file(${PROJECT_WGT_DIR}/config.xml.in ${WIDGET_DIR}/config.xml)
 			file(COPY ${PROJECT_WGT_DIR}/${PROJECT_ICON}.in DESTINATION ${WIDGET_DIR}/${PROJECT_ICON})
@@ -96,17 +108,17 @@ macro(build_widget)
 		set(ADDITIONAL_MAKE_CLEAN_FILES, "${PROJECT_NAME}.wgt")
 	else()
 		MESSAGE(FATAL_ERROR "Widget tree empty, please populate it by calling  populate_widget() macro with target you want to include into it.")
-	endif("${PROJECT_TARGETS}" MATCHES "populate_")
-endmacro(build_widget)
+	endif("${PROJECT_TARGETS}" MATCHES "project_populate_")
+endmacro(project_package_build)
 
-macro(search_targets)
+macro(project_subdirs_add)
 	file(GLOB filelist "*")
 	foreach(filename ${filelist})
-	if(EXISTS "${filename}/CMakeLists.txt")
-		add_subdirectory(${filename})
-	endif(EXISTS "${filename}/CMakeLists.txt")
+		if(EXISTS "${filename}/CMakeLists.txt")
+			add_subdirectory(${filename})
+		endif(EXISTS "${filename}/CMakeLists.txt")
 	endforeach()
-endmacro()
+endmacro(project_subdirs_add)
 
 set(CMAKE_BUILD_TYPE Debug CACHE STRING "the type of build")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
