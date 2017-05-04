@@ -18,11 +18,13 @@
 
 # Project Info
 # ------------------
-set(NAME Hybrid-QML-example)
+set(NAME native-example)
 set(VERSION "0.0")
-set(PROJECT_PRETTY_NAME "Hybrid QML Example")
-set(PROJECT_DESCRIPTION "Hybrid QML AGL application example")
+set(PROJECT_PRETTY_NAME "Native Example")
+set(PROJECT_DESCRIPTION "Native AGL application example")
 set(PROJECT_URL "https://gerrit.automotivelinux.org/gerrit/apps/app-templates")
+set(PROJECT_AUTHOR "Last Name, First Name")
+set(PROJECT_AUTHOR_MAIL "example.man@bigouden.bzh")
 set(PROJECT_ICON "icon.png")
 
 # Compilation Mode (DEBUG, RELEASE)

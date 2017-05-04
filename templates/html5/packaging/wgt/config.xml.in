@@ -4,7 +4,7 @@
   <icon src="icon.png"/>
   <content src="index.html" type="text/html"/>
   <description>@PROJECT_DESCRIPTION@</description>
-  <author>Romain Forlot &lt;romain.forlot@iot.bzh&gt;</author>
+  <author>@PROJECT_AUTHOR@ &lt;@PROJECT_AUTHOR_MAIL@&gt;</author>
   <license>APL 2.0</license>
 </widget>
 

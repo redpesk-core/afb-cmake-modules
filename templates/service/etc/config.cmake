@@ -23,6 +23,8 @@ set(VERSION "0.0")
 set(PROJECT_PRETTY_NAME "Service binding Example")
 set(PROJECT_DESCRIPTION "service binding AGL application example")
 set(PROJECT_URL "https://gerrit.automotivelinux.org/gerrit/apps/app-templates")
+set(PROJECT_AUTHOR "Last Name, First Name")
+set(PROJECT_AUTHOR_MAIL "example.man@bigouden.bzh")
 set(PROJECT_ICON "icon.png")
 
 # Compilation Mode (DEBUG, RELEASE)
