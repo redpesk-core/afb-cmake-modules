@@ -18,7 +18,7 @@ var exec = require('child_process').exec
 var router   = require('front-router');
 
 // == PATH STRINGS ========
-var appdir  = "./app/";   // Warning to not forget trailling '/'
+var appdir  = "./";   // Warning to not forget trailling '/'
 config=require (appdir + "etc/_Config"); // upload user local preferences if any
 
 var frontend= appdir + config.FRONTEND;

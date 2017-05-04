@@ -16,12 +16,23 @@
 # limitations under the License.
 ###########################################################################
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.3)
+# Add target to project dependency list
+PROJECT_TARGET_ADD(hybrid-html5-example)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/etc/config.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/etc/macros.cmake)
+	# Define project Targets
+	add_custom_command(OUTPUT dist.prod
+	DEPENDS ${TARGET_NAME}
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	COMMAND npm install
+	COMMAND gulp widget-config-prod
+	COMMAND cp -r dist.prod ${CMAKE_CURRENT_BINARY_DIR})
 
-# Add subdir targets
-search_targets()
+	add_custom_target(${TARGET_NAME} ALL DEPENDS dist.prod)
 
-build_widget()
+	# Binder exposes a unique public entry point
+	SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
+		PREFIX ""
+		LABELS "HTDOCS"
+		OUTPUT_NAME dist.prod)
+
+populate_widget()

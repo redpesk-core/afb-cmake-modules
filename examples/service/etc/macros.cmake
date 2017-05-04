@@ -69,15 +69,16 @@ macro(populate_widget)
 	set(POPULE_WIDGET_TARGET "populate_${TARGET_NAME}")
 
 	get_target_property(T ${TARGET_NAME} LABELS)
+	get_target_property(OUT ${TARGET_NAME} OUTPUT_NAME)
+
 	if(${T} STREQUAL "BINDING")
 		add_custom_command(OUTPUT ${WIDGET_LIBDIR}/${TARGET_NAME}.so
 			DEPENDS ${TARGET_NAME}
 			COMMAND mkdir -p ${WIDGET_LIBDIR}
-			COMMAND cp ${TARGET_NAME}.so ${WIDGET_LIBDIR}
+			COMMAND cp ${OUT}.so ${WIDGET_LIBDIR}
 		)
 		add_custom_target(${POPULE_WIDGET_TARGET} ALL DEPENDS ${WIDGET_LIBDIR}/${TARGET_NAME}.so)
 	elseif(${T} STREQUAL "EXECUTABLE")
-		get_target_property(OUT ${TARGET_NAME} OUTPUT_NAME)
 		add_custom_command(OUTPUT ${WIDGET_BINDIR}/${TARGET_NAME}
 			DEPENDS ${TARGET_NAME}
 			COMMAND mkdir -p ${WIDGET_BINDIR}
@@ -85,14 +86,12 @@ macro(populate_widget)
 		)
 		add_custom_target(${POPULE_WIDGET_TARGET} ALL DEPENDS ${WIDGET_BINDIR}/${TARGET_NAME})
 	elseif(${T} STREQUAL "HTDOCS")
-		get_target_property(OUT ${TARGET_NAME} OUTPUT_NAME)
 		add_custom_command(OUTPUT ${WIDGET_HTTPDIR}
 			DEPENDS ${TARGET_NAME}
 			COMMAND cp -r ${OUT} ${WIDGET_HTTPDIR}
 			)
 			add_custom_target(${POPULE_WIDGET_TARGET} ALL DEPENDS ${WIDGET_HTTPDIR})
 	elseif(${T} STREQUAL "DATA")
-		get_target_property(OUT ${TARGET_NAME} OUTPUT_NAME)
 		add_custom_command(OUTPUT ${WIDGET_DATADIR}
 			DEPENDS ${TARGET_NAME}
 			COMMAND cp -r ${OUT} ${WIDGET_DATADIR}
@@ -119,6 +118,7 @@ macro(build_widget)
 		COMMAND wgtpkg-pack -f -o ${PROJECT_NAME}.wgt ${WIDGET_DIR}
 		)
 		add_custom_target(widget DEPENDS ${PROJECT_NAME}.wgt)
+		set(ADDITIONAL_MAKE_CLEAN_FILES, "${PROJECT_NAME}.wgt")
 	else()
 		MESSAGE(FATAL_ERROR "Widget tree empty, please populate it by calling  populate_widget() macro with target you want to include into it.")
 	endif("${PROJECT_TARGETS}" MATCHES "populate_")
@@ -191,7 +191,7 @@ CHECK_LIBRARY_EXISTS(efence malloc "" HAVE_LIBEFENCE)
 IF(HAVE_LIBEFENCE)
 	MESSAGE(STATUS "Linking with ElectricFence for debugging purposes...")
 	SET(libefence_LIBRARIES "-lefence")
-	list (APPEND link_libraries libefence_LIBRARIES})
+	list (APPEND link_libraries ${libefence_LIBRARIES})
 ENDIF(HAVE_LIBEFENCE)
 ENDIF(CMAKE_BUILD_TYPE MATCHES DEBUG)
 
@@ -250,4 +250,3 @@ if(CLOSING_MESSAGE AND GLOBAL_TARGET_LIST)
 	)
 endif()
 
-set(ADDITIONAL_MAKE_CLEAN_FILES, "low-can-binding/low-can-binding.wgt")
