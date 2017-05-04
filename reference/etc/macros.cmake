@@ -112,7 +112,12 @@ macro(project_package_build)
 endmacro(project_package_build)
 
 macro(project_subdirs_add)
-	file(GLOB filelist "*")
+	if(${ARGV0})
+		file(GLOB filelist "${ARGV0}")
+	else()
+		file(GLOB filelist "*")
+	endif(${ARGV0})
+
 	foreach(filename ${filelist})
 		if(EXISTS "${filename}/CMakeLists.txt")
 			add_subdirectory(${filename})
