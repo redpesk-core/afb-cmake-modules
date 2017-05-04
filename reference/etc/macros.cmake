@@ -55,12 +55,6 @@ macro(project_targets_populate)
 		get_target_property(BD ${TARGET} BINARY_DIR)
 		get_target_property(OUT ${TARGET} OUTPUT_NAME)
 
-		if(${P} STREQUAL "P-NOTFOUND" AND ${T} STREQUAL "BINDING")
-			set(P "lib")
-		elseif(${P} STREQUAL "P-NOTFOUND")
-			set(P "")
-		endif(${P} STREQUAL "P-NOTFOUND" AND ${T} STREQUAL "BINDING")
-
 		if(${T} STREQUAL "BINDING")
 			add_custom_command(OUTPUT ${WIDGET_LIBDIR}/${P}${TARGET}.so
 				DEPENDS ${TARGET}
@@ -79,6 +73,14 @@ macro(project_targets_populate)
 			add_custom_command(OUTPUT ${WIDGET_HTTPDIR}
 				DEPENDS ${TARGET}
 				COMMAND cp -r ${BD}/${P}${OUT} ${WIDGET_HTTPDIR}
+			if(P MATCHES "NOTFOUND$")
+				if (${T} STREQUAL "BINDING")
+					set(P "lib")
+				else()
+					set(P "")
+				endif()
+			endif()
+
 				)
 				add_custom_target(${POPULE_WIDGET_TARGET} ALL DEPENDS ${WIDGET_HTTPDIR})
 		elseif(${T} STREQUAL "DATA")
