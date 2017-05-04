@@ -131,7 +131,7 @@ set(CMP0048 1)
 
 # Include project configuration
 # ------------------------------
-project(${NAME} VERSION ${VERSION})
+project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES ${PROJECT_LANGUAGES})
 set(PROJECT_WGT_DIR "packaging/wgt" CACHE PATH "Subpath to the widget directory")
 set(PROJECT_LIBDIR "libs" CACHE PATH "Subpath to libraries")
 set(PROJECT_RESOURCES "data" CACHE PATH "Subpath to data")

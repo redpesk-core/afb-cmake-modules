@@ -27,6 +27,7 @@ set(PROJECT_ICON "icon.png")
 set(PROJECT_AUTHOR "Last Name, First Name")
 set(PROJECT_AUTHOR_MAIL "example.man@bigouden.bzh")
 set(PROJECT_LICENCE "APL2.0")
+set(PROJECT_LANGUAGES,"C")
 
 # Where are stored config.xml.in and icon.png.in files. Template available at :
 # https://gerrit.automotivelinux.org/gerrit/#/admin/projects/apps/app-templates
