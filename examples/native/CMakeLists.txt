@@ -25,7 +25,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/etc/macros.cmake)
 PROJECT_TARGET_ADD(native-example)
 
 	# Define project Targets
-	add_executable(${TARGET_NAME} xxxxxx-native-client.c
+	add_executable(${TARGET_NAME} app/xxxxxx-native-client.c
 	)
 
 	link_libraries(

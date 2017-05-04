@@ -26,7 +26,7 @@ PROJECT_TARGET_ADD(service-example)
 
 	# Define project Targets
 	add_library(${TARGET_NAME} MODULE
-		xxxxxx-service-binding.c
+		binding/xxxxxx-service-binding.c
 	)
 
 	# Binder exposes a unique public entry point

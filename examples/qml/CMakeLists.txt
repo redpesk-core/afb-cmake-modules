@@ -24,12 +24,12 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/etc/macros.cmake)
 # Add target to project dependency list
 PROJECT_TARGET_ADD(qml-example)
 
-	add_custom_command(OUTPUT xxxxxx-qml-app.qml
+	add_custom_command(OUTPUT app/xxxxxx-qml-app.qml
 		COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/xxxxxx-qml-app.qml ${CMAKE_CURRENT_BINARY_DIR}
 		)
 
 	# Define project Targets
-	add_custom_target(${TARGET_NAME} ALL 
+	add_custom_target(${TARGET_NAME} ALL
 		DEPENDS xxxxxx-qml-app.qml
 		)
 
