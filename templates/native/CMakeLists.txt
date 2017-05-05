@@ -21,34 +21,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.3)
 include(${CMAKE_CURRENT_SOURCE_DIR}/etc/config.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/etc/macros.cmake)
 
-# Add target to project dependency list
-PROJECT_TARGET_ADD(native-example)
-
-	# Define project Targets
-	add_executable(${TARGET_NAME} app/xxxxxx-native-client.c
-	)
-
-	link_libraries(
-		${CMAKE_THREAD_LIBS_INIT}
-		${libafbwsc_LIBRARIES}
-		${json-c_LIBRARIES}
-		${libsystemd_LIBRARIES}
-	)
-
-	# Binder exposes a unique public entry point
-	SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
-		LABELS "EXECUTABLE"
-		OUTPUT_NAME ${TARGET_NAME})
-
-	TARGET_INCLUDE_DIRECTORIES(${TARGET_NAME}
-		PUBLIC	${libafbwsc_INCLUDE_DIRS}
-			${json-c_INCLUDE_DIRS}
-			${libsystemd_INCLUDE_DIRS})
-
-	TARGET_LINK_LIBRARIES(${TARGET_NAME}
-		afbwsc
-		${link_libraries})
+# Add subdir targets
+project_subdirs_add()
 
 project_targets_populate()
-
 project_package_build()

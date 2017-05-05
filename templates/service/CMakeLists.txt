@@ -21,20 +21,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.3)
 include(${CMAKE_CURRENT_SOURCE_DIR}/etc/config.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/etc/macros.cmake)
 
-# Add target to project dependency list
-PROJECT_TARGET_ADD(service-example)
-
-	# Define project Targets
-	add_library(${TARGET_NAME} MODULE
-		binding/xxxxxx-service-binding.c
-	)
-
-	# Binder exposes a unique public entry point
-	SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
-		PREFIX ""
-		LABELS "BINDING"
-		OUTPUT_NAME ${TARGET_NAME})
+project_subdirs_add()
 
 project_targets_populate()
-
 project_package_build()

@@ -18,13 +18,17 @@
 ###########################################################################
 
 # Add target to project dependency list
-PROJECT_TARGET_ADD(xxxxxx-hybrid-binding)
+PROJECT_TARGET_ADD(xxx)
 
 	# Define project Targets
-	add_library(${TARGET_NAME} MODULE ${TARGET_NAME}.c)
+	add_library(${TARGET_NAME} MODULE 
+		${TARGET_NAME}-hat.c
+		${TARGET_NAME}-cb.c
+		)
 
 	# Binder exposes a unique public entry point
 	SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
+		PREFIX "afb-"
 		LABELS "BINDING"
 		LINK_FLAGS ${BINDINGS_LINK_FLAG}
 		OUTPUT_NAME ${TARGET_NAME}

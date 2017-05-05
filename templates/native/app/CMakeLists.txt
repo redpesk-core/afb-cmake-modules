@@ -1,7 +1,8 @@
 ###########################################################################
 # Copyright 2015, 2016, 2017 IoT.bzh
 #
-# author: Romain Forlot <romain.forlot@iot.bzh>
+# author: Fulup Ar Foll <fulup@iot.bzh>
+# contrib: Romain Forlot <romain.forlot@iot.bzh>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,19 +18,34 @@
 ###########################################################################
 
 # Add target to project dependency list
-PROJECT_TARGET_ADD(html5-app)
+PROJECT_TARGET_ADD(xxx-native-app)
 
 	# Define project Targets
-	add_custom_command(OUTPUT dist.prod
-	DEPENDS ${TARGET_NAME}
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	COMMAND npm install
-	COMMAND gulp widget-config-prod
-	COMMAND cp -r dist.prod ${CMAKE_CURRENT_BINARY_DIR})
+	add_executable(${TARGET_NAME} 
+		${TARGET_NAME}.c
+		)
 
-	add_custom_target(${TARGET_NAME} ALL DEPENDS dist.prod)
+	link_libraries(
+		${CMAKE_THREAD_LIBS_INIT}
+		${libafbwsc_LIBRARIES}
+		${json-c_LIBRARIES}
+		${libsystemd_LIBRARIES}
+	)
 
 	# Binder exposes a unique public entry point
 	SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
-		LABELS "HTDOCS"
-		OUTPUT_NAME dist.prod)
+		LABELS "EXECUTABLE"
+		OUTPUT_NAME ${TARGET_NAME})
+
+	TARGET_INCLUDE_DIRECTORIES(${TARGET_NAME}
+		PUBLIC	${libafbwsc_INCLUDE_DIRS}
+			${json-c_INCLUDE_DIRS}
+			${libsystemd_INCLUDE_DIRS})
+
+	TARGET_LINK_LIBRARIES(${TARGET_NAME}
+		afbwsc
+		${link_libraries})
+
+	# installation directory
+	INSTALL(TARGETS ${TARGET_NAME}
+		RUNTIME DESTINATION ${BINDINGS_INSTALL_DIR})

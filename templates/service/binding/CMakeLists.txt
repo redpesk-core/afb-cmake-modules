@@ -16,13 +16,22 @@
 # limitations under the License.
 ###########################################################################
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.3)
+# Add target to project dependency list
+PROJECT_TARGET_ADD(xxx-service)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/etc/config.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/etc/macros.cmake)
+	# Define project Targets
+	add_library(${TARGET_NAME} MODULE
+		${TARGET_NAME}-hat.c
+		${TARGET_NAME}-cb.c
+	)
 
-# Add subdir targets
-project_subdirs_add()
+	# Binder exposes a unique public entry point
+	SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
+		PREFIX "afs-"
+		LABELS "BINDING"
+		LINK_FLAGS ${BINDINGS_LINK_FLAG}
+		OUTPUT_NAME ${TARGET_NAME})
 
-project_targets_populate()
-project_package_build()
+	# Library dependencies (include updates automatically)
+	TARGET_LINK_LIBRARIES(${TARGET_NAME}
+		${link_libraries})

@@ -23,4 +23,5 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/etc/macros.cmake)
 
 project_subdirs_add()
 
-build_widget()
+project_targets_populate()
+project_package_build()
