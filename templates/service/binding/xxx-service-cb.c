@@ -14,26 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include <json-c/json.h>
 
 #include <afb/afb-binding.h>
-
-const struct afb_binding_interface *interface;
-
-struct event
-{
-	struct event *next;
-	struct afb_event event;
-	char tag[1];
-};
-
-static struct event *events = 0;
+ #include "xxx-service-hat.h"
+ 
+ const struct afb_binding_interface *interface;
+ 
+ static struct event *events = 0;
 
 /* searchs the event of tag */
-static struct event *event_get(const char *tag)
+ struct event *event_get(const char *tag)
 {
 	struct event *e = events;
 	while(e && strcmp(e->tag, tag))
@@ -42,7 +37,7 @@ static struct event *event_get(const char *tag)
 }
 
 /* deletes the event of tag */
-static int event_del(const char *tag)
+ int event_del(const char *tag)
 {
 	struct event *e, **p;
 
@@ -62,7 +57,7 @@ static int event_del(const char *tag)
 }
 
 /* creates the event of tag */
-static int event_add(const char *tag, const char *name)
+ int event_add(const char *tag, const char *name)
 {
 	struct event *e;
 
@@ -85,21 +80,21 @@ static int event_add(const char *tag, const char *name)
 	return 0;
 }
 
-static int event_subscribe(struct afb_req request, const char *tag)
+ int event_subscribe(struct afb_req request, const char *tag)
 {
 	struct event *e;
 	e = event_get(tag);
 	return e ? afb_req_subscribe(request, e->event) : -1;
 }
 
-static int event_unsubscribe(struct afb_req request, const char *tag)
+ int event_unsubscribe(struct afb_req request, const char *tag)
 {
 	struct event *e;
 	e = event_get(tag);
 	return e ? afb_req_unsubscribe(request, e->event) : -1;
 }
 
-static int event_push(struct json_object *args, const char *tag)
+ int event_push(struct json_object *args, const char *tag)
 {
 	struct event *e;
 	e = event_get(tag);
@@ -107,34 +102,34 @@ static int event_push(struct json_object *args, const char *tag)
 }
 
 // Sample Generic Ping Debug API
-static void ping(struct afb_req request, json_object *jresp, const char *tag)
+ static void ping(struct afb_req request, json_object *jresp, const char *tag)
 {
-	static int pingcount = 0;
+	 static int pingcount = 0;
 	json_object *query = afb_req_json(request);
 	afb_req_success_f(request, jresp, "Ping Binder Daemon tag=%s count=%d query=%s", tag, ++pingcount, json_object_to_json_string(query));
 }
 
-static void pingSample (struct afb_req request)
+ void pingSample (struct afb_req request)
 {
 	ping(request, json_object_new_string ("Some String"), "pingSample");
 }
 
-static void pingFail (struct afb_req request)
+ void pingFail (struct afb_req request)
 {
 	afb_req_fail(request, "failed", "Ping Binder Daemon fails");
 }
 
-static void pingNull (struct afb_req request)
+ void pingNull (struct afb_req request)
 {
 	ping(request, NULL, "pingNull");
 }
 
-static void pingBug (struct afb_req request)
+ void pingBug (struct afb_req request)
 {
-	ping((struct afb_req){NULL,NULL,NULL}, NULL, "pingBug");
+	ping((struct afb_req){NULL,NULL}, NULL, "pingBug");
 }
 
-static void pingEvent(struct afb_req request)
+ void pingEvent(struct afb_req request)
 {
 	json_object *query = afb_req_json(request);
 	afb_daemon_broadcast_event(interface->daemon, "event", json_object_get(query));
@@ -143,7 +138,7 @@ static void pingEvent(struct afb_req request)
 
 
 // For samples https://linuxprograms.wordpress.com/2010/05/20/json-c-libjson-tutorial/
-static void pingJson (struct afb_req request) {
+ void pingJson (struct afb_req request) {
     json_object *jresp, *embed;
 
     jresp = json_object_new_object();
@@ -159,7 +154,7 @@ static void pingJson (struct afb_req request) {
     ping(request, jresp, "pingJson");
 }
 
-static void subcallcb (void *prequest, int iserror, json_object *object)
+ void subcallcb (void *prequest, int iserror, json_object *object)
 {
 	struct afb_req request = afb_req_unstore(prequest);
 	if (iserror)
@@ -169,7 +164,7 @@ static void subcallcb (void *prequest, int iserror, json_object *object)
 	afb_req_unref(request);
 }
 
-static void subcall (struct afb_req request)
+ void subcall (struct afb_req request)
 {
 	const char *api = afb_req_value(request, "api");
 	const char *verb = afb_req_value(request, "verb");
@@ -182,7 +177,7 @@ static void subcall (struct afb_req request)
 		afb_req_subcall(request, api, verb, object, subcallcb, afb_req_store(request));
 }
 
-static void eventadd (struct afb_req request)
+ void eventadd (struct afb_req request)
 {
 	const char *tag = afb_req_value(request, "tag");
 	const char *name = afb_req_value(request, "name");
@@ -195,7 +190,7 @@ static void eventadd (struct afb_req request)
 		afb_req_success(request, NULL, NULL);
 }
 
-static void eventdel (struct afb_req request)
+ void eventdel (struct afb_req request)
 {
 	const char *tag = afb_req_value(request, "tag");
 
@@ -207,7 +202,7 @@ static void eventdel (struct afb_req request)
 		afb_req_success(request, NULL, NULL);
 }
 
-static void eventsub (struct afb_req request)
+ void eventsub (struct afb_req request)
 {
 	const char *tag = afb_req_value(request, "tag");
 
@@ -219,7 +214,7 @@ static void eventsub (struct afb_req request)
 		afb_req_success(request, NULL, NULL);
 }
 
-static void eventunsub (struct afb_req request)
+ void eventunsub (struct afb_req request)
 {
 	const char *tag = afb_req_value(request, "tag");
 
@@ -231,7 +226,7 @@ static void eventunsub (struct afb_req request)
 		afb_req_success(request, NULL, NULL);
 }
 
-static void eventpush (struct afb_req request)
+ void eventpush (struct afb_req request)
 {
 	const char *tag = afb_req_value(request, "tag");
 	const char *data = afb_req_value(request, "data");
@@ -243,37 +238,4 @@ static void eventpush (struct afb_req request)
 		afb_req_fail(request, "failed", "push error");
 	else
 		afb_req_success(request, NULL, NULL);
-}
-
-// NOTE: this sample does not use session to keep test a basic as possible
-//       in real application most APIs should be protected with AFB_SESSION_CHECK
-static const struct afb_verb_desc_v1 verbs[]= {
-  {"ping"     , AFB_SESSION_NONE, pingSample  , "Ping the binder"},
-  {"pingfail" , AFB_SESSION_NONE, pingFail    , "Ping that fails"},
-  {"pingnull" , AFB_SESSION_NONE, pingNull    , "Ping which returns NULL"},
-  {"pingbug"  , AFB_SESSION_NONE, pingBug     , "Do a Memory Violation"},
-  {"pingJson" , AFB_SESSION_NONE, pingJson    , "Return a JSON object"},
-  {"pingevent", AFB_SESSION_NONE, pingEvent   , "Send an event"},
-  {"subcall",   AFB_SESSION_NONE, subcall     , "Call api/verb(args)"},
-  {"eventadd",  AFB_SESSION_NONE, eventadd    , "adds the event of 'name' for the 'tag'"},
-  {"eventdel",  AFB_SESSION_NONE, eventdel    , "deletes the event of 'tag'"},
-  {"eventsub",  AFB_SESSION_NONE, eventsub    , "subscribes to the event of 'tag'"},
-  {"eventunsub",AFB_SESSION_NONE, eventunsub  , "unsubscribes to the event of 'tag'"},
-  {"eventpush", AFB_SESSION_NONE, eventpush   , "pushes the event of 'tag' with the 'data'"},
-  {NULL}
-};
-
-static const struct afb_binding plugin_desc = {
-	.type = AFB_BINDING_VERSION_1,
-	.v1 = {
-		.info = "xxxxxx service",
-		.prefix = "xxxxxx",
-		.verbs = verbs
-	}
-};
-
-const struct afb_binding *afbBindingV1Register (const struct afb_binding_interface *itf)
-{
-	interface = itf;
-	return &plugin_desc;
 }

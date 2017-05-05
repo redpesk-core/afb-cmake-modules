@@ -18,36 +18,12 @@
 #include <json-c/json.h>
 
 #include <afb/afb-binding.h>
+#include "xxx-hat.h"
 
-const struct afb_binding_interface *interface;
-
-static void ping (struct afb_req request)
+void ping (struct afb_req request)
 {
 	static int pingcount = 0;
 
 	json_object *query = afb_req_json(request);
 	afb_req_success_f(request, NULL, "Ping Binder Daemon count=%d query=%s", ++pingcount, json_object_to_json_string(query));
-}
-
-// NOTE: this sample does not use session to keep test a basic as possible
-//       in real application most APIs should be protected with AFB_SESSION_CHECK
-static const struct afb_verb_desc_v1 verbs[]= {
-  {"ping"     , AFB_SESSION_NONE, ping    , "Ping the binder"},
-  {NULL}
-};
-
-static const struct afb_binding plugin_desc = {
-	.type = AFB_BINDING_VERSION_1,
-	.v1 = {
-		.info = "xxxxxx hybrid service",
-		.prefix = "xxxxxx",
-		.verbs = verbs
-	}
-};
-
-const struct afb_binding *afbBindingV1Register (const struct afb_binding_interface *itf)
-{
-	interface = itf;
-
-	return &plugin_desc;
 }
