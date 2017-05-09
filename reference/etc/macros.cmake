@@ -34,7 +34,7 @@ macro(PROJECT_TARGET_ADD TARGET_NAME)
 	# Cmake does not maintain targets list before 3.7
 	# -------------------------------------------------
 	if(${CMAKE_VERSION} VERSION_LESS 3.7)
-		set(GLOBAL_TARGET_LIST ${PROJECT_TARGETS})
+		set(GLOBAL_TARGET_LIST ${PROJECT_TARGETS} CACHE INTERNAL "Hold project targets")
 	else()
 		get_property(GLOBAL_TARGET_LIST GLOBAL PROPERTY GlobalTargetList)
 	endif()
