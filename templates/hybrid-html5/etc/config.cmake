@@ -31,14 +31,13 @@ set(PROJECT_ICON "icon.png")
 # ----------------------------------
 set(CMAKE_BUILD_TYPE "DEBUG")
 
-# Compiler selection if needed. Overload the detected compiler.
+# Compiler selection if needed. Impose a minimal version.
 # -----------------------------------------------
-#set(CMAKE_C_COMPILER "gcc")
-#set(CMAKE_CXX_COMPILER "g++")
+set (gcc_minimal_version 4.9)
 
 # PKG_CONFIG required packages
 # -----------------------------
-set (PKG_REQUIRED_LIST 
+set (PKG_REQUIRED_LIST
 	json-c
 	afb-daemon
 )
@@ -54,7 +53,7 @@ set(CMAKE_CXX_FLAGS "")
 # Print a helper message when every thing is finished
 # ----------------------------------------------------
 #set(CLOSING_MESSAGE "")
-
+#set(WIDGET_MESSAGE "Install widget file using in the target : afm-util install ${PROJECT_NAME}.wgt")
 
 # (BUG!!!) as PKG_CONFIG_PATH does not work [should be an env variable]
 # ---------------------------------------------------------------------
@@ -76,12 +75,35 @@ set(LD_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib64 ${CMAKE_INSTALL_PREFIX}/lib)
 
 # Optional force binding installation
 # ------------------------------------
-set(BINDINGS_INSTALL_PREFIX /opt )
+# set(BINDINGS_INSTALL_PREFIX PrefixPath )
 
 # Optional force widget prefix generation
-# ---------------------------------------
+# ------------------------------------------------
 # set(WIDGET_PREFIX DestinationPath)
+
+# Optional Widget entry point file.
+# ---------------------------------------------------------
+ # This is the file that will be executed, loaded,...
+# at launch time by the application framework
+
+# set(WIDGET_ENTRY_POINT EntryPoint_Path)
+
+# Optional Widget Mimetype specification
+# --------------------------------------------------
+# Choose between :
+# - application/x-executable
+# - application/vnd.agl.url
+# - application/vnd.agl.service
+# - application/vnd.agl.native
+# - text/vnd.qt.qml
+# - text/html
+# - application/vnd.agl.qml
+# - application/vnd.agl.qml.hybrid
+# - application/vnd.agl.html.hybrid
+#
+# set(WIDGET_TYPE MimeType)
 
 # Optional force binding Linking flag
 # ------------------------------------
 # set(BINDINGS_LINK_FLAG LinkOptions )
+
