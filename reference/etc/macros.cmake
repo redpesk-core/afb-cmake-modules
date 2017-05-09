@@ -243,13 +243,14 @@ if(EXTRA_DEPENDENCIES_ORDER)
 	)
 endif()
 
-# Print developer helper message when everything is done
+# Print developer helper message when build is done
 # -------------------------------------------------------
 macro(project_closing_msg)
 	if(CLOSING_MESSAGE AND GLOBAL_TARGET_LIST)
-		add_custom_target(${PROJECT_NAME}_done ALL
-			DEPENDS ${DEPENDENCIES_TARGET} ${GLOBAL_TARGET_LIST}
+		add_custom_target(${PROJECT_NAME}_build_done ALL
 			COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${CLOSING_MESSAGE}"
 		)
+		 add_dependencies(${PROJECT_NAME}_build_done
+		 	${DEPENDENCIES_TARGET} ${GLOBAL_TARGET_LIST})
 	endif()
 endmacro()
