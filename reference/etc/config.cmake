@@ -44,10 +44,9 @@ set(PROJECT_LANGUAGES,"C")
 # ----------------------------------
 set(CMAKE_BUILD_TYPE "DEBUG")
 
-# Compiler selection if needed. Overload the detected compiler.
+# Compiler selection if needed. Impose a minimal version.
 # -----------------------------------------------
-#set(CMAKE_C_COMPILER "gcc")
-#set(CMAKE_CXX_COMPILER "g++")
+set (gcc_minimal_version 4.9) 
 
 # PKG_CONFIG required packages
 # -----------------------------

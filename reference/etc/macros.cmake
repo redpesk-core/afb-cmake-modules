@@ -40,6 +40,14 @@ macro(PROJECT_TARGET_ADD TARGET_NAME)
 	endif()
 endmacro(PROJECT_TARGET_ADD)
 
+# Check GCC minimal version version
+if (gcc_minimal_version)
+   message ("-- Check gcc_minimal_version (found gcc version ${CMAKE_C_COMPILER_VERSION})  (found g++ version ${CMAKE_CXX_COMPILER_VERSION})")
+if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${gcc_minimal_version} OR CMAKE_C_COMPILER_VERSION VERSION_LESS ${gcc_minimal_version})
+    message(FATAL_ERROR "**** FATAL: Require at least gcc-${gcc_minimal_version} please set CMAKE_C[XX]_COMPILER")
+endif()
+endif(gcc_minimal_version)
+
 macro(defstr name value)
 	add_definitions(-D${name}=${value})
 endmacro(defstr)
