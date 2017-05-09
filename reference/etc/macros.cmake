@@ -133,6 +133,12 @@ macro(project_package_build)
 		add_custom_target(widget DEPENDS ${PROJECT_NAME}.wgt)
 		add_dependencies(widget MAIN_POPULATE)
 		set(ADDITIONAL_MAKE_CLEAN_FILES, "${PROJECT_NAME}.wgt")
+
+		if(WIDGET_MESSAGE)
+		add_custom_command(TARGET widget
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${WIDGET_MESSAGE}")
+		endif()
 endmacro(project_package_build)
 
 macro(project_subdirs_add)

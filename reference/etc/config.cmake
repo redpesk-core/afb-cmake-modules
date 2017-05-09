@@ -67,7 +67,7 @@ set(CMAKE_CXX_FLAGS "")
 # Print a helper message when every thing is finished
 # ----------------------------------------------------
 #set(CLOSING_MESSAGE "")
-
+#set(WIDGET_MESSAGE "Install widget file using in the target : afm-util install ${PROJECT_NAME}.wgt")
 
 # (BUG!!!) as PKG_CONFIG_PATH does not work [should be an env variable]
 # ---------------------------------------------------------------------
