@@ -110,6 +110,7 @@ set(LD_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib64 ${CMAKE_INSTALL_PREFIX}/lib)
 # - application/vnd.agl.service
 # - application/vnd.agl.native
 # - text/vnd.qt.qml
+# - text/html
 # - application/vnd.agl.qml
 # - application/vnd.agl.qml.hybrid
 # - application/vnd.agl.html.hybrid
