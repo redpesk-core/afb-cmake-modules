@@ -21,9 +21,13 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.3)
 include(${CMAKE_CURRENT_SOURCE_DIR}/etc/config.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/etc/macros.cmake)
 
-# Add subdir targets
+# Will add each subdirs with a CMakeLists.txt file
 project_subdirs_add()
 
+# Populate each target with LABELS specified.
 project_targets_populate()
+# Build package widget once populated.
 project_package_build()
+
+#Display CLOSING_MESSAGE specified in config.cmake file.
 project_closing_msg()

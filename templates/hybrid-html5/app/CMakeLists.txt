@@ -16,7 +16,11 @@
 # limitations under the License.
 ###########################################################################
 
-# Add target to project dependency list
+# Project target list
+# --------------------
+# Add target to project dependency list. Name specified as argument will be
+# added to the project target list and the variable ${TARGET_NAME} become
+# available with that value.
 PROJECT_TARGET_ADD(hybrid-html5-example)
 
 	# Define project Targets
@@ -29,7 +33,19 @@ PROJECT_TARGET_ADD(hybrid-html5-example)
 
 	add_custom_target(${TARGET_NAME} ALL DEPENDS dist.prod)
 
-	# Binder exposes a unique public entry point
+	# Targets properties
+	# ------------------
+	# Target properties will be used to build package tree that will be
+	# built using project_package_build.
+	# OUTPUT_NAME:  Depends what is the name of your  output file, it is
+	# mandatory to specify which is its name with target the property
+	# OUTPUT_NAME for your target. If file name is same of your target then
+	# use variable ${TARGET_NAME}.
+	# LABELS: Choose between "BINDING", "HTDOCS", "EXECUTABLE" depending of
+	# the type of your target.
+	# PREFIX: This prefix will be added on the output file name specify with
+	# OUTPUT_NAME. By default, there isn't PREFIX on target except on
+	# library target with is "lib".
 	SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
 		LABELS "HTDOCS"
 		OUTPUT_NAME dist.prod)

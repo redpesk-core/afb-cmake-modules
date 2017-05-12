@@ -17,14 +17,22 @@
 # limitations under the License.
 ###########################################################################
 
-# Add target to project dependency list
+# Project target list
+# --------------------
+# Add target to project dependency list. Name specified as argument will be
+# added to the project target list and the variable ${TARGET_NAME} become
+# available with that value.
 PROJECT_TARGET_ADD(xxx-native-app)
 
 	# Define project Targets
-	add_executable(${TARGET_NAME} 
+	add_executable(${TARGET_NAME}
 		${TARGET_NAME}.c
 		)
 
+	# Link
+	# ----
+	# Library dependencies (include updates automatically). Linked to the
+	# target.
 	link_libraries(
 		${CMAKE_THREAD_LIBS_INIT}
 		${libafbwsc_LIBRARIES}
@@ -32,16 +40,42 @@ PROJECT_TARGET_ADD(xxx-native-app)
 		${libsystemd_LIBRARIES}
 	)
 
-	# Binder exposes a unique public entry point
+	# Targets properties
+	# ------------------
+	# Target properties will be used to build package tree that will be
+	# built using project_package_build.
+	# OUTPUT_NAME:  Depends what is the name of your  output file, it is
+	# mandatory to specify which is its name with target the property
+	# OUTPUT_NAME for your target. If file name is same of your target then
+	# use variable ${TARGET_NAME}.
+	# LABELS: Choose between "BINDING", "HTDOCS", "EXECUTABLE" depending of
+	# the type of your target.
+	# PREFIX: This prefix will be added on the output file name specify with
+	# OUTPUT_NAME. By default, there isn't PREFIX on target except on
+	# library target with is "lib".
 	SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
 		LABELS "EXECUTABLE"
 		OUTPUT_NAME ${TARGET_NAME})
 
+	# Include
+	# -------
+	# Define target includes search and dependencies. Choose between PUBLIC,
+	# PRIVATE or INTERFACE. PRIVATE and PUBLIC items will populate the
+	# INCLUDE_DIRECTORIES property of <target>. PUBLIC and INTERFACE items
+	# will populate the INTERFACE_INCLUDE_DIRECTORIES property of <target>.
+	# The following arguments specify include directories.
+	# INTERFACE_INCLUDE_DIRECTORIES will be read at the
+	# TARGET_LINK_LIBRARIES step for others targets that link against this
+	# target.
 	TARGET_INCLUDE_DIRECTORIES(${TARGET_NAME}
 		PUBLIC	${libafbwsc_INCLUDE_DIRS}
 			${json-c_INCLUDE_DIRS}
 			${libsystemd_INCLUDE_DIRS})
 
+	# Link
+	# ----
+	# Library dependencies (include updates automatically). Linked to the
+	# target.
 	TARGET_LINK_LIBRARIES(${TARGET_NAME}
 		afbwsc
 		${link_libraries})
