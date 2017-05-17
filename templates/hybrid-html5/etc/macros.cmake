@@ -30,7 +30,7 @@
 macro(PROJECT_TARGET_ADD TARGET_NAME)
 	set_property(GLOBAL APPEND PROPERTY PROJECT_TARGETS ${TARGET_NAME})
 	set(TARGET_NAME ${TARGET_NAME})
-endmacro()
+endmacro(PROJECT_TARGET_ADD)
 
 # Check GCC minimal version version
 if (gcc_minimal_version)
@@ -250,7 +250,8 @@ endif()
 # Print developer helper message when build is done
 # -------------------------------------------------------
 macro(project_closing_msg)
-	if(CLOSING_MESSAGE AND PROJECT_TARGETS)
+	get_property(PROJECT_TARGETS GLOBAL PROPERTY PROJECT_TARGETS)
+	if(CLOSING_MESSAGE AND ${PROJECT_TARGETS})
 		add_custom_target(${PROJECT_NAME}_build_done ALL
 			COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${CLOSING_MESSAGE}"
 		)
