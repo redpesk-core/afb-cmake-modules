@@ -18,7 +18,7 @@
 
 # Project Info
 # ------------------
-set(NAME example)
+set(PROJECT_NAME example)
 set(VERSION "0.0")
 set(PROJECT_PRETTY_NAME "Example")
 set(PROJECT_DESCRIPTION "AGL application example")
