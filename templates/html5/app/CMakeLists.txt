@@ -25,8 +25,8 @@ PROJECT_TARGET_ADD(html5-app)
 	add_custom_command(OUTPUT dist.prod
 	DEPENDS ${TARGET_NAME}
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	COMMAND  [ -d dist.prod ] && npm install
-	COMMAND [ -d dist.prod ] && gulp widget-config-prod
+	COMMAND [ -d app/dist.prod ] && npm install
+	COMMAND [ -d app/dist.prod ] && gulp widget-config-prod
 	COMMAND cp -r dist.prod ${CMAKE_CURRENT_BINARY_DIR})
 
 	add_custom_target(${TARGET_NAME} ALL DEPENDS dist.prod)
