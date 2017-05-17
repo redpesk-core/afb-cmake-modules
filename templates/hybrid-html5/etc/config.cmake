@@ -18,7 +18,7 @@
 
 # Project Info
 # ------------------
-set(NAME Hybrid-HTML5-example)
+set(PROJECT_NAME Hybrid-HTML5-example)
 set(VERSION "0.0")
 set(PROJECT_PRETTY_NAME "Hybrid HTML5 Example")
 set(PROJECT_DESCRIPTION "Hybrid HTML5 AGL application example")

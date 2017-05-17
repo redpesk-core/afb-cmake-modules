@@ -18,7 +18,7 @@
 
 # Project Info
 # ------------------
-set(NAME service-example)
+set(PROJECT_NAME service-example)
 set(VERSION "0.0")
 set(PROJECT_PRETTY_NAME "Service binding Example")
 set(PROJECT_DESCRIPTION "service binding AGL application example")

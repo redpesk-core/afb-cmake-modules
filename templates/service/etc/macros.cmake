@@ -47,6 +47,7 @@ endmacro(defstr)
 # WGT packaging
 macro(project_targets_populate)
 	add_custom_target(MAIN_POPULATE)
+	get_property(PROJECT_TARGETS GLOBAL PROPERTY PROJECT_TARGETS)
 	foreach(TARGET ${PROJECT_TARGETS})
 		get_target_property(T ${TARGET} LABELS)
 		if(T)
@@ -250,8 +251,9 @@ endif()
 # Print developer helper message when build is done
 # -------------------------------------------------------
 macro(project_closing_msg)
+	get_property(PROJECT_TARGETS_SET GLOBAL PROPERTY PROJECT_TARGETS SET)
 	get_property(PROJECT_TARGETS GLOBAL PROPERTY PROJECT_TARGETS)
-	if(CLOSING_MESSAGE AND ${PROJECT_TARGETS})
+	if(CLOSING_MESSAGE AND ${PROJECT_TARGETS_SET})
 		add_custom_target(${PROJECT_NAME}_build_done ALL
 			COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${CLOSING_MESSAGE}"
 		)

@@ -18,7 +18,7 @@
 
 # Project Info
 # ------------------
-set(NAME HTML5-example)
+set(PROJECT_NAME HTML5-example)
 set(VERSION "0.0")
 set(PROJECT_PRETTY_NAME "HTML5 Example")
 set(PROJECT_DESCRIPTION "HTML5 AGL application example")

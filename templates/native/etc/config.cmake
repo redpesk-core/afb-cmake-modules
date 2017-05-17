@@ -18,7 +18,7 @@
 
 # Project Info
 # ------------------
-set(NAME native-example)
+set(PROJECT_NAME native-example)
 set(VERSION "0.0")
 set(PROJECT_PRETTY_NAME "Native Example")
 set(PROJECT_DESCRIPTION "Native AGL application example")
