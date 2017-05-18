@@ -29,10 +29,6 @@ set(PROJECT_AUTHOR_MAIL "example.man@bigouden.bzh")
 set(PROJECT_LICENCE "APL2.0")
 set(PROJECT_LANGUAGES,"C")
 
-# Where are stored config.xml.in and icon.png.in files. Template available at :
-# https://gerrit.automotivelinux.org/gerrit/#/admin/projects/apps/app-templates
-# set(PROJECT_WGT_DIR "packaging/wgt")
-
 # Where are stored your external libraries for your project. This is 3rd party library that you don't maintain
 # but used and must be built and linked.
 # set(PROJECT_LIBDIR "libs")
@@ -67,7 +63,7 @@ set(CMAKE_CXX_FLAGS "")
 # Print a helper message when every thing is finished
 # ----------------------------------------------------
 #set(CLOSING_MESSAGE "")
-#set(WIDGET_MESSAGE "Install widget file using in the target : afm-util install ${PROJECT_NAME}.wgt")
+#set(PACKAGE_MESSAGE "Install widget file using in the target : afm-util install ${PROJECT_NAME}.wgt")
 
 # (BUG!!!) as PKG_CONFIG_PATH does not work [should be an env variable]
 # ---------------------------------------------------------------------
@@ -91,9 +87,13 @@ set(LD_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib64 ${CMAKE_INSTALL_PREFIX}/lib)
 # ------------------------------------
 # set(BINDINGS_INSTALL_PREFIX PrefixPath )
 
-# Optional force widget prefix generation
-# ------------------------------------------------
-# set(WIDGET_PREFIX DestinationPath)
+# Optional force binding Linking flag
+# ------------------------------------
+# set(BINDINGS_LINK_FLAG LinkOptions )
+
+# Optional force package prefix generation, like widget
+# -----------------------------------------------------
+# set(PACKAGE_PREFIX DestinationPath)
 
 # Optional Widget entry point file.
 # ---------------------------------------------------------
@@ -116,7 +116,3 @@ set(LD_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib64 ${CMAKE_INSTALL_PREFIX}/lib)
 # - application/vnd.agl.html.hybrid
 #
 # set(WIDGET_TYPE MimeType)
-
-# Optional force binding Linking flag
-# ------------------------------------
-# set(BINDINGS_LINK_FLAG LinkOptions )
