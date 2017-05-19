@@ -230,8 +230,8 @@ set(CMP0048 1)
 # Include project configuration
 # ------------------------------
 project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES ${PROJECT_LANGUAGES})
-set(PROJECT_LIBDIR "libs" CACHE PATH "Subpath to libraries")
-set(PROJECT_RESOURCES "data" CACHE PATH "Subpath to data")
+set(PROJECT_LIBDIR "${CMAKE_SOURCE_DIR}/libs" CACHE PATH "Subpath to libraries")
+set(PROJECT_RESOURCES "${CMAKE_SOURCE_DIR}/data" CACHE PATH "Subpath to data")
 
 INCLUDE(FindPkgConfig)
 INCLUDE(CheckIncludeFiles)
