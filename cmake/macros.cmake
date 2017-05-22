@@ -267,11 +267,12 @@ set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON CACHE BOOLEAN "Flag for using prefix pat
 
 # Loop on required package and add options
 foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
-	PKG_CHECK_MODULES(${PKG_CONFIG} REQUIRED ${PKG_CONFIG})
+	string(REGEX REPLACE "[<>]?=.*$" "" XPREFIX ${PKG_CONFIG})
+	PKG_CHECK_MODULES(${XPREFIX} REQUIRED ${PKG_CONFIG})
 
-	INCLUDE_DIRECTORIES(${${PKG_CONFIG}_INCLUDE_DIRS})
-	list (APPEND link_libraries ${${PKG_CONFIG}_LIBRARIES})
-	add_compile_options (${${PKG_CONFIG}_CFLAGS})
+	INCLUDE_DIRECTORIES(${${XPREFIX}_INCLUDE_DIRS})
+	list (APPEND link_libraries ${${XPREFIX}_LIBRARIES})
+	add_compile_options (${${XPREFIX}_CFLAGS})
 endforeach(PKG_CONFIG)
 
 # Optional LibEfence Malloc debug library
