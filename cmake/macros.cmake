@@ -112,18 +112,18 @@ macro(project_targets_populate)
 			elseif(${T} STREQUAL "HTDOCS")
 				add_custom_command(OUTPUT ${PACKAGE_HTTPDIR}
 					DEPENDS ${TARGET}
-					COMMAND mkdir -p ${PROJECT_PKG_DIR}
-					COMMAND cp -r ${BD}/${P}${OUT} ${PACKAGE_HTTPDIR}
+					COMMAND mkdir -p ${PROJECT_PKG_DIR}/${PACKAGE_HTTPDIR}
+					COMMAND cp -r ${BD}/${P}${OUT}/* ${PACKAGE_HTTPDIR}
 					)
 					add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_HTTPDIR})
 					add_dependencies(populate ${POPULE_PACKAGE_TARGET}) 
 			elseif(${T} STREQUAL "DATA")
 				add_custom_command(OUTPUT ${PACKAGE_DATADIR}
 					DEPENDS ${TARGET}
-					COMMAND mkdir -p ${PROJECT_PKG_DIR}
-					COMMAND cp -r ${BD}/${P}${OUT} ${PACKAGE_DATADIR}
+					COMMAND mkdir -p ${PROJECT_PKG_DIR}/${PACKAGE_DATADIR}
+					COMMAND cp -r ${BD}/${P}${OUT}/* ${PACKAGE_DATADIR}
 					)
-					add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_HTTPDIR})
+					add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_DATADIR})
 					add_dependencies(populate ${POPULE_PACKAGE_TARGET}) 
 			endif(${T} STREQUAL "BINDING")
 #		elseif(${CMAKE_BUILD_TYPE} MATCHES "[Dd][Ee][Bb][Uu][Gg]")
