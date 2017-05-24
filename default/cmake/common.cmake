@@ -340,13 +340,13 @@ endif()
 set(PROJECT_PKG_ENTRY_POINT ${CMAKE_SOURCE_DIR}/packaging CACHE PATH "Where package build files, like rpm.spec file or config.xml, are write.")
 
 set (PKG_TEMPLATE_PREFIX ${CMAKE_SOURCE_DIR}/etc CACHE PATH "Default Package Templates Directory")
-set(TEMPLATE_WGT_DIR "${CMAKE_SOURCE_DIR}/conf.d/app-templates/wgt" CACHE PATH "Subpath to a directory where are stored needed files to build widget")
-set(TEMPLATE_RPM_DIR "${CMAKE_SOURCE_DIR}/conf.d/app-templates/rpm" CACHE PATH "Subpath to a directory where are stored needed files to build rpm package")
-set(TEMPLATE_DEB_DIR "${CMAKE_SOURCE_DIR}/conf.d/app-templates/deb" CACHE PATH "Subpath to a directory where are stored needed files to build deb package")
+set(TEMPLATE_WGT_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/default/wgt" CACHE PATH "Subpath to a directory where are stored needed files to build widget")
+set(TEMPLATE_RPM_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/default/rpm" CACHE PATH "Subpath to a directory where are stored needed files to build rpm package")
+set(TEMPLATE_DEB_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/default/deb" CACHE PATH "Subpath to a directory where are stored needed files to build deb package")
 
 # Default Linkflag
 if(NOT BINDINGS_LINK_FLAG)
-	set(BINDINGS_LINK_FLAG "-Wl,--version-script=${CMAKE_SOURCE_DIR}/conf.d/app-templates/cmake/export.map")
+	set(BINDINGS_LINK_FLAG "-Wl,--version-script=${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/default/cmake/export.map")
 endif()
 
 # Add a dummy target to enable global dependency order
