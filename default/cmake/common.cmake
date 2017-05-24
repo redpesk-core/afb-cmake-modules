@@ -75,7 +75,7 @@ macro(project_targets_populate)
         set(PACKAGE_DATADIR ${PROJECT_PKG_BUILD_DIR}/data)
 
 	add_custom_target(populate)
-	get_property(PROJECT_TARGETS GLOBAL PROPERTY PROJECT_TARGETS)
+        get_property(PROJECT_TARGETS GLOBAL PROPERTY PROJECT_TARGETS)
 	foreach(TARGET ${PROJECT_TARGETS})
 		get_target_property(T ${TARGET} LABELS)
 		if(T)
@@ -113,7 +113,7 @@ macro(project_targets_populate)
 			elseif(${T} STREQUAL "HTDOCS")
 				add_custom_command(OUTPUT ${PACKAGE_HTTPDIR}
 					DEPENDS ${TARGET}
-					COMMAND mkdir -p ${PROJECT_PKG_DIR}/${PACKAGE_HTTPDIR}
+					COMMAND mkdir -p ${PACKAGE_HTTPDIR}
 					COMMAND cp -r ${BD}/${P}${OUT}/* ${PACKAGE_HTTPDIR}
 				)
 					add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_HTTPDIR})
@@ -121,17 +121,50 @@ macro(project_targets_populate)
 			elseif(${T} STREQUAL "DATA")
 				add_custom_command(OUTPUT ${PACKAGE_DATADIR}
 					DEPENDS ${TARGET}
-					COMMAND mkdir -p ${PROJECT_PKG_DIR}/${PACKAGE_DATADIR}
-					COMMAND cp -r ${BD}/${P}${OUT}/* ${PACKAGE_DATADIR}
-					)
+					COMMAND mkdir -p ${PACKAGE_DATADIR}
+					COMMAND cp -r ${BD}/${P}${OUT} ${PACKAGE_DATADIR}
+				)
 					add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_DATADIR})
 					add_dependencies(populate ${POPULE_PACKAGE_TARGET}) 
 			endif(${T} STREQUAL "BINDING")
-#		elseif(${CMAKE_BUILD_TYPE} MATCHES "[Dd][Ee][Bb][Uu][Gg]")
-#					MESSAGE(WARNING "This target, ${TARGET}, will be not be included in the package.")
+		elseif(${CMAKE_BUILD_TYPE} MATCHES "[Dd][Ee][Bb][Uu][Gg]")
+			MESSAGE(".. Warning: ${TARGET} ignored when packaging.")
 		endif()
 	endforeach()
 endmacro(project_targets_populate)
+
+macro(remote_targets_populate)
+	if (DEFINED ENV{RSYNC_TARGET})
+	set (RSYNC_TARGET $ENV{RSYNC_TARGET})
+	endif()
+	if (DEFINED ENV{RSYNC_PREFIX})
+	set (RSYNC_PREFIX $ENV{RSYNC_PREFIX})
+	endif()
+
+	set(
+		REMOTE_LAUNCH "Test on target with: ${CMAKE_CURRENT_BINARY_DIR}/target/start-on-${RSYNC_TARGET}.sh" 
+		CACHE STRING "Command to start ${PROJECT_NAME} on remote target ${RSYNC_TARGET}"
+	)
+
+	if(NOT RSYNC_TARGET OR NOT RSYNC_PREFIX)
+		message (".. Warning: RSYNC_TARGET RSYNC_PREFIX not defined 'make remote-target-populate' not instanciated")
+		add_custom_target(remote-target-populate
+			COMMENT "*** Fatal: RSYNC_TARGET RSYNC_PREFIX required with 'make remote-target-populate'"
+			COMMAND exit -1
+		)
+	else() 
+
+		configure_file(${SSH_TEMPLATE_DIR}/start-on-target.in ${CMAKE_CURRENT_BINARY_DIR}/target/start-on-${RSYNC_TARGET}.sh)
+		configure_file(${GDB_TEMPLATE_DIR}/gdb-on-target.in ${CMAKE_CURRENT_BINARY_DIR}/target/gdb-on-${RSYNC_TARGET}.ini)
+
+		add_custom_target(remote-target-populate
+			DEPENDS populate
+			COMMAND chmod +x ${CMAKE_CURRENT_BINARY_DIR}/target/start-on-${RSYNC_TARGET}.sh
+			COMMAND rsync --archive --delete ${PROJECT_PKG_DIR}/ ${RSYNC_TARGET}:${RSYNC_PREFIX}/${PROJECT_NAME}
+			COMMENT "${REMOTE_LAUNCH}"
+		)
+	endif()
+endmacro(remote_targets_populate)
 
 macro(wgt_package_build)
 	if(NOT EXISTS ${TEMPLATE_WGT_DIR}/config.xml.in OR NOT EXISTS ${TEMPLATE_WGT_DIR}/${PROJECT_ICON})
@@ -140,6 +173,7 @@ macro(wgt_package_build)
 		# Build widget spec file from template only once (Fulup good idea or should depend on time ????)
 		if(NOT EXISTS ${TEMPLATE_WGT_DIR}/config.xml.in OR NOT EXISTS ${TEMPLATE_WGT_DIR}/${PROJECT_ICON})
 			configure_file(${TEMPLATE_WGT_DIR}/config.xml.in ${PROJECT_PKG_BUILD_DIR}/config.xml)
+			configure_file(${TEMPLATE_WGT_DIR}/config.xml.in ${PROJECT_PKG_ENTRY_POINT}/config.xml)
 			file(COPY ${TEMPLATE_WGT_DIR}/${PROJECT_ICON} DESTINATION ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON})
 		endif(NOT EXISTS ${TEMPLATE_WGT_DIR}/config.xml.in OR NOT EXISTS ${TEMPLATE_WGT_DIR}/${PROJECT_ICON})
 
@@ -160,8 +194,8 @@ macro(wgt_package_build)
 
 		if(PACKAGE_MESSAGE)
 		add_custom_command(TARGET widget
-				POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${PACKAGE_MESSAGE}")
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${PACKAGE_MESSAGE}")
 		endif()
 	endif()
 endmacro(wgt_package_build)
@@ -190,8 +224,8 @@ macro(rpm_package_build)
 
 		if(PACKAGE_MESSAGE)
 		add_custom_command(TARGET rpm
-				POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${PACKAGE_MESSAGE}")
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${PACKAGE_MESSAGE}")
 		endif()
 	endif()
 endmacro(rpm_package_build)
