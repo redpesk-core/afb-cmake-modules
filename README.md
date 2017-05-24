@@ -20,21 +20,51 @@ Typical project architecture
 
 A typical project architecture would be :
 
-* \<root-path\>/
-* \<root-path\>/<libs>
-* \<root-path\>/packaging
-* \<root-path\>/packaging/wgt
-* \<root-path\>/packaging/wgt/etc
-* \<root-path\>/\<target\>/
+```tree
+<project-root-path>
+│
+├── conf.d/
+│   ├── default/
+│   │   ├── cmake/
+│   │   │   ├── config.cmake.sample
+│   │   │   ├── export.map
+│   │   │   └── macros.cmake
+│   │   ├── deb/
+│   │   │   └── config.deb.in
+│   │   ├── rpm/
+│   │   │   └── config.spec.in
+│   │   └── wgt/
+│   │       ├── config.xml.in
+│   │       └── icon.png
+│   ├── packaging/
+│   │   ├── config.xml
+│   │   ├── config.spec
+│   │   ├── icon.png
+│   │   └── config.deb
+│   ├── autobuild/
+│   │   ├── agl
+│   │   │   └── autobuild.sh
+│   │   ├── linux
+│   │   │   └── autobuild.sh
+│   │   └── windows
+│   │       └── autobuild.bat
+│   ├── README.md
+│   └── config.cmake
+├── <libs>
+├── <target>
+├── <target>
+└── <target>
+```
 
-| # | Parent | Description | Files |
-| - | -------| ----------- | ----- |
-| \<root-path\> | - | Path to your project | Hold master CMakeLists.txt and general files of your projects. |
+| # | Parent | Description |
+| - | -------| ----------- |
+| \<root-path\> | - | Path to your project. Hold master CMakeLists.txt and general files of your projects. |
+| conf.d | \<root-path\> | Git submodule to app-templates AGL repository which provides CMake helpers macros library, and build scripts. config.cmake is a copy of config.cmake.sample configured for the projects. |
+| default | conf.d | Holds examples files and cmake macros used to build packages |
+| packaging | conf.d | Contains output files used to build packages. |
+| autobuild | conf.d | Scripts used to build packages the same way for differents platforms. |
 | \<libs\> | \<root-path\> | External dependencies libraries. This isn't to be used to include header file but build and link statically specifics libraries. | Library sources files. Can be a decompressed library archive file or project fork. |
-| \<target\> | \<root-path\> | A sub component between: tool, binding, html5, html5-hybrid type. | ----- |
-| packaging | \<root-path\> | Contains folder by package type (rpms, deb, wgt...) | Directory for each packaging type. |
-| wgt | packaging | Files used to build project widget that can be installed on an AGL target. | config.xml.in, icon.png.in files. |
-| etc | wgt | Configuration files for your project. This will be installed in the application root directory under etc/ folder once installed by Application Framework. | specific project configuration files |
+| \<target\> | \<root-path\> | A target to build, typically library, executable, etc. |
 
 Usage
 ------
@@ -54,7 +84,7 @@ repository to make yours. Then when you are ready to build, using `AGLbuild`
 that will wrap CMake build command:
 
 ```bash
-./AGLbuild package
+./build.sh package
 ```
 
 AGLbuild is not mandatory to build your project by will be used by `bitbake`
