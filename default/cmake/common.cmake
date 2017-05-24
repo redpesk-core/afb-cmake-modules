@@ -212,6 +212,7 @@ macro(rpm_package_build)
 
 		# build rpm spec file from template
 		configure_file(${TEMPLATE_RPM_DIR}/config.spec.in ${PROJECT_PKG_BUILD_DIR}/config.spec)
+		configure_file(${TEMPLATE_RPM_DIR}/config.xml.in ${PROJECT_PKG_ENTRY_POINT}/config.xml)
 
 		add_custom_command(OUTPUT ${PROJECT_NAME}.spec
 			DEPENDS ${PROJECT_TARGETS}
@@ -336,6 +337,7 @@ if(PACKAGE_PREFIX)
 else()
 	set(PROJECT_PKG_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/package CACHE PATH "Where the package will be built")
 endif()
+set(PROJECT_PKG_ENTRY_POINT ${CMAKE_SOURCE_DIR}/packaging CACHE PATH "Where package build files, like rpm.spec file or config.xml, are write.")
 
 set (PKG_TEMPLATE_PREFIX ${CMAKE_SOURCE_DIR}/etc CACHE PATH "Default Package Templates Directory")
 set(TEMPLATE_WGT_DIR "${CMAKE_SOURCE_DIR}/conf.d/app-templates/wgt" CACHE PATH "Subpath to a directory where are stored needed files to build widget")
