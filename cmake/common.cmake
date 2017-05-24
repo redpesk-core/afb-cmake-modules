@@ -168,7 +168,7 @@ macro(remote_targets_populate)
 		add_custom_target(remote-target-populate
 			DEPENDS populate
 			COMMAND chmod +x ${CMAKE_CURRENT_BINARY_DIR}/target/start-on-${RSYNC_TARGET}.sh
-			COMMAND rsync --archive --delete ${PROJECT_PKG_DIR}/ ${RSYNC_TARGET}:${RSYNC_PREFIX}/${PROJECT_NAME}
+			COMMAND rsync --archive --delete ${PROJECT_PKG_BUILD_DIR}/ ${RSYNC_TARGET}:${RSYNC_PREFIX}/${PROJECT_NAME}
 			COMMENT "${REMOTE_LAUNCH}"
 		)
 	endif()
