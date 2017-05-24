@@ -201,8 +201,8 @@ macro(wgt_package_build)
 endmacro(wgt_package_build)
 
 macro(rpm_package_build)
-	if(NOT EXISTS ${PROJECT_RPM_DIR}/config.spec.in)
-			MESSAGE(STATUS "Missing mandatory files: you need config.spec.in in ${PROJECT_RPM_DIR} folder.")
+	if(NOT EXISTS ${TEMPLATE_RPM_DIR}/config.spec.in)
+			MESSAGE(STATUS "Missing mandatory files: you need config.spec.in in ${TEMPLATE_RPM_DIR} folder.")
 	else()
 		# extract PROJECT_PKG_DEPS and replace ; by , for RPM spec file
 		get_property(PROJECT_PKG_DEPS GLOBAL PROPERTY PROJECT_PKG_DEPS)
