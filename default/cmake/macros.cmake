@@ -166,8 +166,8 @@ macro(wgt_package_build)
 endmacro(wgt_package_build)
 
 macro(rpm_package_build)
-	if(NOT EXISTS ${PROJECT_RPM_DIR}/config.rpm.in)
-			MESSAGE(STATUS "Missing mandatory files: you needconfig.rpm.in in ${PROJECT_RPM_DIR} folder.")
+	if(NOT EXISTS ${PROJECT_RPM_DIR}/config.spec.in)
+			MESSAGE(STATUS "Missing mandatory files: you need config.spec.in in ${PROJECT_RPM_DIR} folder.")
 	else()
 		# extract PROJECT_PKG_DEPS and replace ; by , for RPM spec file
 		get_property(PROJECT_PKG_DEPS GLOBAL PROPERTY PROJECT_PKG_DEPS)
@@ -176,16 +176,16 @@ macro(rpm_package_build)
 		endforeach()
 
 		# build rpm spec file from template
-		configure_file(${PROJECT_RPM_DIR}/config.rpm.in ${PROJECT_PKG_DIR}/config.rpm)
+		configure_file(${PROJECT_RPM_DIR}/config.spec.in ${PROJECT_PKG_DIR}/config.spec)
 
-		add_custom_command(OUTPUT ${PROJECT_NAME}.rpm
+		add_custom_command(OUTPUT ${PROJECT_NAME}.spec
 				DEPENDS ${PROJECT_TARGETS}
-				COMMAND rpmbuild -ba  ${PROJECT_PKG_DIR}/config.rpm
+				COMMAND rpmbuild -ba  ${PROJECT_PKG_DIR}/config.spec
 		)
 
-		add_custom_target(rpm DEPENDS ${PROJECT_NAME}.rpm)
+		add_custom_target(rpm DEPENDS ${PROJECT_NAME}.spec)
 		add_dependencies(rpm populate)
-		set(ADDITIONAL_MAKE_CLEAN_FILES, "${PROJECT_NAME}.rpm")
+		set(ADDITIONAL_MAKE_CLEAN_FILES, "${PROJECT_NAME}.spec")
 
 		if(PACKAGE_MESSAGE)
 		add_custom_command(TARGET rpm
