@@ -64,14 +64,15 @@ macro(defstr name value)
 	add_definitions(-D${name}=${value})
 endmacro(defstr)
 
-# WGT packaging
+# Pre-packaging
 macro(project_targets_populate)
-	# Default Widget default directory
-	set(PACKAGE_BINDIR  ${PROJECT_PKG_DIR}/bin)
-	set(PACKAGE_ETCDIR  ${PROJECT_PKG_DIR}/etc)
-	set(PACKAGE_LIBDIR  ${PROJECT_PKG_DIR}/lib)
-	set(PACKAGE_HTTPDIR ${PROJECT_PKG_DIR}/htdocs)
-	set(PACKAGE_DATADIR ${PROJECT_PKG_DIR}/data)
+
+        # Default Widget default directory
+        set(PACKAGE_BINDIR  ${PROJECT_PKG_BUILD_DIR}/bin)
+        set(PACKAGE_ETCDIR  ${PROJECT_PKG_BUILD_DIR}/etc)
+        set(PACKAGE_LIBDIR  ${PROJECT_PKG_BUILD_DIR}/lib)
+        set(PACKAGE_HTTPDIR ${PROJECT_PKG_BUILD_DIR}/htdocs)
+        set(PACKAGE_DATADIR ${PROJECT_PKG_BUILD_DIR}/data)
 
 	add_custom_target(populate)
 	get_property(PROJECT_TARGETS GLOBAL PROPERTY PROJECT_TARGETS)
@@ -114,7 +115,7 @@ macro(project_targets_populate)
 					DEPENDS ${TARGET}
 					COMMAND mkdir -p ${PROJECT_PKG_DIR}/${PACKAGE_HTTPDIR}
 					COMMAND cp -r ${BD}/${P}${OUT}/* ${PACKAGE_HTTPDIR}
-					)
+				)
 					add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_HTTPDIR})
 					add_dependencies(populate ${POPULE_PACKAGE_TARGET}) 
 			elseif(${T} STREQUAL "DATA")
@@ -138,19 +139,19 @@ macro(wgt_package_build)
 	else()
 		# Build widget spec file from template only once (Fulup good idea or should depend on time ????)
 		if(NOT EXISTS ${TEMPLATE_WGT_DIR}/config.xml.in OR NOT EXISTS ${TEMPLATE_WGT_DIR}/${PROJECT_ICON})
-				configure_file(${TEMPLATE_WGT_DIR}/config.xml.in ${PROJECT_PKG_DIR}/config.xml)
-				file(COPY ${TEMPLATE_WGT_DIR}/${PROJECT_ICON} DESTINATION ${PROJECT_PKG_DIR}/${PROJECT_ICON})
+			configure_file(${TEMPLATE_WGT_DIR}/config.xml.in ${PROJECT_PKG_BUILD_DIR}/config.xml)
+			file(COPY ${TEMPLATE_WGT_DIR}/${PROJECT_ICON} DESTINATION ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON})
 		endif(NOT EXISTS ${TEMPLATE_WGT_DIR}/config.xml.in OR NOT EXISTS ${TEMPLATE_WGT_DIR}/${PROJECT_ICON})
 
 		# Fulup ??? copy any extra file in wgt/etc into populate package before building the widget
 		file(GLOB PROJECT_CONF_FILES "${TEMPLATE_WGT_DIR}/etc/*")
 		if(${PROJECT_CONF_FILES})
-				file(COPY "${TEMPLATE_WGT_DIR}/etc/*" DESTINATION ${PROJECT_PKG_DIR}/etc/)
+			file(COPY "${TEMPLATE_WGT_DIR}/etc/*" DESTINATION ${PROJECT_PKG_BUILD_DIR}/etc/)
 		endif(${PROJECT_CONF_FILES})
 
 		add_custom_command(OUTPUT ${PROJECT_NAME}.wgt
-				DEPENDS ${PROJECT_TARGETS}
-				COMMAND wgtpkg-pack -f -o ${PROJECT_NAME}.wgt ${PROJECT_PKG_DIR}
+			DEPENDS ${PROJECT_TARGETS}
+			COMMAND wgtpkg-pack -f -o ${PROJECT_NAME}.wgt ${PROJECT_PKG_BUILD_DIR}
 		)
 
 		add_custom_target(widget DEPENDS ${PROJECT_NAME}.wgt)
@@ -176,11 +177,11 @@ macro(rpm_package_build)
 		endforeach()
 
 		# build rpm spec file from template
-		configure_file(${PROJECT_RPM_DIR}/config.spec.in ${PROJECT_PKG_DIR}/config.spec)
+		configure_file(${TEMPLATE_RPM_DIR}/config.spec.in ${PROJECT_PKG_BUILD_DIR}/config.spec)
 
 		add_custom_command(OUTPUT ${PROJECT_NAME}.spec
-				DEPENDS ${PROJECT_TARGETS}
-				COMMAND rpmbuild -ba  ${PROJECT_PKG_DIR}/config.spec
+			DEPENDS ${PROJECT_TARGETS}
+			COMMAND rpmbuild -ba  ${PROJECT_PKG_BUILD_DIR}/config.spec
 		)
 
 		add_custom_target(rpm DEPENDS ${PROJECT_NAME}.spec)
@@ -297,9 +298,9 @@ endif()
 
 # Define a default package directory
 if(PACKAGE_PREFIX)
-	set(PROJECT_PKG_DIR ${PKG_PREFIX}/package CACHE PATH "Where the package will be built.")
+	set(PROJECT_PKG_BUILD_DIR ${PKG_PREFIX}/package CACHE PATH "Where the package will be built.")
 else()
-	set(PROJECT_PKG_DIR ${CMAKE_CURRENT_BINARY_DIR}/package CACHE PATH "Where the package will be built")
+	set(PROJECT_PKG_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/package CACHE PATH "Where the package will be built")
 endif()
 
 set (PKG_TEMPLATE_PREFIX ${CMAKE_SOURCE_DIR}/etc CACHE PATH "Default Package Templates Directory")
