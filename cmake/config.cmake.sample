@@ -124,3 +124,10 @@ set(LD_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib64 ${CMAKE_INSTALL_PREFIX}/lib)
 # - application/vnd.agl.html.hybrid
 #
 # set(WIDGET_TYPE MimeType)
+
+
+# Optional Application Framework security token
+# and port use for remote debugging.
+#------------------------------------------------------------
+#set(AFB_TOKEN   ""      CACHE PATH "Default AFB_TOKEN")
+#set(AFB_REMPORT "1234" CACHE PATH "Default AFB_TOKEN")
