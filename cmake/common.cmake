@@ -52,6 +52,10 @@ macro(PROJECT_TARGET_ADD TARGET_NAME)
 	set(TARGET_NAME ${TARGET_NAME})
 endmacro(PROJECT_TARGET_ADD)
 
+macro(PROJECT_PKGDEP_ADD PKG_NAME)
+	set_property(GLOBAL APPEND PROPERTY PROJECT_PKG_DEPS ${PKG_NAME})
+endmacro(PROJECT_PKGDEP_ADD)
+
 # Check GCC minimal version
 if (gcc_minimal_version)
 	message (STATUS "${Blue}-- Check gcc_minimal_version (found gcc version ${CMAKE_C_COMPILER_VERSION})  (found g++ version ${CMAKE_CXX_COMPILER_VERSION})${ColourReset}")
