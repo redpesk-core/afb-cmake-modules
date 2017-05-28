@@ -155,9 +155,9 @@ macro(remote_targets_populate)
 	)
 
 	if(NOT RSYNC_TARGET OR NOT RSYNC_PREFIX)
-		message (".. Warning: RSYNC_TARGET RSYNC_PREFIX not defined 'make remote-target-populate' not instanciated")
+		message ("${Yellow}.. Warning: RSYNC_TARGET RSYNC_PREFIX not defined 'make remote-target-populate' not instanciated${ColourReset}")
 		add_custom_target(remote-target-populate
-			COMMENT "*** Fatal: RSYNC_TARGET RSYNC_PREFIX required with 'make remote-target-populate'"
+			COMMENT "${Red}*** Fatal: RSYNC_TARGET RSYNC_PREFIX environment variables required with 'make remote-target-populate'${ColourReset}"
 			COMMAND exit -1
 		)
 	else()
