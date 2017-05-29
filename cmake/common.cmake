@@ -79,15 +79,15 @@ endmacro(defstr)
 # Pre-packaging
 macro(project_targets_populate)
 
-        # Default Widget default directory
-        set(PACKAGE_BINDIR  ${PROJECT_PKG_BUILD_DIR}/bin)
-        set(PACKAGE_ETCDIR  ${PROJECT_PKG_BUILD_DIR}/etc)
-        set(PACKAGE_LIBDIR  ${PROJECT_PKG_BUILD_DIR}/lib)
-        set(PACKAGE_HTTPDIR ${PROJECT_PKG_BUILD_DIR}/htdocs)
-        set(PACKAGE_DATADIR ${PROJECT_PKG_BUILD_DIR}/data)
+	# Default Widget default directory
+	set(PACKAGE_BINDIR  ${PROJECT_PKG_BUILD_DIR}/bin)
+	set(PACKAGE_ETCDIR  ${PROJECT_PKG_BUILD_DIR}/etc)
+	set(PACKAGE_LIBDIR  ${PROJECT_PKG_BUILD_DIR}/lib)
+	set(PACKAGE_HTTPDIR ${PROJECT_PKG_BUILD_DIR}/htdocs)
+	set(PACKAGE_DATADIR ${PROJECT_PKG_BUILD_DIR}/data)
 
 	add_custom_target(populate)
-        get_property(PROJECT_TARGETS GLOBAL PROPERTY PROJECT_TARGETS)
+		get_property(PROJECT_TARGETS GLOBAL PROPERTY PROJECT_TARGETS)
 	foreach(TARGET ${PROJECT_TARGETS})
 		get_target_property(T ${TARGET} LABELS)
 		if(T)
