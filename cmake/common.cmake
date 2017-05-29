@@ -243,15 +243,15 @@ macro(rpm_package_build)
 endmacro(rpm_package_build)
 
 macro(project_package_build)
-	if(EXISTS ${TEMPLATE_RPM_DIR})
+	if(EXISTS ${RPM_TEMPLATE_DIR})
 		rpm_package_build()
 	endif()
 
-	if(EXISTS ${TEMPLATE_WGT_DIR})
+	if(EXISTS ${WGT_TEMPLATE_DIR})
 		wgt_package_build()
 	endif()
 
-	if(EXISTS ${TEMPLATE_DEB_DIR})
+	if(EXISTS ${DEB_TEMPLATE_DIR})
 		deb_package_build()
 	endif()
 endmacro(project_package_build)
@@ -353,18 +353,20 @@ if(PACKAGE_PREFIX)
 else()
 	set(PROJECT_PKG_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/package CACHE PATH "Where the package will be built")
 endif()
-set(PROJECT_PKG_ENTRY_POINT ${CMAKE_SOURCE_DIR}/packaging CACHE PATH "Where package build files, like rpm.spec file or config.xml, are write.")
 
 set (PKG_TEMPLATE_PREFIX ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR} CACHE PATH "Default Package Templates Directory")
-set(SSH_TEMPLATE_DIR ${PKG_TEMPLATE_PREFIX}/ssh)
-set(GDB_TEMPLATE_DIR ${PKG_TEMPLATE_PREFIX}/gdb)
-set(TEMPLATE_WGT_DIR "${PKG_TEMPLATE_PREFIX}/wgt" CACHE PATH "Subpath to a directory where are stored needed files to build widget")
-set(TEMPLATE_RPM_DIR "${PKG_TEMPLATE_PREFIX}/rpm" CACHE PATH "Subpath to a directory where are stored needed files to build rpm package")
-set(TEMPLATE_DEB_DIR "${PKG_TEMPLATE_PREFIX}/deb" CACHE PATH "Subpath to a directory where are stored needed files to build deb package")
+set(SSH_TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/ssh" CACHE PATH "Subpath to a directory where are stored needed files to launch on remote target to debuging purposes")
+set(GDB_TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/gdb" CACHE PATH "Subpath to a directory where are stored needed files to launch debuging server on a remote target. Use gdbserver.")
+set(WGT_TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/wgt" CACHE PATH "Subpath to a directory where are stored needed files to build widget")
+set(RPM_TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/rpm" CACHE PATH "Subpath to a directory where are stored needed files to build rpm package")
+set(DEB_TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/deb" CACHE PATH "Subpath to a directory where are stored needed files to build deb package")
+
+string(REGEX REPLACE "^(.*)/.*$" "\\1" ENTRY_POINT "${PKG_TEMPLATE_PREFIX}")
+set(PROJECT_PKG_ENTRY_POINT ${ENTRY_POINT}/packaging CACHE PATH "Where package build files, like rpm.spec file or config.xml, are write.")
 
 # Default Linkflag
 if(NOT BINDINGS_LINK_FLAG)
-	set(BINDINGS_LINK_FLAG "-Wl,--version-script=${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/export.map")
+	set(BINDINGS_LINK_FLAG "-Wl,--version-script=${PKG_TEMPLATE_PREFIX}/cmake/export.map")
 endif()
 
 # Add a dummy target to enable global dependency order
