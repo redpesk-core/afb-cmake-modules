@@ -179,66 +179,70 @@ macro(remote_targets_populate)
 endmacro(remote_targets_populate)
 
 macro(wgt_package_build)
-	if(NOT EXISTS ${TEMPLATE_WGT_DIR}/config.xml.in OR NOT EXISTS ${TEMPLATE_WGT_DIR}/icon-default.png)
-		MESSAGE(SEND_ERROR "${Red}WARNING ! Missing mandatory files to build widget file.\nYou need config.xml.in and ${PROJECT_ICON} files in ${TEMPLATE_WGT_DIR} folder.${ColourReset}")
-	else()
 		# Build widget spec file from template only once (Fulup good idea or should depend on time ????)
 		if(NOT EXISTS ${TEMPLATE_WGT_DIR}/config.xml.in OR NOT EXISTS ${TEMPLATE_WGT_DIR}/${PROJECT_ICON})
 			configure_file(${TEMPLATE_WGT_DIR}/config.xml.in ${PROJECT_PKG_BUILD_DIR}/config.xml)
 			configure_file(${TEMPLATE_WGT_DIR}/config.xml.in ${PROJECT_PKG_ENTRY_POINT}/config.xml)
 			file(COPY ${TEMPLATE_WGT_DIR}/icon-default.png DESTINATION ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON})
 		endif(NOT EXISTS ${TEMPLATE_WGT_DIR}/config.xml.in OR NOT EXISTS ${TEMPLATE_WGT_DIR}/${PROJECT_ICON})
+	if(NOT EXISTS ${WGT_TEMPLATE_DIR}/config.xml.in OR NOT EXISTS ${WGT_TEMPLATE_DIR}/icon-default.png)
+		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build widget file.\nYou need config.xml.in and ${PROJECT_ICON} files in ${WGT_TEMPLATE_DIR} folder.${ColourReset}")
+	endif()
 
-		# Fulup ??? copy any extra file in wgt/etc into populate package before building the widget
-		file(GLOB PROJECT_CONF_FILES "${TEMPLATE_WGT_DIR}/etc/*")
-		if(${PROJECT_CONF_FILES})
-			file(COPY "${TEMPLATE_WGT_DIR}/etc/*" DESTINATION ${PROJECT_PKG_BUILD_DIR}/etc/)
-		endif(${PROJECT_CONF_FILES})
+	configure_file(${WGT_TEMPLATE_DIR}/config.xml.in ${PROJECT_PKG_BUILD_DIR}/config.xml)
+	configure_file(${WGT_TEMPLATE_DIR}/config.xml.in ${PROJECT_PKG_ENTRY_POINT}/config.xml)
+	file(COPY ${WGT_TEMPLATE_DIR}/icon-default.png DESTINATION ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON})
 
-		add_custom_command(OUTPUT ${PROJECT_NAME}.wgt
-			DEPENDS ${PROJECT_TARGETS}
-			COMMAND wgtpkg-pack -f -o ${PROJECT_NAME}.wgt ${PROJECT_PKG_BUILD_DIR}
-		)
+	# Fulup ??? copy any extra file in wgt/etc into populate package before building the widget
+	file(GLOB PROJECT_CONF_FILES "${WGT_TEMPLATE_DIR}/etc/*")
+	if(${PROJECT_CONF_FILES})
+		file(COPY "${WGT_TEMPLATE_DIR}/etc/*" DESTINATION ${PROJECT_PKG_BUILD_DIR}/etc/)
+	endif(${PROJECT_CONF_FILES})
 
-		add_custom_target(widget DEPENDS ${PROJECT_NAME}.wgt)
-		add_dependencies(widget populate)
-		set(ADDITIONAL_MAKE_CLEAN_FILES, "${PROJECT_NAME}.wgt")
+	add_custom_command(OUTPUT ${PROJECT_NAME}.wgt
+		DEPENDS ${PROJECT_TARGETS}
+		COMMAND wgtpkg-pack -f -o ${PROJECT_NAME}.wgt ${PROJECT_PKG_BUILD_DIR}
+	)
 
-		if(PACKAGE_MESSAGE)
-		add_custom_command(TARGET widget
-			POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${PACKAGE_MESSAGE}")
-		endif()
+	add_custom_target(widget DEPENDS ${PROJECT_NAME}.wgt)
+	add_dependencies(widget populate)
+	set(ADDITIONAL_MAKE_CLEAN_FILES, "${PROJECT_NAME}.wgt")
+
+	if(PACKAGE_MESSAGE)
+	add_custom_command(TARGET widget
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${PACKAGE_MESSAGE}")
 	endif()
 endmacro(wgt_package_build)
 
 macro(rpm_package_build)
-	if(NOT EXISTS ${TEMPLATE_RPM_DIR}/config.spec.in)
-			MESSAGE(STATUS "Missing mandatory files: you need config.spec.in in ${TEMPLATE_RPM_DIR} folder.")
-	else()
-		# extract PROJECT_PKG_DEPS and replace ; by , for RPM spec file
-		get_property(PROJECT_PKG_DEPS GLOBAL PROPERTY PROJECT_PKG_DEPS)
-		foreach (PKFCONF ${PROJECT_PKG_DEPS})
+	if(NOT EXISTS ${RPM_TEMPLATE_DIR}/rpm-config.spec.in)
+		MESSAGE(FATAL_ERROR "${Red}Missing mandatory files: you need rpm-config.spec.in in ${RPM_TEMPLATE_DIR} folder.${ColourReset}")
+	endif()
+
+	# extract PROJECT_PKG_DEPS and replace ; by , for RPM spec file
+	get_property(PROJECT_PKG_DEPS GLOBAL PROPERTY PROJECT_PKG_DEPS)
+	foreach (PKFCONF ${PROJECT_PKG_DEPS})
 		set(RPM_PKG_DEPS "${RPM_PKG_DEPS}, pkgconfig(${PKFCONF})")
-		endforeach()
+	endforeach()
 
-		# build rpm spec file from template
-		configure_file(${TEMPLATE_RPM_DIR}/config.spec.in ${PROJECT_PKG_BUILD_DIR}/config.spec)
+	# build rpm spec file from template
+	configure_file(${RPM_TEMPLATE_DIR}/rpm-config.spec.in ${PROJECT_PKG_BUILD_DIR}/${PROJECT_NAME}.spec)
+	configure_file(${RPM_TEMPLATE_DIR}/rpm-config.spec.in ${PROJECT_PKG_ENTRY_POINT}/${PROJECT_NAME}.spec)
 
-		add_custom_command(OUTPUT ${PROJECT_NAME}.spec
-			DEPENDS ${PROJECT_TARGETS}
-			COMMAND rpmbuild -ba  ${PROJECT_PKG_BUILD_DIR}/config.spec
-		)
+	add_custom_command(OUTPUT ${PROJECT_NAME}.spec
+		DEPENDS ${PROJECT_TARGETS}
+		COMMAND rpmbuild -ba  ${PROJECT_PKG_BUILD_DIR}/${PROJECT_NAME}.spec
+	)
 
-		add_custom_target(rpm DEPENDS ${PROJECT_NAME}.spec)
-		add_dependencies(rpm populate)
-		set(ADDITIONAL_MAKE_CLEAN_FILES, "${PROJECT_NAME}.spec")
+	add_custom_target(rpm DEPENDS ${PROJECT_NAME}.spec)
+	add_dependencies(rpm populate)
+	set(ADDITIONAL_MAKE_CLEAN_FILES, "${PROJECT_NAME}.spec")
 
-		if(PACKAGE_MESSAGE)
-		add_custom_command(TARGET rpm
-			POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${PACKAGE_MESSAGE}")
-		endif()
+	if(PACKAGE_MESSAGE)
+	add_custom_command(TARGET rpm
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${PACKAGE_MESSAGE}")
 	endif()
 endmacro(rpm_package_build)
 
