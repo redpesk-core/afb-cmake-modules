@@ -310,7 +310,13 @@ set(CMAKE_CXX_FLAGS_DEBUG        "-g -O0 -ggdb -Wp,-U_FORTIFY_SOURCE")
 set(CMAKE_CXX_FLAGS_RELEASE      "-g -O2")
 set(CMAKE_CXX_FLAGS_CCOV "-g -O2 --coverage")
 
-set(CMAKE_INSTALL_PREFIX      "${CMAKE_SOURCE_DIR}/Install" CACHE PATH "The path where to install")
+# Env variable overload default
+if(DEFINED ENV{INSTALL_PREFIX})
+	set (INSTALL_PREFIX $ENV{INSTALL_PREFIX})
+else()
+	set(INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/Install" CACHE PATH "The path where to install")
+endif()
+set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX} CACHE STRING "Installation Prefix" FORCE)
 
 # (BUG!!!) as PKG_CONFIG_PATH does not work [should be en env variable]
 set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON CACHE BOOLEAN "Flag for using prefix path")
