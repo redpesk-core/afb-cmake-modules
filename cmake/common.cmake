@@ -355,9 +355,9 @@ endif()
 
 # Define a default package directory
 if(PACKAGE_PREFIX)
-	set(PROJECT_PKG_BUILD_DIR ${PKG_PREFIX}/package CACHE PATH "Where the package will be built.")
+	set(PROJECT_PKG_BUILD_DIR ${PKG_PREFIX}/package CACHE PATH "Application contents to be packaged")
 else()
-	set(PROJECT_PKG_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/package CACHE PATH "Where the package will be built")
+	set(PROJECT_PKG_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/package CACHE PATH "Application contents to be packaged")
 endif()
 
 set (PKG_TEMPLATE_PREFIX ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR} CACHE PATH "Default Package Templates Directory")
