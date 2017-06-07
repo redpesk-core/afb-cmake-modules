@@ -29,10 +29,10 @@ clean:
 mrproper:
 	@rm -rf ${BUILD_DIR}
 
-build:  ${BUILD_DIR}/Makefile
+build: ${BUILD_DIR}/Makefile
 	@cmake --build ${BUILD_DIR} --target all
 
-package: config.xml.in icon.png.in build | $(PKG_FILELIST)
+package: build
 	@mkdir -p ${BUILD_DIR}/$@/bin
 	@mkdir -p ${BUILD_DIR}/$@/etc
 	@mkdir -p ${BUILD_DIR}/$@/lib
