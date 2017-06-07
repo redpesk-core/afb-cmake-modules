@@ -228,7 +228,8 @@ macro(rpm_package_build)
 
 	add_custom_command(OUTPUT ${PROJECT_NAME}.spec
 		DEPENDS ${PROJECT_TARGETS}
-		COMMAND rpmbuild -ba  ${PROJECT_PKG_BUILD_DIR}/${PROJECT_NAME}.spec
+		COMMAND git --git-dir=${CMAKE_CURRENT_SOURCE_DIR}/.git  archive --format=tar.gz --prefix=${PROJECT_NAME}-${PROJECT_VERSION}/ HEAD -o ${PROJECT_PKG_BUILD_DIR}/${PROJECT_NAME}_${PROJECT_VERSION}.orig.tar.gz
+		COMMAND rpmbuild --define=\"%_sourcedir ${PROJECT_PKG_BUILD_DIR}\" -ba  ${PROJECT_PKG_BUILD_DIR}/${PROJECT_NAME}.spec
 	)
 
 	add_custom_target(rpm DEPENDS ${PROJECT_NAME}.spec)
