@@ -187,7 +187,8 @@ macro(wgt_package_build)
 
 	configure_file(${WGT_TEMPLATE_DIR}/config.xml.in ${PROJECT_PKG_BUILD_DIR}/config.xml)
 	configure_file(${WGT_TEMPLATE_DIR}/config.xml.in ${PROJECT_PKG_ENTRY_POINT}/config.xml)
-	file(COPY ${WGT_TEMPLATE_DIR}/icon-default.png DESTINATION ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON})
+	file(COPY ${WGT_TEMPLATE_DIR}/icon-default.png DESTINATION ${PROJECT_PKG_BUILD_DIR})
+	file(RENAME ${PROJECT_PKG_BUILD_DIR}/icon-default.png ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON})
 
 	# Fulup ??? copy any extra file in wgt/etc into populate package before building the widget
 	file(GLOB PROJECT_CONF_FILES "${WGT_TEMPLATE_DIR}/etc/*")
