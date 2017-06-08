@@ -79,6 +79,27 @@ set(CMAKE_INSTALL_PREFIX $ENV{HOME}/opt)
 set(CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
 set(LD_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib64 ${CMAKE_INSTALL_PREFIX}/lib)
 
+# Mandatory widget Mimetype specification
+# --------------------------------------------------
+# Choose between :
+# - application/vnd.agl.service
+# - application/vnd.agl.native
+# - application/x-executable
+# - text/html
+#
+set(WIDGET_TYPE MimeType_Not_Set)
+
+# Mandatory Widget entry point file.
+# ----------------------------------------------------
+# This is the file that will be executed, loaded,...
+# at launch time by the application framework
+#
+# !IMPORTANT! : Service Widget Mimetype has to specified
+# the WIDGET_ENTRY_POINT "lib" which is the default directory
+# that holds the bindings.
+#
+set(WIDGET_ENTRY_POINT EntryPoint_Path_Not_Set)
+
 # Optional dependencies order
 # ---------------------------
 #set(EXTRA_DEPENDENCIES_ORDER)
@@ -102,29 +123,6 @@ set(LD_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib64 ${CMAKE_INSTALL_PREFIX}/lib)
 # Optional force package prefix generation, like widget
 # -----------------------------------------------------
 # set(PACKAGE_PREFIX DestinationPath)
-
-# Optional Widget entry point file.
-# ---------------------------------------------------------
- # This is the file that will be executed, loaded,...
-# at launch time by the application framework
-
-# set(WIDGET_ENTRY_POINT EntryPoint_Path)
-
-# Optional Widget Mimetype specification
-# --------------------------------------------------
-# Choose between :
-# - application/x-executable
-# - application/vnd.agl.url
-# - application/vnd.agl.service
-# - application/vnd.agl.native
-# - text/vnd.qt.qml
-# - text/html
-# - application/vnd.agl.qml
-# - application/vnd.agl.qml.hybrid
-# - application/vnd.agl.html.hybrid
-#
-# set(WIDGET_TYPE MimeType)
-
 
 # Optional Application Framework security token
 # and port use for remote debugging.
