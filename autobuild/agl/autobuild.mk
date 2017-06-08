@@ -19,7 +19,7 @@ PACKAGING_DIR := packaging/wgt
 
 VPATH = etc:$(PACKAGING_DIR):$(PACKAGING_DIR)/etc:$(BUILD_DIR)
 
-.PHONY: all clean mrproper package
+.PHONY: all clean build mrproper package
 
 all: build
 
