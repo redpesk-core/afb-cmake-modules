@@ -8,3 +8,4 @@ Makefile
 nbproject
 .vscode
 *.tar.gz
+.*.sw*
