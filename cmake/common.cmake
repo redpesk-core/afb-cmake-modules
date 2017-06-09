@@ -406,5 +406,12 @@ macro(project_closing_msg)
 	endif()
 endmacro()
 
-# Add RSYSTARGET
+# Add RSYNCTARGET
 remote_targets_populate()
+
+add_custom_command(OUTPUT ${PROJECT_PKG_ENTRY_POINT}/${PROJECT_NAME}_${PROJECT_VERSION}.orig.tar.gz
+DEPENDS ${PROJECT_TARGETS}
+ COMMAND git --git-dir=${CMAKE_CURRENT_SOURCE_DIR}/.git archive --format=tar.gz --prefix=${PROJECT_NAME}-${PROJECT_VERSION}/ HEAD -o ${PROJECT_PKG_ENTRY_POINT}/${PROJECT_NAME}_${PROJECT_VERSION}.orig.tar.gz
+)
+
+add_custom_target(archive DEPENDS ${PROJECT_PKG_ENTRY_POINT}/${PROJECT_NAME}_${PROJECT_VERSION}.orig.tar.gz)
