@@ -12,11 +12,11 @@ isn't recommended now to handle project build especially in a multiuser
 project because CMake will not be aware of new or removed source files.
 
 You'll find simple usage example for different kind of target under the `examples` folder.
-More advanced usage can be saw with the [CAN_signaling binding](https://github.com/iotbzh/CAN_signaling)
-which mix external libraries, binding, and html5 hybrid demo application.
+More advanced usage can be saw with the [low-level-can-service](https://gerrit.automotivelinux.org/gerrit/apps/low-level-can-service)
+which mix external libraries, binding.
 
 Typical project architecture
------------------------------
+---------------------------------
 
 A typical project architecture would be :
 
@@ -35,11 +35,15 @@ A typical project architecture would be :
 │   │   │   └── config.spec.in
 │   │   └── wgt/
 │   │       ├── config.xml.in
-│   │       └── icon.png
+│   │       ├── config.xml.in.sample
+│   │       ├── icon-default.png
+│   │       ├── icon-html5.png
+│   │       ├── icon-native.png
+│   │       ├── icon-qml.png
+│   │       └── icon-service.png
 │   ├── packaging/
 │   │   ├── config.xml
 │   │   ├── config.spec
-│   │   ├── icon.png
 │   │   └── config.deb
 │   ├── autobuild/
 │   │   ├── agl
@@ -69,32 +73,25 @@ A typical project architecture would be :
 Usage
 ------
 
-Install the reference files to the root path of your project, then once
-installed, customize your project with file `\<root-path\>/etc/config.cmake`.
-
-Typically, to copy files use a command like:
+To use these templates files on your project just install the reference files using **git submodule** then use `config.cmake` file to configure your project specificities :
 
 ```bash
-cp -r reference/etc reference/packaging <root-path-to-your-project>
-cp reference/AGLbuild <root-path-to-your-project>
+git submodule add https://gerrit.automotivelinux.org/gerrit/apps/app-templates conf.d/default
 ```
 
 Specify manually your targets, you should look at samples provided in this
-repository to make yours. Then when you are ready to build, using `AGLbuild`
+repository to make yours. Then when you are ready to build, using `autobuild`
 that will wrap CMake build command:
 
 ```bash
-./build.sh package
+./conf.d/default/autobuild/agl/autobuild.mk package
 ```
-
-AGLbuild is not mandatory to build your project by will be used by `bitbake`
-tool when building application from a Yocto workflow that use this entry point
-to get its widget file.
 
 Or with the classic way :
 
 ```bash
-mkdir -p build && cd build
+mkdir -p build
+cd build
 cmake .. && make
 ```
 
@@ -121,12 +118,29 @@ INSTALL(TARGETS ${TARGET_NAME}....
 populate_widget() --> add target to widget tree depending upon target properties
 ```
 
-### Build a widget using provided macros
+### Build a widget
+
+#### config.xml.in file
+
+To build a widget you need to configure file _config.xml_. This repo 
+provide a simple default file _config.xml.in_ that will be configured using the
+variable set in _config.cmake_  file.
+
+> ***CAUTION*** : The default file is only meant to be use for a
+> simple widget app, more complicated ones which needed to export
+> their api, or ship several app in one widget need to use the provided
+> _config.xml.in.sample_ which had all new Application Framework
+> features explained and examples.
+
+#### Using cmake template macros
 
 To leverage all macros features, you have to specify ***properties*** on your
 targets. Some macros will not works without specifying which is the target type.
-As the type is not always specified for some custom target, like an ***HTML5***
+
+As the type is not always specified for some custom targets, like an ***HTML5***
 application, macros make the difference using ***LABELS*** property.
+
+Example:
 
 ```cmake
 SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
@@ -144,19 +158,22 @@ definition. Then at the end of your project definition you should use the macro
 `wgtpkg-pack` Application Framework tools.
 
 Macro reference
-----------------
+--------------------
 
 ### PROJECT_TARGET_ADD
 
 Typical usage would be to add the target to your project using macro
-`PROJECT_TARGET_ADD` with the name of your target as parameter. Example:
+`PROJECT_TARGET_ADD` with the name of your target as parameter.
+
+Example:
 
 ```cmake
 PROJECT_TARGET_ADD(low-can-demo)
 ```
 
-This will make available the variable `${TARGET_NAME}` set with the specificied
-name.
+> ***NOTE***: This will make available the variable `${TARGET_NAME}` 
+> set with the specificied name. This variable will change at the next call
+> to this macros.
 
 ### project_subdirs_add
 
@@ -170,13 +187,21 @@ Usage :
 project_subdirs_add()
 ```
 
+You also can specify a globbing pattern as argument to filter which folders will be looked for.
+
+To filter all directories that begin with a number followed by a dash the anything:
+
+```cmake
+project_subdirs_add("[0-9]-*")
+```
+
 ### project_targets_populate
 
 Macro use to populate widget tree. To make this works you have to specify some properties to your target :
 
-- LABELS : specify *BINDING*, *HTDOCS*, *EXECUTABLE*, *DATA*
-- PREFIX : must be empty **""** when target is a *BINDING* else default prefix *lib* will be applied
-- OUTPUT_NAME : Name of the output file generated, useful when generated file name is different from `${TARGET_NAME}`
+* LABELS : specify *BINDING*, *HTDOCS*, *EXECUTABLE*, *DATA*
+* PREFIX : must be empty **""** when target is a *BINDING* else default prefix *lib* will be applied
+* OUTPUT_NAME : Name of the output file generated, useful when generated file name is different from `${TARGET_NAME}`
 
 Always specify  `populate_widget()` macro as the last statement, especially if
 you use ${TARGET_NAME} variable. Else variable will be set at wrong value with
@@ -185,7 +210,7 @@ the **populate_** target name.
 Usage :
 
 ```cmake
-populate_widget()
+project_targets_populate()
 ```
 
 ### project_package_build
@@ -197,7 +222,7 @@ directory :
 Usage :
 
 ```cmake
-build_widget()
+project_package_build()
 ```
 
 ### project_closing_message
