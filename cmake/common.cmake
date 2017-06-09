@@ -76,6 +76,9 @@ macro(defstr name value)
 	add_definitions(-D${name}=${value})
 endmacro(defstr)
 
+# Native packaging name
+set(NPKG_PROJECT_NAME agl-${PROJECT_NAME})
+
 # Pre-packaging
 macro(project_targets_populate)
 
@@ -237,27 +240,14 @@ macro(wgt_package_build)
 endmacro(wgt_package_build)
 
 macro(rpm_package_build)
-	if(NOT EXISTS ${RPM_TEMPLATE_DIR}/rpm-config.spec.in)
-		MESSAGE(FATAL_ERROR "${Red}Missing mandatory files: you need rpm-config.spec.in in ${RPM_TEMPLATE_DIR} folder.${ColourReset}")
-	endif()
-
-	# extract PROJECT_PKG_DEPS and replace ; by , for RPM spec file
-	get_property(PROJECT_PKG_DEPS GLOBAL PROPERTY PROJECT_PKG_DEPS)
-	foreach (PKFCONF ${PROJECT_PKG_DEPS})
-		set(RPM_PKG_DEPS "${RPM_PKG_DEPS}, pkgconfig(${PKFCONF})")
-	endforeach()
-
-	# build rpm spec file from template
-	configure_file(${RPM_TEMPLATE_DIR}/rpm-config.spec.in ${PROJECT_NAME}.spec)
-	configure_file(${RPM_TEMPLATE_DIR}/rpm-config.spec.in ${PROJECT_PKG_ENTRY_POINT}/${PROJECT_NAME}.spec)
-
-	add_custom_command(OUTPUT ${PROJECT_NAME}.spec
+	add_custom_command(OUTPUT ${NPKG_PROJECT_NAME}.spec
 		DEPENDS ${PROJECT_TARGETS}
-		COMMAND git --git-dir=${CMAKE_CURRENT_SOURCE_DIR}/.git  archive --format=tar.gz --prefix=${PROJECT_NAME}-${PROJECT_VERSION}/ HEAD -o ${PROJECT_PKG_BUILD_DIR}/${PROJECT_NAME}_${PROJECT_VERSION}.orig.tar.gz
-		COMMAND rpmbuild --define=\"%_sourcedir ${PROJECT_PKG_BUILD_DIR}\" -ba  ${PROJECT_PKG_BUILD_DIR}/${PROJECT_NAME}.spec
+				archive
+				packaging
+		COMMAND rpmbuild --define=\"%_sourcedir ${PROJECT_PKG_ENTRY_POINT}\" -ba  ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}.spec
 	)
 
-	add_custom_target(rpm DEPENDS ${PROJECT_NAME}.spec)
+	add_custom_target(rpm DEPENDS ${NPKG_PROJECT_NAME}.spec)
 	add_dependencies(rpm populate)
 	set(ADDITIONAL_MAKE_CLEAN_FILES, "${PROJECT_NAME}.spec")
 
@@ -267,6 +257,10 @@ macro(rpm_package_build)
 		COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${PACKAGE_MESSAGE}")
 	endif()
 endmacro(rpm_package_build)
+
+macro(deb_package_build)
+#TODO
+endmacro(deb_package_build)
 
 macro(project_package_build)
 	if(EXISTS ${RPM_TEMPLATE_DIR})
@@ -432,9 +426,113 @@ endmacro()
 # Add RSYNCTARGET
 remote_targets_populate()
 
-add_custom_command(OUTPUT ${PROJECT_PKG_ENTRY_POINT}/${PROJECT_NAME}_${PROJECT_VERSION}.orig.tar.gz
-DEPENDS ${PROJECT_TARGETS}
- COMMAND git --git-dir=${CMAKE_CURRENT_SOURCE_DIR}/.git archive --format=tar.gz --prefix=${PROJECT_NAME}-${PROJECT_VERSION}/ HEAD -o ${PROJECT_PKG_ENTRY_POINT}/${PROJECT_NAME}_${PROJECT_VERSION}.orig.tar.gz
+#Archive project
+set(ARCHIVE_OUTPUT_ARCHIVE ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}_${PROJECT_VERSION}.orig.tar)
+set(ARCHIVE_OUTPUT ${ARCHIVE_OUTPUT_ARCHIVE}.gz)
+set(TMP_ARCHIVE_SUBMODULE ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}-sub)
+set(CMD_ARCHIVE_SUBMODULE \'git archive --verbose --prefix=${NPKG_PROJECT_NAME}-${PROJECT_VERSION}/$$path/ --format tar HEAD --output ${TMP_ARCHIVE_SUBMODULE}-$$sha1.tar\' )
+add_custom_command(OUTPUT  ${ARCHIVE_OUTPUT}
+	DEPENDS ${PROJECT_TARGETS}
+	#Create git archive of the main project
+	COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}\; git --git-dir=${CMAKE_CURRENT_SOURCE_DIR}/.git archive --format=tar --prefix=${NPKG_PROJECT_NAME}-${PROJECT_VERSION}/ HEAD -o ${ARCHIVE_OUTPUT_ARCHIVE}
+	#Create tmp git archive for each submodule
+	COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}\; git --git-dir=${CMAKE_CURRENT_SOURCE_DIR}/.git submodule foreach --recursive ${CMD_ARCHIVE_SUBMODULE}
+	#Concatenate main archive and tmp submodule archive
+	COMMAND  for SUBTAR in ${TMP_ARCHIVE_SUBMODULE}-*.tar\; do tar --concatenate --file=${ARCHIVE_OUTPUT_ARCHIVE} $$SUBTAR\;done
+	#Remove tmp submodule archive
+	COMMAND rm -rf ${TMP_ARCHIVE_SUBMODULE}-*.tar
+	#Compress main archive
+	COMMAND gzip --force --verbose ${ARCHIVE_OUTPUT_ARCHIVE}
 )
+add_custom_target(archive DEPENDS ${ARCHIVE_OUTPUT})
 
-add_custom_target(archive DEPENDS ${PROJECT_PKG_ENTRY_POINT}/${PROJECT_NAME}_${PROJECT_VERSION}.orig.tar.gz)
+#Get the os type
+if(EXISTS "/etc/os-release")
+	execute_process(COMMAND grep ID_LIKE /etc/os-release
+		OUTPUT_VARIABLE TMP_OSRELEASE
+	)
+	if (NOT TMP_OSRELEASE STREQUAL "")
+		string(REGEX REPLACE ".*=" "" OSRELEASE ${TMP_OSRELEASE})
+	else()
+		set(OSRELEASE "NOT DEBIAN OS")
+	endif()
+	message(STATUS "OSRELEASE = ${OSRELEASE}")
+else()
+	set(OSRELEASE "NOT DEBIAN OS")
+endif()
+
+#Format Build require package
+foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
+	#Unset TMP variable
+	unset(XPREFIX)
+	unset(XRULE)
+	unset(RPM_EXTRA_DEP)
+	unset(DEB_EXTRA_DEP)
+	#For deb package,add EOL format only for a new line
+	if(DEB_PKG_DEPS)
+		set(DEB_PKG_DEPS "${DEB_PKG_DEPS},\n")
+	endif()
+	#Get pkg-config rule on version 
+	string(REGEX REPLACE "[<>]?=.*$" "" XPREFIX ${PKG_CONFIG})
+	string(REGEX MATCH "[<>]?="  XRULE ${PKG_CONFIG})
+	#Only if pkg-config has rule on version 
+	if(XRULE)
+		string(REGEX REPLACE ".*[<>]?=" "" XVERS ${PKG_CONFIG})
+		set(RPM_EXTRA_DEP " ${XRULE} ${XVERS}")
+		set(DEB_EXTRA_DEP " (${XRULE} ${XVERS})")
+	endif()
+	#Format for rpm package
+	set(RPM_PKG_DEPS "${RPM_PKG_DEPS}BuildRequires: pkgconfig(${XPREFIX})${RPM_EXTRA_DEP}\n")
+	#Format for deb package
+	#Because the tool "dpkg" is used on the packages db to find the
+	#package providing the pkg-cong file ${XPREFIX}.pc, we need 
+	#to test the OS release package type
+	if( OSRELEASE MATCHES "debian" )
+		execute_process(
+			COMMAND dpkg -S *${XPREFIX}.pc 
+					OUTPUT_VARIABLE TMP_PKG_BIN
+					)
+		#Need to be harden check
+		string(REGEX REPLACE ":.*$" "" PKG_BIN ${TMP_PKG_BIN})
+		set(DEB_PKG_DEPS "${DEB_PKG_DEPS} ${PKG_BIN} ${DEB_EXTRA_DEP}")
+	endif()
+endforeach()
+
+if(NOT EXISTS ${RPM_TEMPLATE_DIR}/rpm-config.spec.in)
+	MESSAGE(FATAL_ERROR "${Red}Missing mandatory files: you need rpm-config.spec.in in ${RPM_TEMPLATE_DIR} folder.${ColourReset}")
+endif()
+set(PACKAGING_SPEC_OUTPUT ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}.spec)
+# build rpm spec file from template
+configure_file(${RPM_TEMPLATE_DIR}/rpm-config.spec.in ${PACKAGING_SPEC_OUTPUT})
+
+#Because the tool "dpkg" is used on the packages db to find the
+#package providing the pkg-cong file ${XPREFIX}.pc, we need 
+#to test the OS release package type
+if( OSRELEASE MATCHES "debian" )
+	# build deb spec file from template
+	set(PACKAGING_DEB_OUTPUT_DSC       ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}.dsc)
+	configure_file(${DEB_TEMPLATE_DIR}/deb-config.dsc.in     ${PACKAGING_DEB_OUTPUT_DSC})
+	set(PACKAGING_DEB_OUTPUT_INSTALL   ${PROJECT_PKG_ENTRY_POINT}/debian.${NPKG_PROJECT_NAME}.install)
+	configure_file(${DEB_TEMPLATE_DIR}/deb-config.install.in ${PACKAGING_DEB_OUTPUT_INSTALL})
+	set(PACKAGING_DEB_OUTPUT_CHANGELOG ${PROJECT_PKG_ENTRY_POINT}/debian.changelog)
+	configure_file(${DEB_TEMPLATE_DIR}/debian.changelog.in   ${PACKAGING_DEB_OUTPUT_CHANGELOG})
+	set(PACKAGING_DEB_OUTPUT_COMPAT    ${PROJECT_PKG_ENTRY_POINT}/debian.compat)
+	configure_file(${DEB_TEMPLATE_DIR}/debian.compat.in      ${PACKAGING_DEB_OUTPUT_COMPAT})
+	set(PACKAGING_DEB_OUTPUT_CONTROL   ${PROJECT_PKG_ENTRY_POINT}/debian.control)
+	configure_file(${DEB_TEMPLATE_DIR}/debian.control.in     ${PACKAGING_DEB_OUTPUT_CONTROL})
+	set(PACKAGING_DEB_OUTPUT_RULES     ${PROJECT_PKG_ENTRY_POINT}/debian.rules)
+	configure_file(${DEB_TEMPLATE_DIR}/debian.rules.in       ${PACKAGING_DEB_OUTPUT_RULES})
+endif()
+
+add_custom_target( packaging DEPENDS ${PACKAGING_SPEC_OUTPUT}
+                                     ${PACKAGING_DEB_OUTPUT_DSC}
+                                     ${PACKAGING_DEB_OUTPUT_INSTALL}
+                                     ${PACKAGING_DEB_OUTPUT_CHANGELOG}
+                                     ${PACKAGING_DEB_OUTPUT_COMPAT}
+                                     ${PACKAGING_DEB_OUTPUT_CONTROL}
+                                     ${PACKAGING_DEB_OUTPUT_CONTROL}
+                                     ${PACKAGING_DEB_OUTPUT_RULES})
+
+add_custom_command(TARGET packaging
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ Packaging")
