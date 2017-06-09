@@ -84,24 +84,27 @@ set(LD_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib64 ${CMAKE_INSTALL_PREFIX}/lib)
 # -----------------------------------
 #set(WIDGET_CONFIG_TEMPLATE ${CMAKE_CURRENT_SOURCE_DIR}/conf.d/config.xml.in)
 
-# Mandatory widget Mimetype specification
-# --------------------------------------------------
+# Mandatory widget Mimetype specification of the main unit
+# --------------------------------------------------------------------------
 # Choose between :
-# - application/vnd.agl.service
-# - application/vnd.agl.native
-# - application/x-executable
-# - text/html
+#- text/html : HTML application,
+#	content.src designates the home page of the application
+#
+#- application/vnd.agl.native : AGL compatible native,
+#	content.src designates the relative path of the binary.
+#
+# - application/vnd.agl.service: AGL service, content.src is not used.
+#
+#- ***application/x-executable***: Native application,
+#	content.src designates the relative path of the binary.
+#	For such application, only security setup is made.
 #
 set(WIDGET_TYPE MimeType_Not_Set)
 
-# Mandatory Widget entry point file.
-# ----------------------------------------------------
-# This is the file that will be executed, loaded,...
-# at launch time by the application framework
-#
-# !IMPORTANT! : Service Widget Mimetype has to specified
-# the WIDGET_ENTRY_POINT "lib" which is the default directory
-# that holds the bindings.
+# Mandatory Widget entry point file of the main unit
+# --------------------------------------------------------------
+# This is the file that will be executed, loaded,
+# at launch time by the application framework.
 #
 set(WIDGET_ENTRY_POINT EntryPoint_Path_Not_Set)
 
