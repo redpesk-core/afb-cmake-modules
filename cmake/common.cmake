@@ -194,7 +194,6 @@ macro(wgt_package_build)
     set(WIDGET_ENTRY_POINT lib CACHE STRING "the widget entry point file")
 
 	configure_file(${WIDGET_CONFIG_TEMPLATE} ${PROJECT_PKG_BUILD_DIR}/config.xml)
-	configure_file(${WIDGET_CONFIG_TEMPLATE} ${PROJECT_PKG_ENTRY_POINT}/config.xml)
 	file(COPY ${WGT_TEMPLATE_DIR}/icon-default.png DESTINATION ${PROJECT_PKG_BUILD_DIR})
 	file(RENAME ${PROJECT_PKG_BUILD_DIR}/icon-default.png ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON})
 
