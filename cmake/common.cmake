@@ -227,7 +227,7 @@ macro(rpm_package_build)
 	endforeach()
 
 	# build rpm spec file from template
-	configure_file(${RPM_TEMPLATE_DIR}/rpm-config.spec.in ${PROJECT_PKG_BUILD_DIR}/${PROJECT_NAME}.spec)
+	configure_file(${RPM_TEMPLATE_DIR}/rpm-config.spec.in ${PROJECT_NAME}.spec)
 	configure_file(${RPM_TEMPLATE_DIR}/rpm-config.spec.in ${PROJECT_PKG_ENTRY_POINT}/${PROJECT_NAME}.spec)
 
 	add_custom_command(OUTPUT ${PROJECT_NAME}.spec
