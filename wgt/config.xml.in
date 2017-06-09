@@ -5,5 +5,5 @@
   <content src="@WIDGET_ENTRY_POINT@" type="@WIDGET_TYPE@"/>
   <description>@PROJECT_DESCRIPTION@</description>
   <author>@PROJECT_AUTHOR@ &lt;@PROJECT_AUTHOR_MAIL@&gt;</author>
-  <license>@PROJECT_LICENCE@</license>
+  <license>@PROJECT_LICENSE@</license>
 </widget>

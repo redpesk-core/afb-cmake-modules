@@ -20,7 +20,7 @@
 Name:    @PROJECT_NAME@
 Version: @PROJECT_VERSION@
 Release: 1
-License: @PROJECT_LICENCE@
+License: @PROJECT_LICENSE@
 Summary: @PROJECT_DESCRIPTION@
 Url:     @PROJECT_URL@
 Source0: %{name}_%{version}.orig.tar.gz
