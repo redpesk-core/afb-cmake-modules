@@ -122,7 +122,7 @@ populate_widget() --> add target to widget tree depending upon target properties
 
 #### config.xml.in file
 
-To build a widget you need to configure file _config.xml_. This repo 
+To build a widget you need to configure file _config.xml_. This repo
 provide a simple default file _config.xml.in_ that will be configured using the
 variable set in _config.cmake_  file.
 
@@ -171,7 +171,7 @@ Example:
 PROJECT_TARGET_ADD(low-can-demo)
 ```
 
-> ***NOTE***: This will make available the variable `${TARGET_NAME}` 
+> ***NOTE***: This will make available the variable `${TARGET_NAME}`
 > set with the specificied name. This variable will change at the next call
 > to this macros.
 

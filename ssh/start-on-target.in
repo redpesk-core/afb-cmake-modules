@@ -1,5 +1,5 @@
 #!/bin/sh
-# 
+#
 # File:   start-on-target.sh
 # Author: Fulup Ar Foll @ IoT.bzh
 # Object: Forward signal (SIGTERM) to remote process
