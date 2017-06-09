@@ -113,7 +113,7 @@ macro(project_targets_populate)
 					COMMAND cp ${BD}/${P}${OUT}.so ${PACKAGE_LIBDIR}
 				)
 				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${TARGET}.so)
-				add_dependencies(populate ${POPULE_PACKAGE_TARGET}) 
+				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
 			elseif(${T} STREQUAL "EXECUTABLE")
 				add_custom_command(OUTPUT ${PACKAGE_BINDIR}/${P}${TARGET}
 					DEPENDS ${TARGET}
@@ -121,7 +121,7 @@ macro(project_targets_populate)
 					COMMAND cp ${BD}/${P}${OUT} ${PACKAGE_BINDIR}
 				)
 				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_BINDIR}/${P}${TARGET})
-				add_dependencies(populate ${POPULE_PACKAGE_TARGET}) 
+				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
 			elseif(${T} STREQUAL "HTDOCS")
 				add_custom_command(OUTPUT ${PACKAGE_HTTPDIR}-xx
 					DEPENDS ${TARGET}
@@ -130,7 +130,7 @@ macro(project_targets_populate)
 					COMMAND cp -r ${BD}/${P}${OUT}/* ${PACKAGE_HTTPDIR}
 				)
 					add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_HTTPDIR}-xx)
-					add_dependencies(populate ${POPULE_PACKAGE_TARGET}) 
+					add_dependencies(populate ${POPULE_PACKAGE_TARGET})
 			elseif(${T} STREQUAL "DATA")
 				add_custom_command(OUTPUT ${PACKAGE_DATADIR}-xx
 					DEPENDS ${TARGET}
@@ -139,7 +139,7 @@ macro(project_targets_populate)
 					COMMAND cp -r ${BD}/${P}${OUT} ${PACKAGE_DATADIR}
 				)
 					add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_DATADIR}-xx)
-					add_dependencies(populate ${POPULE_PACKAGE_TARGET}) 
+					add_dependencies(populate ${POPULE_PACKAGE_TARGET})
 			endif(${T} STREQUAL "BINDING")
 		elseif(${CMAKE_BUILD_TYPE} MATCHES "[Dd][Ee][Bb][Uu][Gg]")
 			MESSAGE(".. Warning: ${TARGET} ignored when packaging.")
@@ -156,7 +156,7 @@ macro(remote_targets_populate)
 	endif()
 
 	set(
-		REMOTE_LAUNCH "Test on target with: ${CMAKE_CURRENT_BINARY_DIR}/target/start-on-${RSYNC_TARGET}.sh" 
+		REMOTE_LAUNCH "Test on target with: ${CMAKE_CURRENT_BINARY_DIR}/target/start-on-${RSYNC_TARGET}.sh"
 		CACHE STRING "Command to start ${PROJECT_NAME} on remote target ${RSYNC_TARGET}"
 	)
 
@@ -187,6 +187,11 @@ macro(wgt_package_build)
 	if(NOT EXISTS ${WGT_TEMPLATE_DIR}/icon-default.png)
 		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build widget file.\nYou need ${PROJECT_ICON} file in ${WGT_TEMPLATE_DIR} folder.${ColourReset}")
 	endif()
+    if(NOT WIDGET_TYPE)
+        MESSAGE(FATAL_ERROR "WIDGET_TYPE must be set in your config.cmake.\neg.: set(WIDGET_TYPE application/vnd.agl.service)")
+    endif()
+
+    set(WIDGET_ENTRY_POINT lib CACHE STRING "the widget entry point file")
 
 	configure_file(${WIDGET_CONFIG_TEMPLATE} ${PROJECT_PKG_BUILD_DIR}/config.xml)
 	configure_file(${WIDGET_CONFIG_TEMPLATE} ${PROJECT_PKG_ENTRY_POINT}/config.xml)
@@ -364,6 +369,8 @@ if(PACKAGE_PREFIX)
 else()
 	set(PROJECT_PKG_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/package CACHE PATH "Application contents to be packaged")
 endif()
+
+set (PROJECT_APP_TEMPLATES_DIR "conf.d/templates" CACHE PATH "Default Templates directory")
 
 set (PKG_TEMPLATE_PREFIX ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR} CACHE PATH "Default Package Templates Directory")
 set(SSH_TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/ssh" CACHE PATH "Subpath to a directory where are stored needed files to launch on remote target to debuging purposes")
