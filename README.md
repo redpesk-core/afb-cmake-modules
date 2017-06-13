@@ -24,7 +24,7 @@ A typical project architecture would be :
 <project-root-path>
 │
 ├── conf.d/
-│   ├── default/
+│   ├── app-templates/
 │   │   ├── cmake/
 │   │   │   ├── config.cmake.sample
 │   │   │   ├── export.map
@@ -64,7 +64,7 @@ A typical project architecture would be :
 | - | -------| ----------- |
 | \<root-path\> | - | Path to your project. Hold master CMakeLists.txt and general files of your projects. |
 | conf.d | \<root-path\> | Git submodule to app-templates AGL repository which provides CMake helpers macros library, and build scripts. config.cmake is a copy of config.cmake.sample configured for the projects. |
-| default | conf.d | Holds examples files and cmake macros used to build packages |
+| app-templates | conf.d | Holds examples files and cmake macros used to build packages |
 | packaging | conf.d | Contains output files used to build packages. |
 | autobuild | conf.d | Scripts used to build packages the same way for differents platforms. |
 | \<libs\> | \<root-path\> | External dependencies libraries. This isn't to be used to include header file but build and link statically specifics libraries. | Library sources files. Can be a decompressed library archive file or project fork. |
@@ -76,7 +76,7 @@ Usage
 To use these templates files on your project just install the reference files using **git submodule** then use `config.cmake` file to configure your project specificities :
 
 ```bash
-git submodule add https://gerrit.automotivelinux.org/gerrit/apps/app-templates conf.d/default
+git submodule add https://gerrit.automotivelinux.org/gerrit/apps/app-templates conf.d/app-templates
 ```
 
 Specify manually your targets, you should look at samples provided in this
@@ -84,7 +84,7 @@ repository to make yours. Then when you are ready to build, using `autobuild`
 that will wrap CMake build command:
 
 ```bash
-./conf.d/default/autobuild/agl/autobuild.mk package
+./conf.d/app-templates/autobuild/agl/autobuild.mk package
 ```
 
 Or with the classic way :
