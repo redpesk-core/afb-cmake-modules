@@ -25,6 +25,14 @@ A typical project architecture would be :
 │
 ├── conf.d/
 │   ├── app-templates/
+│   │   ├── README.md
+│   │   ├── autobuild/
+│   │   │   ├── agl
+│   │   │   │   └── autobuild.sh
+│   │   │   ├── linux
+│   │   │   │   └── autobuild.sh
+│   │   │   └── windows
+│   │   │       └── autobuild.bat
 │   │   ├── cmake/
 │   │   │   ├── config.cmake.sample
 │   │   │   ├── export.map
@@ -42,18 +50,12 @@ A typical project architecture would be :
 │   │       ├── icon-qml.png
 │   │       └── icon-service.png
 │   ├── packaging/
-│   │   ├── config.xml
 │   │   ├── config.spec
 │   │   └── config.deb
-│   ├── autobuild/
-│   │   ├── agl
-│   │   │   └── autobuild.sh
-│   │   ├── linux
-│   │   │   └── autobuild.sh
-│   │   └── windows
-│   │       └── autobuild.bat
-│   ├── README.md
-│   └── config.cmake
+│   ├── cmake
+│   │   └── config.cmake
+│   └── wgt
+│      └── config.xml.in
 ├── <libs>
 ├── <target>
 ├── <target>
