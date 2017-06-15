@@ -173,8 +173,8 @@ macro(remote_targets_populate)
 
 		add_custom_target(remote-target-populate
 			DEPENDS populate
-			COMMAND chmod +x ${CMAKE_CURRENT_BINARY_DIR}/target/start-on-${RSYNC_TARGET}.sh
-			COMMAND rsync --archive --delete ${PROJECT_PKG_BUILD_DIR}/ ${RSYNC_TARGET}:${RSYNC_PREFIX}/${PROJECT_NAME}
+			COMMAND chmod +x ${CMAKE_CURRENT_BINARY_DIR}/target/*.sh
+			COMMAND rsync -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --archive --delete ${PROJECT_PKG_BUILD_DIR}/ ${RSYNC_TARGET}:${RSYNC_PREFIX}/${PROJECT_NAME}
 			COMMENT "${REMOTE_LAUNCH}"
 		)
 	endif()
@@ -187,9 +187,9 @@ macro(wgt_package_build)
 	if(NOT EXISTS ${WGT_TEMPLATE_DIR}/icon-default.png)
 		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build widget file.\nYou need ${PROJECT_ICON} file in ${WGT_TEMPLATE_DIR} folder.${ColourReset}")
 	endif()
-	if(NOT WIDGET_TYPE)
-		MESSAGE(FATAL_ERROR "WIDGET_TYPE must be set in your config.cmake.\neg.: set(WIDGET_TYPE application/vnd.agl.service)")
-	endif()
+    if(NOT WIDGET_TYPE)
+        MESSAGE(FATAL_ERROR "WIDGET_TYPE must be set in your config.cmake.\neg.: set(WIDGET_TYPE application/vnd.agl.service)")
+    endif()
 
 	if(NOT WIDGET_ENTRY_POINT)
 		set(WIDGET_ENTRY_POINT lib)
@@ -213,6 +213,21 @@ macro(wgt_package_build)
 	add_custom_target(widget DEPENDS ${PROJECT_NAME}.wgt)
 	add_dependencies(widget populate)
 	set(ADDITIONAL_MAKE_CLEAN_FILES, "${PROJECT_NAME}.wgt")
+
+	if(NOT RSYNC_TARGET)
+		message ("${Yellow}.. Warning: RSYNC_TARGET not defined 'make widget-target-install' not instanciated${ColourReset}")
+		add_custom_target(widget-target-install
+			COMMENT "${Red}*** Fatal: RSYNC_TARGET RSYNC_PREFIX environment variables required with 'make widget-target-install'${ColourReset}"
+			COMMAND exit -1
+		)
+	else()
+        configure_file(${WGT_TEMPLATE_DIR}/install-wgt-on-target.in ${CMAKE_CURRENT_BINARY_DIR}/target/install-wgt-on-${RSYNC_TARGET}.sh)
+        add_custom_target(widget-target-install
+            DEPENDS widget
+            COMMAND chmod +x ${CMAKE_CURRENT_BINARY_DIR}/target/install-wgt-on-${RSYNC_TARGET}.sh
+            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/target/install-wgt-on-${RSYNC_TARGET}.sh
+        )
+    endif()
 
 	if(PACKAGE_MESSAGE)
 	add_custom_command(TARGET widget
@@ -364,12 +379,16 @@ else()
 	set(BINDINGS_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME} CACHE PATH "Where the binding will be installed in your system")
 endif()
 
+set(PKGOUT_DIR package CACHE PATH "Output directory for packages")
+
 # Define a default package directory
-if(PACKAGE_PREFIX)
-	set(PROJECT_PKG_BUILD_DIR ${PKG_PREFIX}/package CACHE PATH "Application contents to be packaged")
+if(PKG_PREFIX)
+	set(PROJECT_PKG_BUILD_DIR ${PKG_PREFIX}/${PKGOUT_DIR} CACHE PATH "Application contents to be packaged")
 else()
-	set(PROJECT_PKG_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/package CACHE PATH "Application contents to be packaged")
+	set(PROJECT_PKG_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/${PKGOUT_DIR} CACHE PATH "Application contents to be packaged")
 endif()
+
+set (PROJECT_APP_TEMPLATES_DIR "conf.d/templates" CACHE PATH "Default Templates directory")
 
 set (PKG_TEMPLATE_PREFIX ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR} CACHE PATH "Default Package Templates Directory")
 set(SSH_TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/ssh" CACHE PATH "Subpath to a directory where are stored needed files to launch on remote target to debuging purposes")
