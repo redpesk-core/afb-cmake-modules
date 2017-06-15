@@ -388,8 +388,6 @@ else()
 	set(PROJECT_PKG_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/${PKGOUT_DIR} CACHE PATH "Application contents to be packaged")
 endif()
 
-set (PROJECT_APP_TEMPLATES_DIR "conf.d/templates" CACHE PATH "Default Templates directory")
-
 set (PKG_TEMPLATE_PREFIX ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR} CACHE PATH "Default Package Templates Directory")
 set(SSH_TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/ssh" CACHE PATH "Subpath to a directory where are stored needed files to launch on remote target to debuging purposes")
 set(GDB_TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/gdb" CACHE PATH "Subpath to a directory where are stored needed files to launch debuging server on a remote target. Use gdbserver.")
