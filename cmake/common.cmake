@@ -81,7 +81,6 @@ set(NPKG_PROJECT_NAME agl-${PROJECT_NAME})
 
 # Pre-packaging
 macro(project_targets_populate)
-
 	# Default Widget default directory
 	set(PACKAGE_BINDIR  ${PROJECT_PKG_BUILD_DIR}/bin)
 	set(PACKAGE_ETCDIR  ${PROJECT_PKG_BUILD_DIR}/etc)
@@ -198,9 +197,12 @@ macro(wgt_package_build)
 		set(WIDGET_ENTRY_POINT lib)
 	endif()
 
-	configure_file(${WIDGET_CONFIG_TEMPLATE} ${PROJECT_PKG_BUILD_DIR}/config.xml)
-	file(COPY ${WGT_TEMPLATE_DIR}/icon-default.png DESTINATION ${PROJECT_PKG_BUILD_DIR})
-	file(RENAME ${PROJECT_PKG_BUILD_DIR}/icon-default.png ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON})
+	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/config.xml
+		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		COMMAND cp ${WGT_TEMPLATE_DIR}/icon-default.png ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
+
+	)
+	add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml)
 
 	# Fulup ??? copy any extra file in wgt/etc into populate package before building the widget
 	file(GLOB PROJECT_CONF_FILES "${WGT_TEMPLATE_DIR}/etc/*")
@@ -214,7 +216,7 @@ macro(wgt_package_build)
 	)
 
 	add_custom_target(widget DEPENDS ${PROJECT_NAME}.wgt)
-	add_dependencies(widget populate)
+	add_dependencies(widget populate packaging_wgt)
 	set(ADDITIONAL_MAKE_CLEAN_FILES, "${PROJECT_NAME}.wgt")
 
 	if(NOT RSYNC_TARGET)
@@ -248,7 +250,7 @@ macro(rpm_package_build)
 	)
 
 	add_custom_target(rpm DEPENDS ${NPKG_PROJECT_NAME}.spec)
-	add_dependencies(rpm populate)
+	add_dependencies(rpm populate packaging)
 	set(ADDITIONAL_MAKE_CLEAN_FILES, "${PROJECT_NAME}.spec")
 
 	if(PACKAGE_MESSAGE)
@@ -461,78 +463,109 @@ else()
 	set(OSRELEASE "NOT DEBIAN OS")
 endif()
 
-#Format Build require package
-foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
-	#Unset TMP variable
-	unset(XPREFIX)
-	unset(XRULE)
-	unset(RPM_EXTRA_DEP)
-	unset(DEB_EXTRA_DEP)
-	#For deb package,add EOL format only for a new line
-	if(DEB_PKG_DEPS)
-		set(DEB_PKG_DEPS "${DEB_PKG_DEPS},\n")
-	endif()
-	#Get pkg-config rule on version 
-	string(REGEX REPLACE "[<>]?=.*$" "" XPREFIX ${PKG_CONFIG})
-	string(REGEX MATCH "[<>]?="  XRULE ${PKG_CONFIG})
-	#Only if pkg-config has rule on version 
-	if(XRULE)
-		string(REGEX REPLACE ".*[<>]?=" "" XVERS ${PKG_CONFIG})
-		set(RPM_EXTRA_DEP " ${XRULE} ${XVERS}")
-		set(DEB_EXTRA_DEP " (${XRULE} ${XVERS})")
-	endif()
-	#Format for rpm package
-	set(RPM_PKG_DEPS "${RPM_PKG_DEPS}BuildRequires: pkgconfig(${XPREFIX})${RPM_EXTRA_DEP}\n")
-	#Format for deb package
-	#Because the tool "dpkg" is used on the packages db to find the
-	#package providing the pkg-cong file ${XPREFIX}.pc, we need 
-	#to test the OS release package type
-	if( OSRELEASE MATCHES "debian" )
-		execute_process(
-			COMMAND dpkg -S *${XPREFIX}.pc 
-					OUTPUT_VARIABLE TMP_PKG_BIN
-					)
-		#Need to be harden check
-		string(REGEX REPLACE ":.*$" "" PKG_BIN ${TMP_PKG_BIN})
-		set(DEB_PKG_DEPS "${DEB_PKG_DEPS} ${PKG_BIN} ${DEB_EXTRA_DEP}")
-	endif()
-endforeach()
+	#Format Build require package
+	foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
+		#Unset TMP variable
+		unset(XPREFIX)
+		unset(XRULE)
+		unset(RPM_EXTRA_DEP)
+		unset(DEB_EXTRA_DEP)
+		#For deb package,add EOL format only for a new line
+		if(DEB_PKG_DEPS)
+			set(DEB_PKG_DEPS "${DEB_PKG_DEPS},\n")
+		endif()
+		#Get pkg-config rule on version
+		string(REGEX REPLACE "[<>]?=.*$" "" XPREFIX ${PKG_CONFIG})
+		string(REGEX MATCH "[<>]?="  XRULE ${PKG_CONFIG})
+		#Only if pkg-config has rule on version
+		if(XRULE)
+			string(REGEX REPLACE ".*[<>]?=" "" XVERS ${PKG_CONFIG})
+			set(RPM_EXTRA_DEP " ${XRULE} ${XVERS}")
+			set(DEB_EXTRA_DEP " (${XRULE} ${XVERS})")
+		endif()
+		#Format for rpm package
+		set(RPM_PKG_DEPS "${RPM_PKG_DEPS}BuildRequires: pkgconfig(${XPREFIX})${RPM_EXTRA_DEP}\n")
+		#Format for deb package
+		#Because the tool "dpkg" is used on the packages db to find the
+		#package providing the pkg-cong file ${XPREFIX}.pc, we need
+		#to test the OS release package type
+		if( OSRELEASE MATCHES "debian" )
+			execute_process(
+				COMMAND dpkg -S *${XPREFIX}.pc
+						OUTPUT_VARIABLE TMP_PKG_BIN
+						)
+			#Need to be harden check
+			string(REGEX REPLACE ":.*$" "" PKG_BIN ${TMP_PKG_BIN})
+			set(DEB_PKG_DEPS "${DEB_PKG_DEPS} ${PKG_BIN} ${DEB_EXTRA_DEP}")
+		endif()
+	endforeach()
 
-if(NOT EXISTS ${RPM_TEMPLATE_DIR}/rpm-config.spec.in)
-	MESSAGE(FATAL_ERROR "${Red}Missing mandatory files: you need rpm-config.spec.in in ${RPM_TEMPLATE_DIR} folder.${ColourReset}")
-endif()
-set(PACKAGING_SPEC_OUTPUT ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}.spec)
-# build rpm spec file from template
-configure_file(${RPM_TEMPLATE_DIR}/rpm-config.spec.in ${PACKAGING_SPEC_OUTPUT})
+	if(NOT EXISTS ${RPM_TEMPLATE_DIR}/rpm-config.spec.in)
+		MESSAGE(FATAL_ERROR "${Red}Missing mandatory files: you need rpm-config.spec.in in ${RPM_TEMPLATE_DIR} folder.${ColourReset}")
+	endif()
+	set(PACKAGING_SPEC_OUTPUT ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}.spec)
+add_custom_command(OUTPUT ${PACKAGING_SPEC_OUTPUT}
+	COMMAND ${CMAKE_COMMAND} -DINFILE=${RPM_TEMPLATE_DIR}/rpm-config.spec.in -DOUTFILE=${PACKAGING_SPEC_OUTPUT} -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+	)
 
 #Because the tool "dpkg" is used on the packages db to find the
-#package providing the pkg-cong file ${XPREFIX}.pc, we need 
+#package providing the pkg-cong file ${XPREFIX}.pc, we need
 #to test the OS release package type
-if( OSRELEASE MATCHES "debian" )
+if(OSRELEASE MATCHES "debian")
 	# build deb spec file from template
 	set(PACKAGING_DEB_OUTPUT_DSC       ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}.dsc)
-	configure_file(${DEB_TEMPLATE_DIR}/deb-config.dsc.in     ${PACKAGING_DEB_OUTPUT_DSC})
 	set(PACKAGING_DEB_OUTPUT_INSTALL   ${PROJECT_PKG_ENTRY_POINT}/debian.${NPKG_PROJECT_NAME}.install)
-	configure_file(${DEB_TEMPLATE_DIR}/deb-config.install.in ${PACKAGING_DEB_OUTPUT_INSTALL})
 	set(PACKAGING_DEB_OUTPUT_CHANGELOG ${PROJECT_PKG_ENTRY_POINT}/debian.changelog)
-	configure_file(${DEB_TEMPLATE_DIR}/debian.changelog.in   ${PACKAGING_DEB_OUTPUT_CHANGELOG})
 	set(PACKAGING_DEB_OUTPUT_COMPAT    ${PROJECT_PKG_ENTRY_POINT}/debian.compat)
-	configure_file(${DEB_TEMPLATE_DIR}/debian.compat.in      ${PACKAGING_DEB_OUTPUT_COMPAT})
 	set(PACKAGING_DEB_OUTPUT_CONTROL   ${PROJECT_PKG_ENTRY_POINT}/debian.control)
-	configure_file(${DEB_TEMPLATE_DIR}/debian.control.in     ${PACKAGING_DEB_OUTPUT_CONTROL})
 	set(PACKAGING_DEB_OUTPUT_RULES     ${PROJECT_PKG_ENTRY_POINT}/debian.rules)
-	configure_file(${DEB_TEMPLATE_DIR}/debian.rules.in       ${PACKAGING_DEB_OUTPUT_RULES})
+	add_custom_command(OUTPUT ${PACKAGING_DEB_OUTPUT_DSC}
+				${PACKAGING_DEB_OUTPUT_INSTALL}
+				${PACKAGING_DEB_OUTPUT_CHANGELOG}
+				${PACKAGING_DEB_OUTPUT_COMPAT}
+				${PACKAGING_DEB_OUTPUT_CONTROL}
+				${PACKAGING_DEB_OUTPUT_RULES}
+				COMMAND ${CMAKE_COMMAND} -DINFILE=${DEB_TEMPLATE_DIR}/debian.compat.in		-DOUTFILE=${PACKAGING_DEB_OUTPUT_COMPAT}	-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}	-P	${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+				COMMAND ${CMAKE_COMMAND} -DINFILE=${DEB_TEMPLATE_DIR}/debian.changelog.in	-DOUTFILE=${PACKAGING_DEB_OUTPUT_CHANGELOG}	-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}	-P	${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+				COMMAND ${CMAKE_COMMAND} -DINFILE=${DEB_TEMPLATE_DIR}/deb-config.dsc.in		-DOUTFILE=${PACKAGING_DEB_OUTPUT_DSC}		-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}	-P	${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+				COMMAND ${CMAKE_COMMAND} -DINFILE=${DEB_TEMPLATE_DIR}/deb-config.install.in	-DOUTFILE=${PACKAGING_DEB_OUTPUT_INSTALL}	-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}	-P	${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+				COMMAND ${CMAKE_COMMAND} -DINFILE=${DEB_TEMPLATE_DIR}/debian.control.in		-DOUTFILE=${PACKAGING_DEB_OUTPUT_CONTROL}	-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}	-P	${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+				COMMAND ${CMAKE_COMMAND} -DINFILE=${DEB_TEMPLATE_DIR}/debian.rules.in		-DOUTFILE=${PACKAGING_DEB_OUTPUT_RULES}		-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}	-P	${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+	)
+	add_custom_target(packaging_deb DEPENDS ${PACKAGING_DEB_OUTPUT_DSC}
+						${PACKAGING_DEB_OUTPUT_INSTALL}
+						${PACKAGING_DEB_OUTPUT_CHANGELOG}
+						${PACKAGING_DEB_OUTPUT_COMPAT}
+						${PACKAGING_DEB_OUTPUT_CONTROL}
+						${PACKAGING_DEB_OUTPUT_CONTROL}
+						${PACKAGING_DEB_OUTPUT_RULES})
 endif()
 
-add_custom_target( packaging DEPENDS ${PACKAGING_SPEC_OUTPUT}
-                                     ${PACKAGING_DEB_OUTPUT_DSC}
-                                     ${PACKAGING_DEB_OUTPUT_INSTALL}
-                                     ${PACKAGING_DEB_OUTPUT_CHANGELOG}
-                                     ${PACKAGING_DEB_OUTPUT_COMPAT}
-                                     ${PACKAGING_DEB_OUTPUT_CONTROL}
-                                     ${PACKAGING_DEB_OUTPUT_CONTROL}
-                                     ${PACKAGING_DEB_OUTPUT_RULES})
+add_custom_target(packaging)
+add_custom_target(packaging_rpm DEPENDS ${PACKAGING_SPEC_OUTPUT})
+add_dependencies(packaging packaging_rpm)
+if(TARGET packaging_wgt)
+	add_dependencies(packaging packaging_wgt)
+endif()
+if(OSRELEASE MATCHES "debian")
+	# Target to add dependencies indirectly to "packaging" target.
+	add_dependencies(packaging packaging_deb)
+endif()
 
-add_custom_command(TARGET packaging
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ Packaging")
+#Generate a cmake cache file usable by cmake script.
+set(CacheForScript ${CMAKE_BINARY_DIR}/CMakeCacheForScript.cmake)
+#Create a tmp cmake file.
+file(WRITE ${CacheForScript} "")
+
+get_cmake_property(Vars VARIABLES)
+foreach(Var ${Vars})
+	if(${Var})
+		#Replace unwanted char.
+		string(REPLACE "\\" "\\\\" VALUE ${${Var}})
+		string(REPLACE "\n" "\\n" VALUE ${VALUE})
+		string(REPLACE "\r" "\\n" VALUE ${VALUE})
+		string(REPLACE "\"" "\\\"" VALUE ${VALUE})
+	endif()
+
+	file(APPEND ${CacheForScript} "set(${Var} \"${VALUE}\")\n")
+endforeach()

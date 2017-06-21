@@ -51,9 +51,9 @@ install: build
 	mkdir -p debian/tmp/etc/profile.d
 	echo '#----------  AGL @PROJECT_NAME@ options Start ---------" '  > debian/tmp/etc/profile.d/AGL_@PROJECT_NAME@.sh
 	echo '# Object: AGL cmake option for  binder/bindings'  >> debian/tmp/etc/profile.d/AGL_@PROJECT_NAME@.sh
-	echo 'export LD_LIBRARY_PATH=/opt/AGL/@PROJECT_NAME@/lib/$(DEB_HOST_MULTIARCH):${LD_LIBRARY_PATH}'  >> debian/tmp/etc/profile.d/AGL_@PROJECT_NAME@.sh
-	echo 'export LIBRARY_PATH=/opt/AGL/@PROJECT_NAME@/lib/$(DEB_HOST_MULTIARCH):${LIBRARY_PATH}'  >> debian/tmp/etc/profile.d/AGL_@PROJECT_NAME@.sh
-	echo 'export PATH=/opt/AGL/@PROJECT_NAME@/AGL/bin:\$PATH'  >> debian/tmp/etc/profile.d/AGL_@PROJECT_NAME@.sh
+	echo 'export LD_LIBRARY_PATH=/opt/AGL/@PROJECT_NAME@/lib/$(DEB_HOST_MULTIARCH):$$LD_LIBRARY_PATH'  >> debian/tmp/etc/profile.d/AGL_@PROJECT_NAME@.sh
+	echo 'export LIBRARY_PATH=/opt/AGL/@PROJECT_NAME@/lib/$(DEB_HOST_MULTIARCH):$$LIBRARY_PATH'  >> debian/tmp/etc/profile.d/AGL_@PROJECT_NAME@.sh
+	echo 'export PATH=/opt/AGL/@PROJECT_NAME@/bin:$$PATH'  >> debian/tmp/etc/profile.d/AGL_@PROJECT_NAME@.sh
 	echo '#----------  AGL options End ---------'  >> debian/tmp/etc/profile.d/AGL_@PROJECT_NAME@.sh
 	# Move all files in their corresponding package
 	dh_install --list-missing -s --sourcedir=debian/tmp
