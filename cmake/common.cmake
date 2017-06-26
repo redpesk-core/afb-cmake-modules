@@ -30,7 +30,8 @@ include(${PROJECT_APP_TEMPLATES_DIR}/cmake/extra_targets.cmake)
 
 # Check GCC minimal version
 if (gcc_minimal_version)
-		message (STATUS "${Blue}-- Check gcc_minimal_version (found gcc version ${CMAKE_C_COMPILER_VERSION})  (found g++ version ${CMAKE_CXX_COMPILER_VERSION})${ColourReset}")
+		message (STATUS "${Cyan}-- Check gcc_minimal_version (found gcc version ${CMAKE_C_COMPILER_VERSION}) \
+		(found g++ version ${CMAKE_CXX_COMPILER_VERSION})${ColourReset}")
 	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${gcc_minimal_version} OR CMAKE_C_COMPILER_VERSION VERSION_LESS ${gcc_minimal_version})
 		message(FATAL_ERROR "${Red}**** FATAL: Require at least gcc-${gcc_minimal_version} please set CMAKE_C[XX]_COMPILER")
 	endif()
@@ -38,10 +39,23 @@ endif(gcc_minimal_version)
 
 # Check Kernel minimal version
 if (kernel_minimal_version)
-	message (STATUS "${Blue}-- Check kernel_minimal_version (found kernel version ${CMAKE_SYSTEM_VERSION})${ColourReset}")
-	if (CMAKE_SYSTEM_VERSION VERSION_LESS ${kernel_minimal_version})
-	message(FATAL_ERROR "${Red}**** FATAL: Require at least ${kernel_minimal_version} please use a recent kernel.")
-endif()
+	if(DEFINED ENV{SDKTARGETSYSROOT})
+		file(STRINGS $ENV{SDKTARGETSYSROOT}/usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
+	else()
+		file(STRINGS /usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
+	endif()
+
+	string(REGEX MATCH "[0-9]+" LINUX_VERSION_CODE ${LINUX_VERSION_CODE_LINE})
+	math(EXPR a "${LINUX_VERSION_CODE} >> 16")
+	math(EXPR b "(${LINUX_VERSION_CODE} >> 8) & 255")
+	math(EXPR c "(${LINUX_VERSION_CODE} & 255)")
+
+	set(KERNEL_VERSION "${a}.${b}.${c}")
+	message (STATUS "${Cyan}-- Check kernel_minimal_version (found kernel version ${KERNEL_VERSION})${ColourReset}")
+
+	if (KERNEL_VERSION VERSION_LESS ${kernel_minimal_version})
+		message(FATAL_ERROR "${Red}**** FATAL: Require at least ${kernel_minimal_version} please use a recent kernel or source your SDK environment then clean and reconfigure your CMake project.")
+	endif (KERNEL_VERSION VERSION_LESS ${kernel_minimal_version})
 endif(kernel_minimal_version)
 
 INCLUDE(FindPkgConfig)
