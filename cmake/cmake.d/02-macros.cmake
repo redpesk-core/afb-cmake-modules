@@ -97,8 +97,7 @@ macro(project_targets_populate)
 					DEPENDS ${TARGET}
 					COMMAND mkdir -p ${PACKAGE_HTTPDIR}
 					COMMAND touch ${PACKAGE_HTTPDIR}
-					COMMAND cp -r ${SD}/* ${PACKAGE_HTTPDIR}
-					COMMAND rm -f ${PACKAGE_HTTPDIR}/CMakeLists.txt
+					COMMAND cp -r ${BD}/${P}${OUT}/* ${PACKAGE_HTTPDIR}
 				)
 					add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_HTTPDIR}-xx)
 					add_dependencies(populate ${POPULE_PACKAGE_TARGET})
@@ -107,8 +106,7 @@ macro(project_targets_populate)
 					DEPENDS ${TARGET}
 					COMMAND mkdir -p ${PACKAGE_DATADIR}
 					COMMAND touch ${PACKAGE_DATADIR}
-					COMMAND cp -r ${SD}/* ${PACKAGE_DATADIR}
-					COMMAND rm -f ${PACKAGE_DATADIR}/CMakeLists.txt
+					COMMAND cp -r ${BD}/${P}${OUT}/* ${PACKAGE_DATADIR}
 				)
 					add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_DATADIR}-xx)
 					add_dependencies(populate ${POPULE_PACKAGE_TARGET})
