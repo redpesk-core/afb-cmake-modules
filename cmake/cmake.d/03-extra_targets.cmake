@@ -36,7 +36,9 @@ endif()
 # Add RSYNCTARGET
 remote_targets_populate()
 
-#Archive project
+# ----------------------------------------------------------------------------
+#                                Archive target
+# ----------------------------------------------------------------------------
 add_custom_command(OUTPUT  ${ARCHIVE_OUTPUT}
 	DEPENDS ${PROJECT_TARGETS}
 	#Create git archive of the main project
@@ -97,6 +99,9 @@ add_custom_command(OUTPUT ${PACKAGING_SPEC_OUTPUT}
 	COMMAND ${CMAKE_COMMAND} -DINFILE=${RPM_TEMPLATE_DIR}/rpm-config.spec.in -DOUTFILE=${PACKAGING_SPEC_OUTPUT} -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 	)
 
+# ----------------------------------------------------------------------------
+#                                Packaging target
+# ----------------------------------------------------------------------------
 #Because the tool "dpkg" is used on the packages db to find the
 #package providing the pkg-cong file ${XPREFIX}.pc, we need
 #to test the OS release package type
@@ -150,3 +155,15 @@ foreach(Var ${Vars})
 	endif()
 	file(APPEND ${CacheForScript} "set(${Var} \"${VALUE}\")\n")
 endforeach()
+
+# ----------------------------------------------------------------------------
+#                                Autobuild target
+# ----------------------------------------------------------------------------
+
+add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/conf.d/autobuild/agl/autobuild
+			${CMAKE_SOURCE_DIR}/conf.d/autobuild/linux/autobuild
+	COMMAND rsync -azp ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/autobuild ${CMAKE_SOURCE_DIR}/conf.d
+	)
+
+add_custom_target(autobuild ALL DEPENDS ${CMAKE_SOURCE_DIR}/conf.d/autobuild/agl/autobuild
+					${CMAKE_SOURCE_DIR}/conf.d/autobuild/linux/autobuild)
