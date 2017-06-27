@@ -37,6 +37,15 @@ macro(defstr name value)
 	add_definitions(-D${name}=${value})
 endmacro(defstr)
 
+macro(configure_files_in_dir dir)
+	file(GLOB filelist "${dir}/*in")
+	foreach(file ${filelist})
+		get_filename_component(filename ${file} NAME)
+		string(REGEX REPLACE "target" "${RSYNC_TARGET}" destinationfile ${filename})
+		configure_file(${file} ${CMAKE_CURRENT_BINARY_DIR}/target/${destinationfile})
+	endforeach()
+endmacro(configure_files_in_dir)
+
 # Pre-packaging
 macro(project_targets_populate)
 	# Default Widget default directory
@@ -130,8 +139,9 @@ macro(remote_targets_populate)
 			COMMAND exit -1
 		)
 	else()
-		configure_file(${SSH_TEMPLATE_DIR}/start-on-target.in ${CMAKE_CURRENT_BINARY_DIR}/target/start-on-${RSYNC_TARGET}.sh)
-		configure_file(${GDB_TEMPLATE_DIR}/gdb-on-target.in ${CMAKE_CURRENT_BINARY_DIR}/target/gdb-on-${RSYNC_TARGET}.ini)
+
+		configure_files_in_dir(${SSH_TEMPLATE_DIR})
+		configure_files_in_dir(${GDB_TEMPLATE_DIR})
 
 		add_custom_target(remote-target-populate
 			DEPENDS populate
@@ -186,13 +196,13 @@ macro(wgt_package_build)
 			COMMAND exit -1
 		)
 	else()
-        configure_file(${WGT_TEMPLATE_DIR}/install-wgt-on-target.in ${CMAKE_CURRENT_BINARY_DIR}/target/install-wgt-on-${RSYNC_TARGET}.sh)
-        add_custom_target(widget-target-install
-            DEPENDS widget
-            COMMAND chmod +x ${CMAKE_CURRENT_BINARY_DIR}/target/install-wgt-on-${RSYNC_TARGET}.sh
-            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/target/install-wgt-on-${RSYNC_TARGET}.sh
-        )
-    endif()
+	configure_files_in_dir(${WGT_TEMPLATE_DIR})
+	add_custom_target(widget-target-install
+	DEPENDS widget
+	COMMAND chmod +x ${CMAKE_CURRENT_BINARY_DIR}/target/install-wgt-on-${RSYNC_TARGET}.sh
+	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/target/install-wgt-on-${RSYNC_TARGET}.sh
+	)
+endif()
 
 	if(PACKAGE_MESSAGE)
 	add_custom_command(TARGET widget
