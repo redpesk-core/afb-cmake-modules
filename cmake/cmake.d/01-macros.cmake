@@ -130,7 +130,6 @@ macro(remote_targets_populate)
 			COMMAND exit -1
 		)
 	else()
-
 		configure_file(${SSH_TEMPLATE_DIR}/start-on-target.in ${CMAKE_CURRENT_BINARY_DIR}/target/start-on-${RSYNC_TARGET}.sh)
 		configure_file(${GDB_TEMPLATE_DIR}/gdb-on-target.in ${CMAKE_CURRENT_BINARY_DIR}/target/gdb-on-${RSYNC_TARGET}.ini)
 
