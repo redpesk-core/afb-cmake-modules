@@ -14,10 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-BUILD_DIR   := @PROJECT_BINARY_DIR@
-PACKAGING_DIR := @PROJECT_PKG_ENTRY_POINT@
-
-VPATH = etc:$(PACKAGING_DIR):$(PACKAGING_DIR)/etc:$(BUILD_DIR)
+THISFILE  := $(lastword $(MAKEFILE_LIST))
+BUILD_DIR := $(abspath $(dir $(THISFILE)/../../../../..)/build)
 
 .PHONY: all clean distclean configure build package
 
