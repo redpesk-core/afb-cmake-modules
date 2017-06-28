@@ -45,6 +45,9 @@ if(NOT WIN32)
   set(BoldWhite   "${Esc}[1;37m")
 endif()
 
+# (BUG!!!) as PKG_CONFIG_PATH does not work [should be en env variable]
+set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON CACHE BOOLEAN "Flag for using prefix path")
+
 # Native packaging name
 set(NPKG_PROJECT_NAME agl-${PROJECT_NAME})
 

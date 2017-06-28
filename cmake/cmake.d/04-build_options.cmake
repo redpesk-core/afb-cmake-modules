@@ -89,9 +89,6 @@ else()
 endif()
 set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX} CACHE STRING "Installation Prefix")
 
-# (BUG!!!) as PKG_CONFIG_PATH does not work [should be en env variable]
-set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON CACHE BOOLEAN "Flag for using prefix path")
-
 # Loop on required package and add options
 foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
 	string(REGEX REPLACE "[<>]?=.*$" "" XPREFIX ${PKG_CONFIG})
