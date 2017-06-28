@@ -94,9 +94,11 @@ add_custom_target(archive DEPENDS ${ARCHIVE_OUTPUT})
 	if(NOT EXISTS ${RPM_TEMPLATE_DIR}/rpm-config.spec.in)
 		MESSAGE(FATAL_ERROR "${Red}Missing mandatory files: you need rpm-config.spec.in in ${RPM_TEMPLATE_DIR} folder.${ColourReset}")
 	endif()
+
 	set(PACKAGING_SPEC_OUTPUT ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}.spec)
-add_custom_command(OUTPUT ${PACKAGING_SPEC_OUTPUT}
-	COMMAND ${CMAKE_COMMAND} -DINFILE=${RPM_TEMPLATE_DIR}/rpm-config.spec.in -DOUTFILE=${PACKAGING_SPEC_OUTPUT} -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+	add_custom_command(OUTPUT ${PACKAGING_SPEC_OUTPUT}
+		DEPENDS ${RPM_TEMPLATE_DIR}/rpm-config.spec.in
+		COMMAND ${CMAKE_COMMAND} -DINFILE=${RPM_TEMPLATE_DIR}/rpm-config.spec.in -DOUTFILE=${PACKAGING_SPEC_OUTPUT} -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 	)
 
 # ----------------------------------------------------------------------------
@@ -112,6 +114,12 @@ if(OSRELEASE MATCHES "debian")
 				${PACKAGING_DEB_OUTPUT_COMPAT}
 				${PACKAGING_DEB_OUTPUT_CONTROL}
 				${PACKAGING_DEB_OUTPUT_RULES}
+		DEPENDS ${DEB_TEMPLATE_DIR}/debian.compat.in
+				${DEB_TEMPLATE_DIR}/debian.changelog.in
+				${DEB_TEMPLATE_DIR}/deb-config.dsc.in
+				${DEB_TEMPLATE_DIR}/deb-config.install.in
+				${DEB_TEMPLATE_DIR}/debian.control.in
+				${DEB_TEMPLATE_DIR}/debian.rules.in
 				COMMAND ${CMAKE_COMMAND} -DINFILE=${DEB_TEMPLATE_DIR}/debian.compat.in		-DOUTFILE=${PACKAGING_DEB_OUTPUT_COMPAT}	-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}	-P	${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 				COMMAND ${CMAKE_COMMAND} -DINFILE=${DEB_TEMPLATE_DIR}/debian.changelog.in	-DOUTFILE=${PACKAGING_DEB_OUTPUT_CHANGELOG}	-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}	-P	${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 				COMMAND ${CMAKE_COMMAND} -DINFILE=${DEB_TEMPLATE_DIR}/deb-config.dsc.in		-DOUTFILE=${PACKAGING_DEB_OUTPUT_DSC}		-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}	-P	${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
@@ -162,9 +170,10 @@ endforeach()
 
 add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/conf.d/autobuild/agl/autobuild
 			${CMAKE_SOURCE_DIR}/conf.d/autobuild/linux/autobuild
-	COMMAND ${CMAKE_COMMAND} -DINFILE=${PROJECT_APP_TEMPLATES_DIR}/autobuild/agl/autobuild.in -DOUTFILE=${CMAKE_SOURCE_DIR}/conf.d/autobuild/agl/autobuild -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
-	COMMAND ${CMAKE_COMMAND} -DINFILE=${PROJECT_APP_TEMPLATES_DIR}/autobuild/agl/autobuild.in -DOUTFILE=${CMAKE_SOURCE_DIR}/conf.d/autobuild/linux/autobuild -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
-	COMMAND rsync -azp ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/autobuild ${CMAKE_SOURCE_DIR}/conf.d
+	DEPENDS ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/autobuild/agl/autobuild.in
+		${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/autobuild/linux/autobuild.in
+	COMMAND ${CMAKE_COMMAND} -DINFILE=${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/autobuild/agl/autobuild.in -DOUTFILE=${CMAKE_SOURCE_DIR}/conf.d/autobuild/agl/autobuild -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+	COMMAND ${CMAKE_COMMAND} -DINFILE=${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/autobuild/agl/autobuild.in -DOUTFILE=${CMAKE_SOURCE_DIR}/conf.d/autobuild/linux/autobuild -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 	)
 
 add_custom_target(autobuild ALL DEPENDS ${CMAKE_SOURCE_DIR}/conf.d/autobuild/agl/autobuild
