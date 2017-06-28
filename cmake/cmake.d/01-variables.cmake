@@ -50,6 +50,8 @@ set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON CACHE BOOLEAN "Flag for using prefix pat
 
 # Native packaging name
 set(NPKG_PROJECT_NAME agl-${PROJECT_NAME})
+#No upercase in deb packaging name
+string(TOLOWER ${NPKG_PROJECT_NAME} NPKG_PROJECT_NAME)
 
 set(CMAKE_BUILD_TYPE Debug CACHE STRING "the type of build")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
