@@ -21,7 +21,7 @@
 #--------------------------------------------------------------------------
 #  WARNING:
 #     Do not change this cmake template
-#     Customise your preferences in "./etc/config.cmake"
+#     Customise your preferences in "./conf.d/cmake/config.cmake"
 #--------------------------------------------------------------------------
 
 # Check GCC minimal version

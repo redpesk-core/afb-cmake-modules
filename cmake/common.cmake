@@ -21,7 +21,7 @@
 #--------------------------------------------------------------------------
 #  WARNING:
 #     Do not change this cmake template
-#     Customise your preferences in "./etc/config.cmake"
+#     Customise your preferences in "./conf.d/cmake/config.cmake"
 #--------------------------------------------------------------------------
 
 file(GLOB project_cmakefiles ${PROJECT_APP_TEMPLATES_DIR}/cmake/cmake.d/[0-9][0-9]-*.cmake)
