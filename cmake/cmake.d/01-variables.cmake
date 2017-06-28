@@ -21,7 +21,7 @@
 #--------------------------------------------------------------------------
 #  WARNING:
 #     Do not change this cmake template
-#     Customise your preferences in "./conf.d/cmake/config.cmake"
+#     Customise your preferences in "./etc/config.cmake"
 #--------------------------------------------------------------------------
 
 # Get colorized message output non Windows OS. You know bash ? :)
@@ -58,7 +58,7 @@ set(CMP0048 1)
 # Get the os type
 # Used to package .deb
 if(EXISTS "/etc/os-release")
-	execute_process(COMMAND grep ID_LIKE /etc/os-release
+	execute_process(COMMAND grep -E "^ID(=|_LIKE=)" /etc/os-release
 		OUTPUT_VARIABLE TMP_OSRELEASE
 	)
 	if (NOT TMP_OSRELEASE STREQUAL "")
@@ -115,7 +115,7 @@ set(ARCHIVE_OUTPUT ${ARCHIVE_OUTPUT_ARCHIVE}.gz)
 set(TMP_ARCHIVE_SUBMODULE ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}-sub)
 set(CMD_ARCHIVE_SUBMODULE \'git archive --verbose --prefix=${NPKG_PROJECT_NAME}-${PROJECT_VERSION}/$$path/ --format tar HEAD --output ${TMP_ARCHIVE_SUBMODULE}-$$sha1.tar\' )
 
-if(OSRELEASE MATCHES "debian")
+if(OSRELEASE MATCHES "debian" AND NOT DEFINED $ENV{SDKTARGETSYSROOT})
 	# build deb spec file from template
 	set(PACKAGING_DEB_OUTPUT_DSC       ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}.dsc)
 	set(PACKAGING_DEB_OUTPUT_INSTALL   ${PROJECT_PKG_ENTRY_POINT}/debian.${NPKG_PROJECT_NAME}.install)
@@ -123,4 +123,4 @@ if(OSRELEASE MATCHES "debian")
 	set(PACKAGING_DEB_OUTPUT_COMPAT    ${PROJECT_PKG_ENTRY_POINT}/debian.compat)
 	set(PACKAGING_DEB_OUTPUT_CONTROL   ${PROJECT_PKG_ENTRY_POINT}/debian.control)
 	set(PACKAGING_DEB_OUTPUT_RULES     ${PROJECT_PKG_ENTRY_POINT}/debian.rules)
-endif(OSRELEASE MATCHES "debian")
+endif(OSRELEASE MATCHES "debian" AND NOT DEFINED $ENV{SDKTARGETSYSROOT})

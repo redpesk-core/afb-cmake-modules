@@ -54,60 +54,63 @@ add_custom_command(OUTPUT  ${ARCHIVE_OUTPUT}
 )
 add_custom_target(archive DEPENDS ${ARCHIVE_OUTPUT})
 
-	#Format Build require package
-	foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
-		#Unset TMP variable
-		unset(XPREFIX)
-		unset(XRULE)
-		unset(RPM_EXTRA_DEP)
-		unset(DEB_EXTRA_DEP)
-		#For deb package,add EOL format only for a new line
-		if(DEB_PKG_DEPS)
-			set(DEB_PKG_DEPS "${DEB_PKG_DEPS},\n")
-		endif()
-		#Get pkg-config rule on version
-		string(REGEX REPLACE "[<>]?=.*$" "" XPREFIX ${PKG_CONFIG})
-		string(REGEX MATCH "[<>]?="  XRULE ${PKG_CONFIG})
-		#Only if pkg-config has rule on version
-		if(XRULE)
-			string(REGEX REPLACE ".*[<>]?=" "" XVERS ${PKG_CONFIG})
-			set(RPM_EXTRA_DEP " ${XRULE} ${XVERS}")
-			set(DEB_EXTRA_DEP " (${XRULE} ${XVERS})")
-		endif()
-		#Format for rpm package
-		set(RPM_PKG_DEPS "${RPM_PKG_DEPS}BuildRequires: pkgconfig(${XPREFIX})${RPM_EXTRA_DEP}\n")
-		#Format for deb package
-		#Because the tool "dpkg" is used on the packages db to find the
-		#package providing the pkg-cong file ${XPREFIX}.pc, we need
-		#to test the OS release package type
-		if( OSRELEASE MATCHES "debian" )
-			execute_process(
-				COMMAND dpkg -S *${XPREFIX}.pc
-						OUTPUT_VARIABLE TMP_PKG_BIN
-						)
-			#Need to be harden check
-			string(REGEX REPLACE ":.*$" "" PKG_BIN ${TMP_PKG_BIN})
-			set(DEB_PKG_DEPS "${DEB_PKG_DEPS} ${PKG_BIN} ${DEB_EXTRA_DEP}")
-		endif()
-	endforeach()
-
-	if(NOT EXISTS ${RPM_TEMPLATE_DIR}/rpm-config.spec.in)
-		MESSAGE(FATAL_ERROR "${Red}Missing mandatory files: you need rpm-config.spec.in in ${RPM_TEMPLATE_DIR} folder.${ColourReset}")
-	endif()
-
-	set(PACKAGING_SPEC_OUTPUT ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}.spec)
-	add_custom_command(OUTPUT ${PACKAGING_SPEC_OUTPUT}
-		DEPENDS ${RPM_TEMPLATE_DIR}/rpm-config.spec.in
-		COMMAND ${CMAKE_COMMAND} -DINFILE=${RPM_TEMPLATE_DIR}/rpm-config.spec.in -DOUTFILE=${PACKAGING_SPEC_OUTPUT} -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
-	)
-
 # ----------------------------------------------------------------------------
 #                                Packaging target
 # ----------------------------------------------------------------------------
-#Because the tool "dpkg" is used on the packages db to find the
-#package providing the pkg-cong file ${XPREFIX}.pc, we need
-#to test the OS release package type
-if(OSRELEASE MATCHES "debian")
+#Format Build require package
+foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
+	#Unset TMP variable
+	unset(XPREFIX)
+	unset(XRULE)
+	unset(RPM_EXTRA_DEP)
+	unset(DEB_EXTRA_DEP)
+	#For deb package,add EOL format only for a new line
+	if(DEB_PKG_DEPS)
+		set(DEB_PKG_DEPS "${DEB_PKG_DEPS},\n")
+	endif()
+	#Get pkg-config rule on version
+	string(REGEX REPLACE "[<>]?=.*$" "" XPREFIX ${PKG_CONFIG})
+	string(REGEX MATCH "[<>]?="  XRULE ${PKG_CONFIG})
+	#Only if pkg-config has rule on version
+	if(XRULE)
+		string(REGEX REPLACE ".*[<>]?=" "" XVERS ${PKG_CONFIG})
+		set(RPM_EXTRA_DEP " ${XRULE} ${XVERS}")
+		set(DEB_EXTRA_DEP " (${XRULE} ${XVERS})")
+	endif()
+	# Format for rpm package
+	set(RPM_PKG_DEPS "${RPM_PKG_DEPS}BuildRequires: pkgconfig(${XPREFIX})${RPM_EXTRA_DEP}\n")
+
+	# Format for deb package
+	# Because the tool "dpkg" is used on the packages db to find the
+	# package providing the pkg-cong file ${XPREFIX}.pc, we need
+	# to test the OS release package type
+	# Only doable within a native environment not under SDK
+	if( OSRELEASE MATCHES "debian" AND NOT DEFINED $ENV{SDKTARGETSYSROOT})
+		execute_process(
+			COMMAND dpkg -S *${XPREFIX}.pc
+					OUTPUT_VARIABLE TMP_PKG_BIN
+		)
+		#Need to be harden check
+		string(REGEX REPLACE ":.*$" "" PKG_BIN ${TMP_PKG_BIN})
+		set(DEB_PKG_DEPS "${DEB_PKG_DEPS} ${PKG_BIN} ${DEB_EXTRA_DEP}")
+	endif()
+endforeach()
+
+if(NOT EXISTS ${RPM_TEMPLATE_DIR}/rpm-config.spec.in)
+	MESSAGE(FATAL_ERROR "${Red}Missing mandatory files: you need rpm-config.spec.in in ${RPM_TEMPLATE_DIR} folder.${ColourReset}")
+endif()
+
+set(PACKAGING_SPEC_OUTPUT ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}.spec)
+add_custom_command(OUTPUT ${PACKAGING_SPEC_OUTPUT}
+	DEPENDS ${RPM_TEMPLATE_DIR}/rpm-config.spec.in
+	COMMAND ${CMAKE_COMMAND} -DINFILE=${RPM_TEMPLATE_DIR}/rpm-config.spec.in -DOUTFILE=${PACKAGING_SPEC_OUTPUT} -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+)
+
+# Because the tool "dpkg" is used on the packages db to find the
+# package providing the pkg-cong file ${XPREFIX}.pc, we need
+# to test the OS release package type
+# Only doable within a native environment not under SDK
+if(OSRELEASE MATCHES "debian" AND NOT DEFINED $ENV{SDKTARGETSYSROOT})
 	add_custom_command(OUTPUT ${PACKAGING_DEB_OUTPUT_DSC}
 				${PACKAGING_DEB_OUTPUT_INSTALL}
 				${PACKAGING_DEB_OUTPUT_CHANGELOG}
@@ -142,7 +145,7 @@ add_dependencies(packaging packaging_rpm)
 if(TARGET packaging_wgt)
 	add_dependencies(packaging packaging_wgt)
 endif()
-if(OSRELEASE MATCHES "debian")
+if(OSRELEASE MATCHES "debian" AND NOT DEFINED $ENV{SDKTARGETSYSROOT})
 	# Target to add dependencies indirectly to "packaging" target.
 	add_dependencies(packaging packaging_deb)
 endif()
