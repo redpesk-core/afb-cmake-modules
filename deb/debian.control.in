@@ -1,7 +1,8 @@
 Priority: optional
 Maintainer: @PROJECT_AUTHOR@ <@PROJECT_AUTHOR_MAIL@>
 Source: @NPKG_PROJECT_NAME@
-Build-Depends: debhelper (>= 5),	
+Build-Depends: debhelper (>= 5),
+ pkg-config,
  cmake,
  gcc,
  g++,
