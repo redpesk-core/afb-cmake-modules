@@ -80,6 +80,9 @@ set(PROJECT_RESOURCES "${CMAKE_SOURCE_DIR}/data" CACHE PATH "Subpath to data")
 set(AFB_TOKEN   ""      CACHE PATH "Default AFB_TOKEN")
 set(AFB_REMPORT "1234" CACHE PATH "Default AFB_TOKEN")
 
+# Project path variables
+# ----------------------
+
 # If no install dir try to guess some smart default
 if(BINDINGS_INSTALL_PREFIX)
 	set(BINDINGS_INSTALL_DIR ${BINDINGS_INSTALL_PREFIX}/${PROJECT_NAME} CACHE PATH "Where the binding will be installed in your system")
@@ -96,6 +99,7 @@ else()
 	set(PROJECT_PKG_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/${PKGOUT_DIR} CACHE PATH "Application contents to be packaged")
 endif()
 
+# Paths to templates files
 set (PKG_TEMPLATE_PREFIX ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR} CACHE PATH "Default Package Templates Directory")
 set(SSH_TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/ssh" CACHE PATH "Subpath to a directory where are stored needed files to launch on remote target to debuging purposes")
 set(GDB_TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/gdb" CACHE PATH "Subpath to a directory where are stored needed files to launch debuging server on a remote target. Use gdbserver.")
