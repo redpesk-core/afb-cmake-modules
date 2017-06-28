@@ -109,6 +109,10 @@ set(DEB_TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/deb" CACHE PATH "Subpath to a direc
 string(REGEX REPLACE "^(.*)/.*$" "\\1" ENTRY_POINT "${PKG_TEMPLATE_PREFIX}")
 set(PROJECT_PKG_ENTRY_POINT ${ENTRY_POINT}/packaging CACHE PATH "Where package build files, like rpm.spec file or config.xml, are write.")
 
+# Path to autobuild template
+set(PROJECT_TEMPLATE_AGL_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/conf.d/autobuild/agl CACHE PATH "Subpath to a directory where are stored autobuild script")
+set(PROJECT_TEMPLATE_LINUX_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/conf.d/autobuild/linux CACHE PATH "Subpath to a directory where are stored autobuild script")
+
 # Archive target variables
 set(ARCHIVE_OUTPUT_ARCHIVE ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}_${PROJECT_VERSION}.orig.tar)
 set(ARCHIVE_OUTPUT ${ARCHIVE_OUTPUT_ARCHIVE}.gz)
