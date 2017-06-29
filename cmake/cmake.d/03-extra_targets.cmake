@@ -85,7 +85,7 @@ foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
 	# package providing the pkg-cong file ${XPREFIX}.pc, we need
 	# to test the OS release package type
 	# Only doable within a native environment not under SDK
-	if( OSRELEASE MATCHES "debian" AND NOT DEFINED $ENV{SDKTARGETSYSROOT})
+	if( OSRELEASE MATCHES "debian" AND NOT DEFINED ENV{SDKTARGETSYSROOT})
 		execute_process(
 			COMMAND dpkg -S *${XPREFIX}.pc
 					OUTPUT_VARIABLE TMP_PKG_BIN
