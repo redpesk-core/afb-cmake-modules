@@ -85,7 +85,7 @@ foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
 	# package providing the pkg-cong file ${XPREFIX}.pc, we need
 	# to test the OS release package type
 	# Only doable within a native environment not under SDK
-	if( OSRELEASE MATCHES "debian" AND NOT DEFINED ENV{SDKTARGETSYSROOT})
+	if( OSRELEASE MATCHES "debian" AND NOT DEFINED ENV{SDKTARGETSYSROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 		execute_process(
 			COMMAND dpkg -S *${XPREFIX}.pc
 					OUTPUT_VARIABLE TMP_PKG_BIN
@@ -110,7 +110,7 @@ add_custom_command(OUTPUT ${PACKAGING_SPEC_OUTPUT}
 # package providing the pkg-cong file ${XPREFIX}.pc, we need
 # to test the OS release package type
 # Only doable within a native environment not under SDK
-if(OSRELEASE MATCHES "debian" AND NOT DEFINED ENV{SDKTARGETSYSROOT})
+if(OSRELEASE MATCHES "debian" AND NOT DEFINED ENV{SDKTARGETSYSROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 	add_custom_command(OUTPUT ${PACKAGING_DEB_OUTPUT_DSC}
 				${PACKAGING_DEB_OUTPUT_INSTALL}
 				${PACKAGING_DEB_OUTPUT_CHANGELOG}
@@ -145,7 +145,7 @@ add_dependencies(packaging packaging_rpm)
 if(TARGET packaging_wgt)
 	add_dependencies(packaging packaging_wgt)
 endif()
-if(OSRELEASE MATCHES "debian" AND NOT DEFINED ENV{SDKTARGETSYSROOT})
+if(OSRELEASE MATCHES "debian" AND NOT DEFINED ENV{SDKTARGETSYSROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 	# Target to add dependencies indirectly to "packaging" target.
 	add_dependencies(packaging packaging_deb)
 endif()
