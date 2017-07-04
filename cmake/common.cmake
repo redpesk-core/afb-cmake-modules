@@ -26,9 +26,9 @@
 
 file(GLOB project_cmakefiles ${PROJECT_APP_TEMPLATES_DIR}/cmake/cmake.d/[0-9][0-9]-*.cmake)
 list(SORT project_cmakefiles)
-file(GLOB home_cmakefiles $ENV{HOME}/.config/cmake.d/[0-9][0-9]-*.cmake)
+file(GLOB home_cmakefiles $ENV{HOME}/.config/app-templates/cmake.d/[0-9][0-9]-*.cmake)
 list(SORT home_cmakefiles)
-file(GLOB system_cmakefiles /etc/cmake.d/[0-9][0-9]-*.cmake)
+file(GLOB system_cmakefiles /etc/app-templates/cmake.d/[0-9][0-9]-*.cmake)
 list(SORT system_cmakefiles)
 
 foreach(file ${project_cmakefiles} ${home_cmakefiles} ${system_cmakefiles})
@@ -41,6 +41,9 @@ if(DEFINED PROJECT_SRC_DIR_PATTERN)
 else()
 	project_subdirs_add()
 endif(DEFINED PROJECT_SRC_DIR_PATTERN)
+
+configure_file_in_dir($ENV{HOME}/.config/app-templates/scripts)
+configure_file_in_dir(/etc/app-templates/scripts)
 
 project_targets_populate()
 project_package_build()
