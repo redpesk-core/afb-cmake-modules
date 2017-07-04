@@ -18,7 +18,78 @@ You'll find usage samples here:
 - [audio-binding](https://github.com/iotbzh/audio-binding)
 - [unicens2-binding](https://github.com/iotbzh/unicens2-binding)
 
-## Typical project architecture
+## Quickstart
+
+### Initialization
+
+To use these templates files on your project just install the reference files using
+**git submodule** then use `config.cmake` file to configure your project specificities :
+
+```bash
+git submodule add https://gerrit.automotivelinux.org/gerrit/apps/app-templatesconf.d/app-templates conf.d/app-templates
+mkdir conf.d/cmake
+cp conf.d/app-templates/cmake/config.cmake.sample conf.d/cmake/config.cmake
+```
+
+Edit the copied config.cmake file to fit your needs.
+
+Now, create your top CMakeLists.txt file which include `config.cmake` file.
+
+An example is available in **app-templates** submodule that you can copy and
+use:
+
+```bash
+cp conf.d/app-templates/cmake/CMakeLists.txt CMakeLists.txt
+```
+
+### Create your CMake targets
+
+For each target part of your project, you need to use ***PROJECT_TARGET_ADD***
+to include this target to your project.
+
+Using it, make available the cmake variable ***TARGET_NAME*** until the next
+***PROJECT_TARGET_ADD*** is invoked with a new target name. 
+
+So, typical usage defining a target is:
+
+```cmake
+PROJECT_TARGET_ADD(SuperExampleName) --> Adding target to your project
+
+add_executable/add_library(${TARGET_NAME}.... --> defining your target sources
+
+SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES.... --> fit target properties
+for macros usage
+
+INSTALL(TARGETS ${TARGET_NAME}....
+```
+
+### Targets PROPERTIES
+
+You should set properties on your targets that will be used to package your
+apps in a widget file that could be installed on an AGL system.
+
+Specify what is the type of your targets that you want to be included in the
+widget package with the property **LABELS**:
+
+Choose between:
+
+- **BINDING**: Shared library that be loaded by the AGL Application Framework
+- **HTDOCS**: Root directory of a web app
+- **DATA**: Resources used by your application
+- **EXECUTABLE**: Entry point of your application executed by the AGL
+ Application Framework
+
+```cmake
+SET_TARGET_PROPERTIES(${TARGET_NAME}
+	PREFIX "afb-"
+	LABELS "BINDING"
+	OUTPUT_NAME "file_output_name")
+```
+
+> **TIP** you should use the prefix _afb-_ with your **BINDING* targets which
+> stand for **Application Framework Binding**.
+
+## More details: Typical project architecture
 
 A typical project architecture would be :
 
@@ -86,21 +157,6 @@ A typical project architecture would be :
 | \<libs\> | \<root-path\> | External dependencies libraries. This isn't to be used to include header file but build and link statically specifics libraries. | Library sources files. Can be a decompressed library archive file or project fork. |
 | \<target\> | \<root-path\> | A target to build, typically library, executable, etc. |
 
-## Usage
-
-### Initialization
-
-To use these templates files on your project just install the reference files using
-**git submodule** then use `config.cmake` file to configure your project specificities :
-
-```bash
-git submodule add https://gerrit.automotivelinux.org/gerrit/apps/app-templatesconf.d/app-templates conf.d/app-templates
-mkdir conf.d/cmake
-cp conf.d/app-templates/cmake/config.cmake.sample conf.d/cmake/config.cmake
-```
-
-Edit the copied config.cmake file to fit your needs.
-
 ### Update app-templates submodule
 
 You may have some news bug fixes or features available from app-templates
@@ -125,29 +181,6 @@ git checkout --detach <commit_id>
 # Then commit
 cd ../..
 git commit -s conf.d/app-templates
-```
-
-### Create  CMake targets
-
-For each target part of your project, you need to use ***PROJECT_TARGET_ADD***
-to include this target to your project.
-
-Using it, make available the cmake variable ***TARGET_NAME*** until the next
-***PROJECT_TARGET_ADD*** is invoked with a new target name. 
-
-So, typical usage defining a target is:
-
-```cmake
-PROJECT_TARGET_ADD(SuperExampleName) --> Adding target to your project
-
-add_executable/add_library(${TARGET_NAME}.... --> defining your target sources
-
-SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES.... --> fit target properties
-for macros usage
-
-INSTALL(TARGETS ${TARGET_NAME}....
-
-populate_widget() --> add target to widget tree depending upon target properties
 ```
 
 ### Build a widget
@@ -178,6 +211,14 @@ target type.
 
 As the type is not always specified for some custom targets, like an ***HTML5***
 application, macros make the difference using ***LABELS*** property.
+
+Choose between:
+
+- **BINDING**: Shared library that be loaded by the AGL Application Framework
+- **HTDOCS**: Root directory of a web app
+- **DATA**: Resources used by your application
+- **EXECUTABLE**: Entry point of your application executed by the AGL
+ Application Framework
 
 Example:
 
@@ -234,6 +275,44 @@ anything:
 ```cmake
 project_subdirs_add("[0-9]-*")
 ```
+
+## Advanced customization
+
+### Including additionnals cmake files
+
+Advanced tuning is possible using addionnals cmake files that are included
+automatically from some specifics locations. They are included in that order:
+
+- Project CMake files normaly located in _<project-root-path>/conf.d/app-templates/cmake/cmake.d_
+- Home CMake files located in _$HOME/.config/app-templates/cmake.d_
+- System CMake files located in _/etc/app-templates/cmake.d_
+
+CMake files has to be named using the following convention: `XX-***.cmake`,
+where `XX` are numbers, `***` file name (ie. `99-my_customs.cmake`).
+
+So, saying that you should be aware that every normal cmake variables used at
+project level could be overwrited by home or system located cmake files if
+variables got the same name. Exceptions are cached variables set using
+**CACHE** keyword:
+
+Example:
+
+```cmake
+set(VARIABLE_NAME 'value string random' CACHE STRING 'docstring')
+```
+
+### Include customs templated scripts
+
+As well as for additionnals cmake files you can include your own templated
+scripts that will be passed to cmake command `configure_file`.
+
+Just create your own script to the following directories:
+
+- Home location in _$HOME/.config/app-templates/scripts_
+- System location in _/etc/app-templates/scripts_
+
+Scripts only needs to use the extension `.in` to be parsed and configured by
+CMake command.
 
 ## Autobuild script usage
 

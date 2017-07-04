@@ -9,3 +9,4 @@ nbproject
 .vscode
 *.tar.gz
 .*.sw*
+_book
