@@ -42,8 +42,8 @@ else()
 	project_subdirs_add()
 endif(DEFINED PROJECT_SRC_DIR_PATTERN)
 
-configure_file_in_dir($ENV{HOME}/.config/app-templates/scripts)
-configure_file_in_dir(/etc/app-templates/scripts)
+configure_files_in_dir($ENV{HOME}/.config/app-templates/scripts)
+configure_files_in_dir(/etc/app-templates/scripts)
 
 project_targets_populate()
 project_package_build()
