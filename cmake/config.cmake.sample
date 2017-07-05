@@ -66,13 +66,10 @@ set (PKG_REQUIRED_LIST
 	libmicrohttpd>=0.9.55
 )
 
-# Static constante definition
-# -----------------------------
-add_compile_options()
-
-# LANG Specific compile flags set for all build types
-set(CMAKE_C_FLAGS "")
-set(CMAKE_CXX_FLAGS "")
+# Compilation options definition
+# Use CMake generator expressions to specify only for a specific language
+# -----------------------------------------------------------------------
+#add_compile_options()
 
 # Print a helper message when every thing is finished
 # ----------------------------------------------------
