@@ -72,6 +72,7 @@ add_compile_options(-Werror=implicit-function-declaration)
 add_compile_options(-ffunction-sections -fdata-sections)
 add_compile_options(-fPIC)
 
+# TODO: make more visible readable compile (macro ? split ?)
 # Compilation option depending on CMAKE_BUILD_TYPE
 ##################################################
 add_compile_options($<$<OR:$<CONFIG:DEBUG>,$<CONFIG:PROFILING>,$<CONFIG:CCOV>>:-g>)
