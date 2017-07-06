@@ -72,15 +72,20 @@ add_compile_options(-Werror=implicit-function-declaration)
 add_compile_options(-ffunction-sections -fdata-sections)
 add_compile_options(-fPIC)
 
-set(CMAKE_C_FLAGS_PROFILING   "-g -O0 -pg -Wp,-U_FORTIFY_SOURCE" CACHE STRING "Flags for profiling")
-set(CMAKE_C_FLAGS_DEBUG       "-g -Og -ggdb -Wp,-U_FORTIFY_SOURCE" CACHE STRING "Flags for debugging")
-set(CMAKE_C_FLAGS_RELEASE     "-O2" CACHE STRING "Flags for releasing")
-set(CMAKE_C_FLAGS_CCOV        "-g -O2 --coverage" CACHE STRING "Flags for coverage test")
+# Compilation option depending on CMAKE_BUILD_TYPE
+##################################################
+add_compile_options($<$<OR:$<CONFIG:DEBUG>,$<CONFIG:PROFILING>,$<CONFIG:CCOV>>:-g>)
 
-set(CMAKE_CXX_FLAGS_PROFILING    "-g -O0 -pg -Wp,-U_FORTIFY_SOURCE" CACHE STRING "Flags for profiling")
-set(CMAKE_CXX_FLAGS_DEBUG        "-g -Og -ggdb -Wp,-U_FORTIFY_SOURCE" CACHE STRING "Flags for debugging")
-set(CMAKE_CXX_FLAGS_RELEASE      "-O2" CACHE STRING "Flags for releasing")
-set(CMAKE_CXX_FLAGS_CCOV         "-g -O2 --coverage" CACHE STRING "Flags for coverage test")
+add_compile_options($<$<CONFIG:DEBUG>:-pg>)
+add_compile_options($<$<CONFIG:DEBUG>:-ggdb>)
+add_compile_options($<$<CONFIG:CCOV>:--coverage>)
+
+add_compile_options($<$<CONFIG:DEBUG>:-Og>)
+add_compile_options($<$<CONFIG:PROFILING>:-O0>)
+add_compile_options($<$<OR:$<CONFIG:CCOV>,$<CONFIG:PROFILING>>:-O2>)
+
+add_compile_options($<$<OR:$<CONFIG:DEBUG>,$<CONFIG:PROFILING>>:-Wp,-U_FORTIFY_SOURCE>)
+
 
 # Env variable overload default
 if(DEFINED ENV{INSTALL_PREFIX})
