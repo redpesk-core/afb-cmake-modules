@@ -171,13 +171,17 @@ endforeach()
 #                                Autobuild target
 # ----------------------------------------------------------------------------
 
-add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/conf.d/autobuild/agl/autobuild
-			${CMAKE_SOURCE_DIR}/conf.d/autobuild/linux/autobuild
-	DEPENDS ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/autobuild/agl/autobuild.in
-		${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/autobuild/linux/autobuild.in
+# Fake files output to avoid cleaning those files once generated.
+# Doing that target always trigger and regenerate files.
+add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/conf.d/autobuild/agl/autobuildx
+			${CMAKE_SOURCE_DIR}/conf.d/autobuild/linux/autobuildx
+	
 	COMMAND ${CMAKE_COMMAND} -DINFILE=${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/autobuild/agl/autobuild.in -DOUTFILE=${PROJECT_TEMPLATE_AGL_AUTOBUILD_DIR}/autobuild -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 	COMMAND ${CMAKE_COMMAND} -DINFILE=${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/autobuild/agl/autobuild.in -DOUTFILE=${PROJECT_TEMPLATE_LINUX_AUTOBUILD_DIR}/autobuild -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 	)
 
-add_custom_target(autobuild ALL DEPENDS ${CMAKE_SOURCE_DIR}/conf.d/autobuild/agl/autobuild
-					${CMAKE_SOURCE_DIR}/conf.d/autobuild/linux/autobuild)
+add_custom_target(autobuild ALL DEPENDS ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/autobuild/agl/autobuild.in
+	${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/autobuild/linux/autobuild.in
+	COMMAND ${CMAKE_COMMAND} -DINFILE=${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/autobuild/agl/autobuild.in -DOUTFILE=${PROJECT_TEMPLATE_AGL_AUTOBUILD_DIR}/autobuild -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+	COMMAND ${CMAKE_COMMAND} -DINFILE=${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/autobuild/agl/autobuild.in -DOUTFILE=${PROJECT_TEMPLATE_LINUX_AUTOBUILD_DIR}/autobuild -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+)
