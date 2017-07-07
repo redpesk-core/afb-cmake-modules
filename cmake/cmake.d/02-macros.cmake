@@ -44,6 +44,7 @@ macro(configure_files_in_dir dir)
 		string(REGEX REPLACE "target" "${RSYNC_TARGET}" destinationfile ${filename})
 		string(REGEX REPLACE ".in$" "" destinationfile ${destinationfile})
 		configure_file(${file} ${CMAKE_CURRENT_BINARY_DIR}/target/${destinationfile})
+		set(ADDITIONAL_MAKE_CLEAN_FILES, "${destinationfile}")
 	endforeach()
 endmacro(configure_files_in_dir)
 
