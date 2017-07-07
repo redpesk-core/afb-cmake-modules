@@ -44,7 +44,7 @@ macro(configure_files_in_dir dir)
 		string(REGEX REPLACE "target" "${RSYNC_TARGET}" destinationfile ${filename})
 		string(REGEX REPLACE ".in$" "" destinationfile ${destinationfile})
 		configure_file(${file} ${CMAKE_CURRENT_BINARY_DIR}/target/${destinationfile})
-		set(ADDITIONAL_MAKE_CLEAN_FILES, "${destinationfile}")
+		set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/target/${destinationfile}")
 	endforeach()
 endmacro(configure_files_in_dir)
 
@@ -187,7 +187,7 @@ macro(wgt_package_build)
 
 	add_custom_target(widget DEPENDS ${PROJECT_NAME}.wgt)
 	add_dependencies(widget populate packaging_wgt)
-	set(ADDITIONAL_MAKE_CLEAN_FILES, "${PROJECT_NAME}.wgt")
+	set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.wgt")
 
 	if(NOT RSYNC_TARGET)
 		message ("${Yellow}.. Warning: RSYNC_TARGET not defined 'make widget-target-install' not instanciated${ColourReset}")
@@ -221,7 +221,6 @@ macro(rpm_package_build)
 
 	add_custom_target(rpm DEPENDS ${NPKG_PROJECT_NAME}.spec)
 	add_dependencies(rpm populate packaging)
-	set(ADDITIONAL_MAKE_CLEAN_FILES, "${PROJECT_NAME}.spec")
 
 	if(PACKAGE_MESSAGE)
 	add_custom_command(TARGET rpm
