@@ -18,9 +18,22 @@ THISFILE  := $(lastword $(MAKEFILE_LIST))
 BUILD_DIR := $(abspath $(dir $(THISFILE)/../../../../..)/build)
 DEST      := ${BUILD_DIR}/target
 
-.PHONY: all clean distclean configure build package
+.PHONY: all clean distclean configure build package help
 
-all: build
+all: help
+
+help:
+	@echo "List of targets available:"
+	@echo ""
+	@echo "- all"
+	@echo "- clean"
+	@echo "- distclean"
+	@echo "- configure"
+	@echo "- build"
+	@echo "- package"
+	@echo ""
+	@echo "Usage: ./conf.d/autobuild/agl/autobuild package DEST=${HOME}/opt"
+	@echo "Don't use your build dir as DEST as wgt file is generated at this location"
 
 clean:
 	@([ -d ${BUILD_DIR} ] && make -C ${BUILD_DIR} clean) || echo Nothing to clean
