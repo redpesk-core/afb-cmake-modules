@@ -117,10 +117,10 @@ endmacro(project_targets_populate)
 
 macro(remote_targets_populate)
 	if (DEFINED ENV{RSYNC_TARGET})
-	set (RSYNC_TARGET $ENV{RSYNC_TARGET})
+		set (RSYNC_TARGET $ENV{RSYNC_TARGET})
 	endif()
 	if (DEFINED ENV{RSYNC_PREFIX})
-	set (RSYNC_PREFIX $ENV{RSYNC_PREFIX})
+		set (RSYNC_PREFIX $ENV{RSYNC_PREFIX})
 	endif()
 
 	set(
