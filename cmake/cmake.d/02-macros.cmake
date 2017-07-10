@@ -79,6 +79,7 @@ macro(project_targets_populate)
 			endif()
 
 			if(${T} STREQUAL "BINDING")
+				list(APPEND BINDINGS_LIST "${P}${OUT}")
 				add_custom_command(OUTPUT ${PACKAGE_LIBDIR}/${P}${OUT}.so
 					COMMAND mkdir -p ${PACKAGE_LIBDIR}
 					COMMAND cp ${BD}/${P}${OUT}.so ${PACKAGE_LIBDIR}
@@ -135,6 +136,19 @@ macro(remote_targets_populate)
 			COMMAND exit -1
 		)
 	else()
+		set(BINDINGS_REGEX "not_set")
+		if(DEFINED BINDINGS_LIST)
+			list(LENGTH BINDINGS_LIST BINDINGS_LIST_LENGTH)
+			if(BINDINGS_LIST_LENGTH EQUAL 1)
+				list(GET BINDINGS_LIST 0 BINDINGS_REGEX)
+				string(APPEND BINDINGS_REGEX ".so")
+			elseif(BINDINGS_LIST_LENGTH GREATER 1)
+				foreach(B IN LISTS BINDINGS_LIST)
+					STRING(APPEND BINDINGS_STR "${B}|")
+				endforeach()
+					STRING(REGEX REPLACE "^(.*)\\|$" "(\\1).so" BINDINGS_REGEX ${BINDINGS_STR})
+			endif()
+		endif()
 
 		configure_files_in_dir(${SSH_TEMPLATE_DIR})
 		configure_files_in_dir(${GDB_TEMPLATE_DIR})

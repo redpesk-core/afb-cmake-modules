@@ -24,6 +24,6 @@ end
 # Manually load project libraries when loaded by afb-daemon
 break execute_command
 commands
-sharedlibrary $ENV{PROJECT_DIR}/build/@PKGOUT_DIR@
+sharedlibrary @BINDINGS_REGEX@
 continue
 end

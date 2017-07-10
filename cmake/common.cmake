@@ -46,5 +46,6 @@ configure_files_in_dir($ENV{HOME}/.config/app-templates/scripts)
 configure_files_in_dir(/etc/app-templates/scripts)
 
 project_targets_populate()
+remote_targets_populate()
 project_package_build()
 project_closing_msg()
