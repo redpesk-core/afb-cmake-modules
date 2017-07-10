@@ -79,39 +79,35 @@ macro(project_targets_populate)
 			endif()
 
 			if(${T} STREQUAL "BINDING")
-				add_custom_command(OUTPUT ${PACKAGE_LIBDIR}/${P}${TARGET}.so
-					DEPENDS ${TARGET}
+				add_custom_command(OUTPUT ${PACKAGE_LIBDIR}/${P}${OUT}.so
 					COMMAND mkdir -p ${PACKAGE_LIBDIR}
 					COMMAND cp ${BD}/${P}${OUT}.so ${PACKAGE_LIBDIR}
 				)
 				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${TARGET}.so)
-				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
+				add_dependencies(populate ${POPULE_PACKAGE_TARGET} ${TARGET})
 			elseif(${T} STREQUAL "EXECUTABLE")
-				add_custom_command(OUTPUT ${PACKAGE_BINDIR}/${P}${TARGET}
-					DEPENDS ${TARGET}
+				add_custom_command(OUTPUT ${PACKAGE_BINDIR}/${P}${OUT}
 					COMMAND mkdir -p ${PACKAGE_BINDIR}
 					COMMAND cp ${BD}/${P}${OUT} ${PACKAGE_BINDIR}
 				)
 				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_BINDIR}/${P}${TARGET})
-				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
+				add_dependencies(populate ${POPULE_PACKAGE_TARGET} ${TARGET})
 			elseif(${T} STREQUAL "HTDOCS")
 				add_custom_command(OUTPUT ${PACKAGE_HTTPDIR}-xx
-					DEPENDS ${TARGET}
 					COMMAND mkdir -p ${PACKAGE_HTTPDIR}
 					COMMAND touch ${PACKAGE_HTTPDIR}
 					COMMAND cp -r ${BD}/${P}${OUT}/* ${PACKAGE_HTTPDIR}
 				)
 					add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_HTTPDIR}-xx)
-					add_dependencies(populate ${POPULE_PACKAGE_TARGET})
+					add_dependencies(populate ${POPULE_PACKAGE_TARGET} ${TARGET})
 			elseif(${T} STREQUAL "DATA")
 				add_custom_command(OUTPUT ${PACKAGE_DATADIR}-xx
-					DEPENDS ${TARGET}
 					COMMAND mkdir -p ${PACKAGE_DATADIR}
 					COMMAND touch ${PACKAGE_DATADIR}
 					COMMAND cp -r ${BD}/${P}${OUT}/* ${PACKAGE_DATADIR}
 				)
 					add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_DATADIR}-xx)
-					add_dependencies(populate ${POPULE_PACKAGE_TARGET})
+					add_dependencies(populate ${POPULE_PACKAGE_TARGET} ${TARGET})
 			endif(${T} STREQUAL "BINDING")
 		elseif(${CMAKE_BUILD_TYPE} MATCHES "[Dd][Ee][Bb][Uu][Gg]")
 			MESSAGE(".. Warning: ${TARGET} ignored when packaging.")
@@ -144,11 +140,11 @@ macro(remote_targets_populate)
 		configure_files_in_dir(${GDB_TEMPLATE_DIR})
 
 		add_custom_target(remote-target-populate
-			DEPENDS populate
 			COMMAND chmod +x ${CMAKE_CURRENT_BINARY_DIR}/target/*.sh
 			COMMAND rsync -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --archive --delete ${PROJECT_PKG_BUILD_DIR}/ ${RSYNC_TARGET}:${RSYNC_PREFIX}/${PROJECT_NAME}
 			COMMENT "${REMOTE_LAUNCH}"
 		)
+		add_dependencies(remote-target-populate populate)
 	endif()
 endmacro(remote_targets_populate)
 
