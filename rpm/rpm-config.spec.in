@@ -20,6 +20,7 @@
 Name:    @NPKG_PROJECT_NAME@
 Version: @PROJECT_VERSION@
 Release: 1
+Group:   AGL
 License: @PROJECT_LICENSE@
 Summary: @PROJECT_DESCRIPTION@
 Url:     @PROJECT_URL@
