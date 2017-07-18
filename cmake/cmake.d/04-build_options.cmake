@@ -77,12 +77,12 @@ add_compile_options(-fPIC)
 ##################################################
 add_compile_options($<$<OR:$<CONFIG:DEBUG>,$<CONFIG:PROFILING>,$<CONFIG:CCOV>>:-g>)
 
-add_compile_options($<$<CONFIG:DEBUG>:-pg>)
 add_compile_options($<$<CONFIG:DEBUG>:-ggdb>)
 add_compile_options($<$<CONFIG:CCOV>:--coverage>)
 
 add_compile_options($<$<CONFIG:DEBUG>:-Og>)
 add_compile_options($<$<CONFIG:PROFILING>:-O0>)
+add_compile_options($<$<CONFIG:PROFILING>:-pg>)
 add_compile_options($<$<OR:$<CONFIG:CCOV>,$<CONFIG:PROFILING>>:-O2>)
 
 add_compile_options($<$<OR:$<CONFIG:DEBUG>,$<CONFIG:PROFILING>>:-Wp,-U_FORTIFY_SOURCE>)
