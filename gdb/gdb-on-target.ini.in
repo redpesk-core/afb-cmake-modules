@@ -5,7 +5,10 @@
 # Reference: https://blog.flameeyes.eu/2010/02/remote-debugging-with-gdb-part-2-gdb/
 
 # Start gdbserver on target and connect through SSH link
-target remote | ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null @RSYNC_TARGET@ gdbserver - afb-daemon --port=@AFB_REMPORT@ --workdir=@RSYNC_PREFIX@/@PROJECT_NAME@ --roothttp=./htdocs --ldpath=./lib --verbose --token=@AFB_TOKEN@
+target remote | ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null @RSYNC_TARGET@ gdbserver - afb-daemon --port=@AFB_REMPORT@ --workdir=@RSYNC_PREFIX@/@PROJECT_NAME@ --roothttp=./htdocs --ldpaths=./lib --verbose --token=@AFB_TOKEN@
+
+# Disable auto answer no on questions and to set breakpoint
+set confirm off
 
 # Disable auto load of libraries to improved perf
 set auto-solib-add off
