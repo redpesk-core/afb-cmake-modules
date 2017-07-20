@@ -66,6 +66,10 @@ set (PKG_REQUIRED_LIST
 	libmicrohttpd>=0.9.55
 )
 
+# Customize link option
+# -----------------------------
+#list(APPEND link_libraries -an-option)
+
 # Compilation options definition
 # Use CMake generator expressions to specify only for a specific language
 # -----------------------------------------------------------------------
