@@ -31,7 +31,7 @@ list(SORT home_cmakefiles)
 file(GLOB system_cmakefiles /etc/app-templates/cmake.d/[0-9][0-9]-*.cmake)
 list(SORT system_cmakefiles)
 
-foreach(file ${project_cmakefiles} ${home_cmakefiles} ${system_cmakefiles})
+foreach(file ${system_cmakefiles} ${home_cmakefiles} ${project_cmakefiles})
 	message(STATUS "Include: ${file}")
 	include(${file})
 endforeach()
