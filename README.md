@@ -26,7 +26,7 @@ To use these templates files on your project just install the reference files us
 **git submodule** then use `config.cmake` file to configure your project specificities :
 
 ```bash
-git submodule add https://gerrit.automotivelinux.org/gerrit/apps/app-templatesconf.d/app-templates conf.d/app-templates
+git submodule add https://gerrit.automotivelinux.org/gerrit/p/apps/app-templates.git conf.d/app-templates
 mkdir conf.d/cmake
 cp conf.d/app-templates/cmake/config.cmake.sample conf.d/cmake/config.cmake
 ```
