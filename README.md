@@ -39,7 +39,7 @@ An example is available in **app-templates** submodule that you can copy and
 use:
 
 ```bash
-cp conf.d/app-templates/cmake/CMakeLists.txt CMakeLists.txt
+cp conf.d/app-templates/cmake/CMakeLists.txt.sample CMakeLists.txt
 ```
 
 ### Create your CMake targets
