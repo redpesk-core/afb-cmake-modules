@@ -71,6 +71,21 @@ else()
 	set(OSRELEASE "NOT DEBIAN OS")
 endif()
 
+if(DEFINED ENV{SDKTARGETSYSROOT})
+	file(STRINGS $ENV{SDKTARGETSYSROOT}/usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
+elseif(DEFINED ENV{PKG_CONFIG_SYSROOT_DIR})
+	file(STRINGS $ENV{PKG_CONFIG_SYSROOT_DIR}/usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
+else()
+	file(STRINGS /usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
+endif()
+
+string(REGEX MATCH "[0-9]+" LINUX_VERSION_CODE ${LINUX_VERSION_CODE_LINE})
+math(EXPR a "${LINUX_VERSION_CODE} >> 16")
+math(EXPR b "(${LINUX_VERSION_CODE} >> 8) & 255")
+math(EXPR c "(${LINUX_VERSION_CODE} & 255)")
+
+set(KERNEL_VERSION "${a}.${b}.${c}")
+
 # Include project configuration
 # ------------------------------
 project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES ${PROJECT_LANGUAGES})
