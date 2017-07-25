@@ -75,18 +75,19 @@ add_compile_options(-fPIC)
 # TODO: make more visible readable compile (macro ? split ?)
 # Compilation option depending on CMAKE_BUILD_TYPE
 ##################################################
-add_compile_options($<$<OR:$<CONFIG:DEBUG>,$<CONFIG:PROFILING>,$<CONFIG:CCOV>>:-g>)
-
-add_compile_options($<$<CONFIG:DEBUG>:-ggdb>)
-add_compile_options($<$<CONFIG:CCOV>:--coverage>)
-
-add_compile_options($<$<CONFIG:DEBUG>:-Og>)
+add_compile_options($<$<CONFIG:PROFILING>:-g>)
 add_compile_options($<$<CONFIG:PROFILING>:-O0>)
 add_compile_options($<$<CONFIG:PROFILING>:-pg>)
-add_compile_options($<$<OR:$<CONFIG:CCOV>,$<CONFIG:PROFILING>>:-O2>)
+add_compile_options($<$<CONFIG:PROFILING>:-Wp,-U_FORTIFY_SOURCE>)
 
-add_compile_options($<$<OR:$<CONFIG:DEBUG>,$<CONFIG:PROFILING>>:-Wp,-U_FORTIFY_SOURCE>)
+add_compile_options($<$<CONFIG:DEBUG>:-g>)
+add_compile_options($<$<CONFIG:DEBUG>:-O0>)
+add_compile_options($<$<CONFIG:DEBUG>:-ggdb>)
+add_compile_options($<$<CONFIG:DEBUG>:-Wp,-U_FORTIFY_SOURCE>)
 
+add_compile_options($<$<CONFIG:CCOV>:-g>)
+add_compile_options($<$<CONFIG:CCOV>:-O2>)
+add_compile_options($<$<CONFIG:CCOV>:--coverage>)
 
 # Env variable overload default
 if(DEFINED ENV{INSTALL_PREFIX})
