@@ -85,15 +85,18 @@ macro(project_targets_populate)
 				add_custom_command(OUTPUT ${PACKAGE_LIBDIR}/${P}${OUT}.so
 					COMMAND mkdir -p ${PACKAGE_LIBDIR}
 					COMMAND cp ${BD}/${P}${OUT}.so ${PACKAGE_LIBDIR}
+                                        DEPENDS ${BD}/${P}${OUT}.so
 				)
-				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${TARGET}.so)
+message ("DEPENDS ${BD}/${P}${OUT}.so")
+				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${OUT}.so)
 				add_dependencies(populate ${POPULE_PACKAGE_TARGET} ${TARGET})
 			elseif(${T} STREQUAL "EXECUTABLE")
 				add_custom_command(OUTPUT ${PACKAGE_BINDIR}/${P}${OUT}
 					COMMAND mkdir -p ${PACKAGE_BINDIR}
 					COMMAND cp ${BD}/${P}${OUT} ${PACKAGE_BINDIR}
+                                        DEPENDS ${BD}/${P}${OUT}
 				)
-				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_BINDIR}/${P}${TARGET})
+				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS  ${TARGET} DEPENDS ${PACKAGE_BINDIR}/${P}${OUT})
 				add_dependencies(populate ${POPULE_PACKAGE_TARGET} ${TARGET})
 			elseif(${T} STREQUAL "HTDOCS")
 				add_custom_command(OUTPUT ${PACKAGE_HTTPDIR}-xx

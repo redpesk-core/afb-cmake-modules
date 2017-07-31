@@ -147,3 +147,6 @@ if(OSRELEASE MATCHES "debian" AND NOT DEFINED ENV{SDKTARGETSYSROOT} AND NOT DEFI
 	set(PACKAGING_DEB_OUTPUT_CONTROL   ${PROJECT_PKG_ENTRY_POINT}/debian.control)
 	set(PACKAGING_DEB_OUTPUT_RULES     ${PROJECT_PKG_ENTRY_POINT}/debian.rules)
 endif()
+
+# Break After Binding are loaded but before they get initialised
+set(GDB_INITIAL_BREAK "personality" CACHE STRING "Initial Break Point for GDB remote")
