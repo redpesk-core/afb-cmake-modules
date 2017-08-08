@@ -83,37 +83,43 @@ macro(project_targets_populate)
 			if(${T} STREQUAL "BINDING")
 				list(APPEND BINDINGS_LIST "${P}${OUT}")
 				add_custom_command(OUTPUT ${PACKAGE_LIBDIR}/${P}${OUT}.so
+					DEPENDS ${BD}/${P}${OUT}.so
 					COMMAND mkdir -p ${PACKAGE_LIBDIR}
 					COMMAND cp ${BD}/${P}${OUT}.so ${PACKAGE_LIBDIR}
-                                        DEPENDS ${BD}/${P}${OUT}.so
 				)
 message ("DEPENDS ${BD}/${P}${OUT}.so")
-				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${OUT}.so)
-				add_dependencies(populate ${POPULE_PACKAGE_TARGET} ${TARGET})
+				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${OUT}.so)
+				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
+				add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
 			elseif(${T} STREQUAL "EXECUTABLE")
 				add_custom_command(OUTPUT ${PACKAGE_BINDIR}/${P}${OUT}
+					DEPENDS ${BD}/${P}${OUT}
 					COMMAND mkdir -p ${PACKAGE_BINDIR}
 					COMMAND cp ${BD}/${P}${OUT} ${PACKAGE_BINDIR}
-                                        DEPENDS ${BD}/${P}${OUT}
 				)
-				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS  ${TARGET} DEPENDS ${PACKAGE_BINDIR}/${P}${OUT})
-				add_dependencies(populate ${POPULE_PACKAGE_TARGET} ${TARGET})
+				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_BINDIR}/${P}${OUT})
+				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
+				add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
 			elseif(${T} STREQUAL "HTDOCS")
 				add_custom_command(OUTPUT ${PACKAGE_HTTPDIR}-xx
+					DEPENDS ${BD}/${P}${OUT}
 					COMMAND mkdir -p ${PACKAGE_HTTPDIR}
 					COMMAND touch ${PACKAGE_HTTPDIR}
 					COMMAND cp -r ${BD}/${P}${OUT}/* ${PACKAGE_HTTPDIR}
 				)
-					add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_HTTPDIR}-xx)
-					add_dependencies(populate ${POPULE_PACKAGE_TARGET} ${TARGET})
+				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_HTTPDIR}-xx)
+				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
+				add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
 			elseif(${T} STREQUAL "DATA")
 				add_custom_command(OUTPUT ${PACKAGE_DATADIR}-xx
+					DEPENDS ${BD}/${P}${OUT}
 					COMMAND mkdir -p ${PACKAGE_DATADIR}
 					COMMAND touch ${PACKAGE_DATADIR}
 					COMMAND cp -r ${BD}/${P}${OUT}/* ${PACKAGE_DATADIR}
 				)
-					add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_DATADIR}-xx)
-					add_dependencies(populate ${POPULE_PACKAGE_TARGET} ${TARGET})
+				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_DATADIR}-xx)
+				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
+				add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
 			endif(${T} STREQUAL "BINDING")
 		elseif(${CMAKE_BUILD_TYPE} MATCHES "[Dd][Ee][Bb][Uu][Gg]")
 			MESSAGE(".. Warning: ${TARGET} ignored when packaging.")
