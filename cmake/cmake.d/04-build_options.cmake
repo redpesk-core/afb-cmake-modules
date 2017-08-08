@@ -78,7 +78,6 @@ add_compile_options($<$<CONFIG:PROFILING>:-pg>)
 add_compile_options($<$<CONFIG:PROFILING>:-Wp,-U_FORTIFY_SOURCE>)
 
 add_compile_options($<$<CONFIG:DEBUG>:-g>)
-add_compile_options($<$<CONFIG:DEBUG>:-O0>)
 add_compile_options($<$<CONFIG:DEBUG>:-ggdb>)
 add_compile_options($<$<CONFIG:DEBUG>:-Wp,-U_FORTIFY_SOURCE>)
 
