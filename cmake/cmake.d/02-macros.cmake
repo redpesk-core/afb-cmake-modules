@@ -87,10 +87,23 @@ macro(project_targets_populate)
 					COMMAND mkdir -p ${PACKAGE_LIBDIR}
 					COMMAND cp ${BD}/${P}${OUT}.so ${PACKAGE_LIBDIR}
 				)
-message ("DEPENDS ${BD}/${P}${OUT}.so")
 				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${OUT}.so)
 				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
 				add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
+			elseif(${T} STREQUAL "BINDINGV2")
+				add_custom_command(OUTPUT ${PACKAGE_LIBDIR}/${P}${OUT}.so
+					DEPENDS ${BD}/${P}${OUT}.so
+					COMMAND mkdir -p ${PACKAGE_LIBDIR}
+					COMMAND cp ${BD}/${P}${OUT}.so ${PACKAGE_LIBDIR}
+				)
+				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${OUT}.so)
+
+				add_custom_command(OUTPUT ${SD}/${P}${OUT}.h
+					DEPENDS ${SD}/${P}${OUT}.json
+					COMMAND afb-genskel ${SD}/${P}${OUT}.json > ${SD}/${P}${OUT}.h
+				)
+				add_custom_target("${TARGET}_GENSKEL" DEPENDS ${SD}/${P}${OUT}.h)
+				add_dependencies(${TARGET} "${TARGET}_GENSKEL")
 			elseif(${T} STREQUAL "EXECUTABLE")
 				add_custom_command(OUTPUT ${PACKAGE_BINDIR}/${P}${OUT}
 					DEPENDS ${BD}/${P}${OUT}
