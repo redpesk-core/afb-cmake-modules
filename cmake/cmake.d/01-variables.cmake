@@ -102,7 +102,7 @@ set(AFB_REMPORT "1234" CACHE PATH "Default AFB_TOKEN")
 if(BINDINGS_INSTALL_PREFIX)
 	set(BINDINGS_INSTALL_DIR ${BINDINGS_INSTALL_PREFIX}/${PROJECT_NAME} CACHE PATH "Where the binding will be installed in your system")
 else()
-	set(BINDINGS_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME} CACHE PATH "Where the binding will be installed in your system")
+	set(BINDINGS_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME} CACHE PATH "Where the binding will be installed in your system")
 endif()
 
 set(PKGOUT_DIR package CACHE PATH "Output directory for packages")
