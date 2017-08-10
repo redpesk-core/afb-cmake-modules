@@ -185,8 +185,8 @@ macro(remote_targets_populate)
 			endif()
 		endif()
 
-		configure_files_in_dir(${SSH_TEMPLATE_DIR})
-		configure_files_in_dir(${GDB_TEMPLATE_DIR})
+		configure_files_in_dir(${TEMPLATE_DIR})
+		configure_files_in_dir(${TEMPLATE_DIR})
 
 		add_custom_target(remote-target-populate
 			COMMAND chmod +x ${CMAKE_CURRENT_BINARY_DIR}/target/*.sh
@@ -201,8 +201,8 @@ macro(wgt_package_build)
 	if(NOT EXISTS ${WIDGET_CONFIG_TEMPLATE})
 		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build widget file.\nYou need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.${ColourReset}")
 	endif()
-	if(NOT EXISTS ${WGT_TEMPLATE_DIR}/icon-default.png)
-		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build widget file.\nYou need ${PROJECT_ICON} file in ${WGT_TEMPLATE_DIR} folder.${ColourReset}")
+	if(NOT EXISTS ${TEMPLATE_DIR}/icon-default.png)
+		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build widget file.\nYou need ${PROJECT_ICON} file in ${TEMPLATE_DIR} folder.${ColourReset}")
 	endif()
     if(NOT WIDGET_TYPE)
         MESSAGE(FATAL_ERROR "WIDGET_TYPE must be set in your config.cmake.\neg.: set(WIDGET_TYPE application/vnd.agl.service)")
@@ -214,15 +214,15 @@ macro(wgt_package_build)
 
 	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/config.xml
 		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
-		COMMAND cp ${WGT_TEMPLATE_DIR}/icon-default.png ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
+		COMMAND cp ${TEMPLATE_DIR}/icon-default.png ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
 
 	)
 	add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml)
 
 	# Fulup ??? copy any extra file in wgt/etc into populate package before building the widget
-	file(GLOB PROJECT_CONF_FILES "${WGT_TEMPLATE_DIR}/etc/*")
+	file(GLOB PROJECT_CONF_FILES "${TEMPLATE_DIR}/etc/*")
 	if(${PROJECT_CONF_FILES})
-		file(COPY "${WGT_TEMPLATE_DIR}/etc/*" DESTINATION ${PROJECT_PKG_BUILD_DIR}/etc/)
+		file(COPY "${TEMPLATE_DIR}/etc/*" DESTINATION ${PROJECT_PKG_BUILD_DIR}/etc/)
 	endif(${PROJECT_CONF_FILES})
 
 	add_custom_command(OUTPUT ${PROJECT_NAME}.wgt
@@ -241,7 +241,7 @@ macro(wgt_package_build)
 			COMMAND exit -1
 		)
 	else()
-	configure_files_in_dir(${WGT_TEMPLATE_DIR})
+	configure_files_in_dir(${TEMPLATE_DIR})
 	add_custom_target(widget-target-install
 	DEPENDS widget
 	COMMAND chmod +x ${CMAKE_CURRENT_BINARY_DIR}/target/install-wgt-on-${RSYNC_TARGET}.sh
@@ -279,15 +279,15 @@ macro(deb_package_build)
 endmacro(deb_package_build)
 
 macro(project_package_build)
-	if(EXISTS ${RPM_TEMPLATE_DIR})
+	if(EXISTS ${TEMPLATE_DIR})
 		rpm_package_build()
 	endif()
 
-	if(EXISTS ${WGT_TEMPLATE_DIR})
+	if(EXISTS ${TEMPLATE_DIR})
 		wgt_package_build()
 	endif()
 
-	if(EXISTS ${DEB_TEMPLATE_DIR})
+	if(EXISTS ${TEMPLATE_DIR})
 		deb_package_build()
 	endif()
 endmacro(project_package_build)
