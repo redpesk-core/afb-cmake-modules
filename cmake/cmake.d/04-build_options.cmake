@@ -112,8 +112,8 @@ foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
 	PKG_CHECK_MODULES(${XPREFIX} REQUIRED ${PKG_CONFIG})
 
 	INCLUDE_DIRECTORIES(${${XPREFIX}_INCLUDE_DIRS})
-	list (APPEND link_libraries ${${XPREFIX}_LDOPTIONS})
-	add_compile_options (${${XPREFIX}_COPTIONS})
+	list(APPEND link_libraries ${${XPREFIX}_LDFLAGS})
+	add_compile_options (${${XPREFIX}_CFLAGS})
 endforeach(PKG_CONFIG)
 
 # Optional LibEfence Malloc debug library
