@@ -30,6 +30,10 @@ application, macros make the difference using ***LABELS*** property.
 Choose between:
 
 - **BINDING**: Shared library that be loaded by the AGL Application Framework
+- **BINDINGV2**: Shared library that be loaded by the AGL Application Framework.
+ This has to be accompagnied with a JSON file named like the *OUTPUT_NAME*  of
+ the target that describe the API with OpenAPI syntax. JSON file will be used
+ to generate header file using `afb-genskel` tool.
 - **HTDOCS**: Root directory of a web app
 - **DATA**: Resources used by your application
 - **EXECUTABLE**: Entry point of your application executed by the AGL
