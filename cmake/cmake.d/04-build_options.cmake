@@ -61,29 +61,42 @@ INCLUDE(GNUInstallDirs)
 # Default compilation options
 ############################################################################
 link_libraries(-Wl,--as-needed -Wl,--gc-sections)
-add_compile_options(-Wall -Wextra -Wconversion)
-add_compile_options(-Wno-unused-parameter) # frankly not using a parameter does it care?
-add_compile_options(-Wno-sign-compare -Wno-sign-conversion)
-add_compile_options(-Werror=maybe-uninitialized)
-add_compile_options(-Werror=implicit-function-declaration)
-add_compile_options(-ffunction-sections -fdata-sections)
-add_compile_options(-fPIC)
+set(COMPILE_OPTIONS "-Wall" "-Wextra" "-Wconversion" "-Wno-unused-parameter" "-Wno-sign-compare" "-Wno-sign-conversion" "-Werror=maybe-uninitialized" "-Werror=implicit-function-declaration" "-ffunction-sections" "-fdata-sections" "-fPIC" CACHE STRING "Compilation flags")
+foreach(option ${COMPILE_OPTIONS})
+	add_compile_options($<$<CONFIG:PROFILING>:${option}>)
+endforeach()
 
-# TODO: make more visible readable compile (macro ? split ?)
+# Compilation OPTIONS depending on language
+#########################################
+
+foreach(option ${COMPILE_OPTIONS})
+	add_compile_options(${option})
+endforeach()
+foreach(option ${C_COMPILE_OPTIONS})
+	add_compile_options($<$<COMPILE_LANGUAGE:C>:${option}>)
+endforeach()
+foreach(option ${CXX_COMPILE_OPTIONS})
+	add_compile_options($<$<COMPILE_LANGUAGE:CXX>:${option}>)
+endforeach()
+
 # Compilation option depending on CMAKE_BUILD_TYPE
 ##################################################
-add_compile_options($<$<CONFIG:PROFILING>:-g>)
-add_compile_options($<$<CONFIG:PROFILING>:-O0>)
-add_compile_options($<$<CONFIG:PROFILING>:-pg>)
-add_compile_options($<$<CONFIG:PROFILING>:-Wp,-U_FORTIFY_SOURCE>)
-
-add_compile_options($<$<CONFIG:DEBUG>:-g>)
-add_compile_options($<$<CONFIG:DEBUG>:-ggdb>)
-add_compile_options($<$<CONFIG:DEBUG>:-Wp,-U_FORTIFY_SOURCE>)
-
-add_compile_options($<$<CONFIG:CCOV>:-g>)
-add_compile_options($<$<CONFIG:CCOV>:-O2>)
-add_compile_options($<$<CONFIG:CCOV>:--coverage>)
+set(PROFILING_COMPILE_OPTIONS "-g" "-O0" "-pg" "-Wp,-U_FORTIFY_SOURCE" CACHE STRING "Compilation flags for PROFILING build type.")
+set(DEBUG_COMPILE_OPTIONS "-g" "-ggdb" "-Wp,-U_FORTIFY_SOURCE" CACHE STRING "Compilation flags for DEBUG build type.")
+set(CCOV_COMPILE_OPTIONS "-g" "-O2" "--coverage" CACHE STRING "Compilation flags for CCOV build type.")
+set(RELEASE_COMPILE_OPTIONS "-g" "-O2" CACHE STRING "Compilation flags for RELEASE build type.")
+foreach(option ${PROFILING_COMPILE_OPTIONS})
+	add_compile_options($<$<CONFIG:PROFILING>:${option}>)
+endforeach()
+foreach(option ${DEBUG_COMPILE_OPTIONS})
+	add_compile_options($<$<CONFIG:PROFILING>:${option}>)
+endforeach()
+foreach(option ${CCOV_COMPILE_OPTIONS})
+	add_compile_options($<$<CONFIG:PROFILING>:${option}>)
+endforeach()
+foreach(option ${RELEASE_COMPILE_OPTIONS})
+	add_compile_options($<$<CONFIG:PROFILING>:${option}>)
+endforeach()
 
 # Env variable overload default
 if(DEFINED ENV{INSTALL_PREFIX})
@@ -99,8 +112,8 @@ foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
 	PKG_CHECK_MODULES(${XPREFIX} REQUIRED ${PKG_CONFIG})
 
 	INCLUDE_DIRECTORIES(${${XPREFIX}_INCLUDE_DIRS})
-	list (APPEND link_libraries ${${XPREFIX}_LDFLAGS})
-	add_compile_options (${${XPREFIX}_CFLAGS})
+	list (APPEND link_libraries ${${XPREFIX}_LDOPTIONS})
+	add_compile_options (${${XPREFIX}_COPTIONS})
 endforeach(PKG_CONFIG)
 
 # Optional LibEfence Malloc debug library
