@@ -98,12 +98,23 @@ macro(project_targets_populate)
 				)
 				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${OUT}.so)
 
-				add_custom_command(OUTPUT ${SD}/${P}${OUT}.h
-					DEPENDS ${SD}/${P}${OUT}.json
-					COMMAND afb-genskel ${SD}/${P}${OUT}.json > ${SD}/${P}${OUT}.h
-				)
-				add_custom_target("${TARGET}_GENSKEL" DEPENDS ${SD}/${P}${OUT}.h)
-				add_dependencies(${TARGET} "${TARGET}_GENSKEL")
+				if (OPENAPI_DEF)
+					add_custom_command(OUTPUT ${SD}/${OPENAPI_DEF}.h
+						DEPENDS ${SD}/${OPENAPI_DEF}.json
+						COMMAND afb-genskel ${SD}/${OPENAPI_DEF}.json > ${SD}/${OPENAPI_DEF}.h
+					)
+					add_custom_target("${TARGET}_GENSKEL" DEPENDS ${SD}/${OPENAPI_DEF}.h
+						COMMENT "Generating OpenAPI header file ${OPENAPI_DEF}.h")
+					add_dependencies(${TARGET} "${TARGET}_GENSKEL")
+				else()
+					add_custom_command(OUTPUT ${SD}/${OUT}-apidef.h
+						DEPENDS ${SD}/${OUT}-apidef.json
+						COMMAND afb-genskel ${SD}/${OUT}-apidef.json > ${SD}/${OUT}-apidef.h
+					)
+					add_custom_target("${TARGET}_GENSKEL" DEPENDS ${SD}/${OUT}-apidef.h
+						COMMENT "Generating OpenAPI header file ${OUT}-apidef.h")
+					add_dependencies(${TARGET} "${TARGET}_GENSKEL")
+				endif()
 			elseif(${T} STREQUAL "EXECUTABLE")
 				add_custom_command(OUTPUT ${PACKAGE_BINDIR}/${P}${OUT}
 					DEPENDS ${BD}/${P}${OUT}

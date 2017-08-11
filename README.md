@@ -75,9 +75,13 @@ Choose between:
 
 - **BINDING**: Shared library that be loaded by the AGL Application Framework
 - **BINDINGV2**: Shared library that be loaded by the AGL Application Framework.
- This has to be accompagnied with a JSON file named like the *OUTPUT_NAME*  of
- the target that describe the API with OpenAPI syntax. JSON file will be used
- to generate header file using `afb-genskel` tool.
+ This has to be accompagnied with a JSON file named like the *${OUTPUT_NAME}-apidef* of
+ the target that describe the API with OpenAPI syntax (e.g: *mybinding-apidef*).
+ Or you can choose the name by setting the *CACHE* cmake variable *OPENAPI_DEF*
+ (***CAUTION***: setting a CACHE variable is needed, or set a normal variable
+ with the *PARENT_SCOPE* option to make it visible for the parent scope
+ where the target is defined) JSON file will be used to generate header file
+ using `afb-genskel` tool.
 - **HTDOCS**: Root directory of a web app
 - **DATA**: Resources used by your application
 - **EXECUTABLE**: Entry point of your application executed by the AGL
