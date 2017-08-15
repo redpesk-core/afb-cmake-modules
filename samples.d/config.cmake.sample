@@ -161,6 +161,13 @@ set(WIDGET_ENTRY_POINT EntryPoint_Path_Not_Set)
 #set(AFB_TOKEN   ""      CACHE PATH "Default AFB_TOKEN")
 #set(AFB_REMPORT "1234" CACHE PATH "Default AFB_TOKEN")
 
+# Optional schema validator about now only XML, LUA and JSON
+# are supported
+#------------------------------------------------------------
+#set(LUA_CHECKER "luac" CACHE STRING "LUA compiler")
+#set(XML_CHECKER "xmllint" CACHE STRING "XML linter")
+#set(JSON_CHECKER "json_verify" CACHE STRING "JSON linter")
+
 # This include is mandatory and MUST happens at the end
 # of this file, else you expose you to unexpected behavior
 # -----------------------------------------------------------

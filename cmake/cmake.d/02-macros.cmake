@@ -48,6 +48,28 @@ macro(configure_files_in_dir dir)
 	endforeach()
 endmacro(configure_files_in_dir)
 
+# Create custom target dedicated for HTML5 and DATA AGL target type
+macro(add_input_files INPUT_FILES)
+	add_custom_target(${TARGET_NAME} 
+	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
+	)
+
+	add_custom_command(TARGET ${TARGET_NAME}
+	PRE_BUILD
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	COMMAND [ -f *xml ] && ${XML_CHECKER} ${INPUT_FILES}
+	COMMAND [ -f *lua ] && ${LUA_CHECKER} ${INPUT_FILES}
+	COMMAND [ -f *json ] && for f in ${INPUT_FILES}; do cat ${INPUT_FILES} | ${JSON_CHECKER}; done
+	)
+
+	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
+	DEPENDS  ${INPUT_FILES}
+	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
+	COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
+	COMMAND touch ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
+	COMMAND cp -r ${INPUT_FILES} ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
+	)
+endmacro()
 # Pre-packaging
 macro(project_targets_populate)
 	# Default Widget default directory

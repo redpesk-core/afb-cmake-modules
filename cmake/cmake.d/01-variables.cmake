@@ -147,3 +147,7 @@ endif()
 
 # Break After Binding are loaded but before they get initialised
 set(GDB_INITIAL_BREAK "personality" CACHE STRING "Initial Break Point for GDB remote")
+
+set(LUA_CHECKER "luac" CACHE STRING "LUA compiler")
+set(XML_CHECKER "xmllint" CACHE STRING "XML linter")
+set(JSON_CHECKER "json_verify" CACHE STRING "JSON linter")
