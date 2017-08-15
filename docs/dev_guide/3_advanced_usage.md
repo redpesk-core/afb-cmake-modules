@@ -38,8 +38,10 @@ Choose between:
  with the *PARENT_SCOPE* option to make it visible for the parent scope
  where the target is defined) JSON file will be used to generate header file
  using `afb-genskel` tool.
-- **HTDOCS**: Root directory of a web app
-- **DATA**: Resources used by your application
+- **HTDOCS**: Root directory of a web app. This target has to build its
+ directory and puts its files in the ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
+- **DATA**: Resources used by your application. This target has to build its
+ directory and puts its files in the ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
 - **EXECUTABLE**: Entry point of your application executed by the AGL
  Application Framework
 
