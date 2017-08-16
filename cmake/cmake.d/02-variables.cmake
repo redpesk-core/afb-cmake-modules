@@ -137,7 +137,7 @@ else()
 endif()
 
 # Paths to templates files
-set(TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/cmake/template.d" CACHE PATH "Subpath to a directory where are stored needed files to launch on remote target to debuging purposes")
+set(TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/template.d" CACHE PATH "Subpath to a directory where are stored needed files to launch on remote target to debuging purposes")
 
 if(NOT WIDGET_CONFIG_TEMPLATE)
 	set(WIDGET_CONFIG_TEMPLATE ${TEMPLATE_DIR}/config.xml.in CACHE PATH "Path to widget config file template (config.xml.in)")
