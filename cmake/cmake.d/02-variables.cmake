@@ -45,15 +45,8 @@ if(NOT WIN32)
   set(BoldWhite   "${Esc}[1;37m")
 endif()
 
-# (BUG!!!) as PKG_CONFIG_PATH does not work [should be en env variable]
-set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON CACHE BOOLEAN "Flag for using prefix path")
-
 # Native packaging name
 set(NPKG_PROJECT_NAME agl-${PROJECT_NAME})
-
-set(CMAKE_BUILD_TYPE Debug CACHE STRING "the type of build")
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMP0048 1)
 
 # Get the os type
 # Used to package .deb
@@ -95,6 +88,35 @@ set(PROJECT_RESOURCES "${CMAKE_SOURCE_DIR}/data" CACHE PATH "Subpath to data")
 set(AFB_TOKEN   ""      CACHE PATH "Default AFB_TOKEN")
 set(AFB_REMPORT "1234" CACHE PATH "Default AFB_TOKEN")
 
+# Check GCC minimal version
+if (gcc_minimal_version)
+message (STATUS "${Cyan}-- Check gcc_minimal_version (found gcc version ${CMAKE_C_COMPILER_VERSION}) \
+(found g++ version ${CMAKE_CXX_COMPILER_VERSION})${ColourReset}")
+if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${gcc_minimal_version} OR CMAKE_C_COMPILER_VERSION VERSION_LESS ${gcc_minimal_version})
+message(FATAL_ERROR "${Red}**** FATAL: Require at least gcc-${gcc_minimal_version} please set CMAKE_C[XX]_COMPILER")
+endif()
+endif(gcc_minimal_version)
+
+# Check Kernel mandatory version, will fail the configuration if required version not matched.
+if (kernel_mandatory_version)
+message (STATUS "${Cyan}-- Check kernel_mandatory_version (found kernel version ${KERNEL_VERSION})${ColourReset}")
+if (KERNEL_VERSION VERSION_LESS ${kernel_mandatory_version})
+message(FATAL_ERROR "${Red}**** FATAL: Require at least ${kernel_mandatory_version} please use a recent kernel or source your SDK environment then clean and reconfigure your CMake project.")
+endif (KERNEL_VERSION VERSION_LESS ${kernel_mandatory_version})
+endif(kernel_mandatory_version)
+
+# Check Kernel minimal version just print a Warning about missing features
+# and set a definition to be used as preprocessor condition in code to disable
+# incompatibles features.
+if (kernel_minimal_version)
+message (STATUS "${Cyan}-- Check kernel_minimal_version (found kernel version ${KERNEL_VERSION})${ColourReset}")
+if (KERNEL_VERSION VERSION_LESS ${kernel_minimal_version})
+message(WARNING "${Yellow}**** Warning: Some feature(s) require at least ${kernel_minimal_version}. Please use a recent kernel or source your SDK environment then clean and reconfigure your CMake project.${ColourReset}")
+else (KERNEL_VERSION VERSION_LESS ${kernel_minimal_version})
+add_definitions(-DKERNEL_MINIMAL_VERSION_OK)
+endif (KERNEL_VERSION VERSION_LESS ${kernel_minimal_version})
+endif(kernel_minimal_version)
+
 # Project path variables
 # ----------------------
 
@@ -115,7 +137,6 @@ else()
 endif()
 
 # Paths to templates files
-set (PKG_TEMPLATE_PREFIX ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR} CACHE PATH "Default Package Templates Directory")
 set(TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/cmake/template.d" CACHE PATH "Subpath to a directory where are stored needed files to launch on remote target to debuging purposes")
 
 if(NOT WIDGET_CONFIG_TEMPLATE)
@@ -148,6 +169,8 @@ endif()
 # Break After Binding are loaded but before they get initialised
 set(GDB_INITIAL_BREAK "personality" CACHE STRING "Initial Break Point for GDB remote")
 
+# Define some checker binaries to verify input DATA files
+# to be included in package.
 set(LUA_CHECKER "luac" CACHE STRING "LUA compiler")
 set(XML_CHECKER "xmllint" CACHE STRING "XML linter")
 set(JSON_CHECKER "json_verify" CACHE STRING "JSON linter")
