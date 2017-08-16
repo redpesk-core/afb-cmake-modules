@@ -307,8 +307,13 @@ automatically from some specifics locations. They are included in that order:
 - Home CMake files located in _$HOME/.config/app-templates/cmake.d_
 - System CMake files located in _/etc/app-templates/cmake.d_
 
-CMake files has to be named using the following convention: `XX-***.cmake`,
-where `XX` are numbers, `***` file name (ie. `99-my_customs.cmake`).
+CMake files has to be named using the following convention: `XX-common-*.cmake`
+or `XX-${PROJECT_NAME}-*.cmake`, where `XX` are numbers, `*` file name
+(ie. `99-common-my_customs.cmake`).
+
+> **NOTE** You need to specify after numbers that indicate include order, to
+which project that file applies, if it applies to all project then use keyword
+`common`.
 
 So, saying that you should be aware that every normal cmake variables used at
 project level could be overwrited by home or system located cmake files if

@@ -50,21 +50,41 @@ endmacro(configure_files_in_dir)
 
 # Create custom target dedicated for HTML5 and DATA AGL target type
 macro(add_input_files INPUT_FILES)
+	set(XML_LIST ${INPUT_FILES})
+	set(LUA_LIST ${INPUT_FILES})
+	set(JSON_LIST ${INPUT_FILES})
+	list(FILTER XML_LIST INCLUDE REGEX "xml$")
+	list(FILTER LUA_LIST INCLUDE REGEX "lua$")
+	list(FILTER JSON_LIST INCLUDE REGEX "json$")
+
 	add_custom_target(${TARGET_NAME} 
 	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
 	)
 
+	foreach(file ${XML_LIST})
+		add_custom_command(TARGET ${TARGET_NAME}
+			PRE_BUILD
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+			COMMAND ${XML_CHECKER} ${file}
+		)
+	endforeach()
+	foreach(file ${LUA_LIST})
 	add_custom_command(TARGET ${TARGET_NAME}
-	PRE_BUILD
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	COMMAND [ -f *xml ] && ${XML_CHECKER} ${INPUT_FILES}
-	COMMAND [ -f *lua ] && ${LUA_CHECKER} ${INPUT_FILES}
-	COMMAND [ -f *json ] && for f in ${INPUT_FILES}; do cat ${INPUT_FILES} | ${JSON_CHECKER}; done
+		PRE_BUILD
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		COMMAND ${LUA_CHECKER} ${file}
 	)
+	endforeach()
+	foreach(file ${JSON_LIST})
+	add_custom_command(TARGET ${TARGET_NAME}
+		PRE_BUILD
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		COMMAND cat ${file} | ${JSON_CHECKER}
+	)
+	endforeach()
 
 	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
-	DEPENDS  ${INPUT_FILES}
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
+	DEPENDS ${INPUT_FILES}
 	COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
 	COMMAND touch ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
 	COMMAND cp -r ${INPUT_FILES} ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
@@ -163,13 +183,19 @@ macro(project_targets_populate)
 				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
 				add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
 			elseif(${T} STREQUAL "DATA")
-				add_custom_command(OUTPUT ${PACKAGE_DATADIR}-xx
-					DEPENDS ${BD}/${P}${OUT}
+				# Generate list of output files instead of just one output directory
+				get_target_property(SF ${TARGET} SOURCES)
+				foreach(file ${SF})
+					get_filename_component(JUST_FILENAME ${file} NAME)
+					list(APPEND OUTPUT_FILES ${PACKAGE_DATADIR}/${JUST_FILENAME})
+				endforeach()
+				add_custom_target(${POPULE_PACKAGE_TARGET})
+				add_custom_command(TARGET ${POPULE_PACKAGE_TARGET}
+					POST_BUILD
 					COMMAND mkdir -p ${PACKAGE_DATADIR}
 					COMMAND touch ${PACKAGE_DATADIR}
-					COMMAND cp -r ${BD}/${P}${OUT}/* ${PACKAGE_DATADIR}
+					COMMAND cp -r ${BD}/${TARGET} ${PACKAGE_DATADIR}
 				)
-				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_DATADIR}-xx)
 				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
 				add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
 			endif(${T} STREQUAL "BINDING")

@@ -26,9 +26,9 @@
 
 file(GLOB project_cmakefiles ${PROJECT_APP_TEMPLATES_DIR}/cmake/cmake.d/[0-9][0-9]-*.cmake)
 list(SORT project_cmakefiles)
-file(GLOB home_cmakefiles $ENV{HOME}/.config/app-templates/cmake.d/[0-9][0-9]-*.cmake)
+file(GLOB home_cmakefiles $ENV{HOME}/.config/app-templates/cmake.d/[0-9][0-9]-common-*.cmake $ENV{HOME}/.config/app-templates/cmake.d/[0-9][0-9]-${PROJECT_NAME}-*.cmake)
 list(SORT home_cmakefiles)
-file(GLOB system_cmakefiles /etc/app-templates/cmake.d/[0-9][0-9]-*.cmake)
+file(GLOB system_cmakefiles /etc/app-templates/cmake.d/[0-9][0-9]-common-*.cmake /etc/app-templates/cmake.d/[0-9][0-9]-${PROJECT_NAME}-*.cmake)
 list(SORT system_cmakefiles)
 
 foreach(file ${system_cmakefiles} ${home_cmakefiles} ${project_cmakefiles})
