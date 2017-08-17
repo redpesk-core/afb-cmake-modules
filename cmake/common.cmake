@@ -42,6 +42,7 @@ else()
 	project_subdirs_add()
 endif(DEFINED PROJECT_SRC_DIR_PATTERN)
 
+configure_files_in_dir(${PROJECT_APP_TEMPLATES_DIR}/${ENTRY_POINT}/template.d)
 configure_files_in_dir($ENV{HOME}/.config/app-templates/scripts)
 configure_files_in_dir(/etc/app-templates/scripts)
 
