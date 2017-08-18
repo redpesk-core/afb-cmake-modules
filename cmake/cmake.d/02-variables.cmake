@@ -54,14 +54,15 @@ if(EXISTS "/etc/os-release")
 	execute_process(COMMAND grep -E "^ID(=|_LIKE=)" /etc/os-release
 		OUTPUT_VARIABLE TMP_OSRELEASE
 	)
+
 	if (NOT TMP_OSRELEASE STREQUAL "")
-		string(REGEX REPLACE ".*=" "" OSRELEASE ${TMP_OSRELEASE})
+		string(REGEX REPLACE ".*=([0-9a-z._-]*)\n" "\\1" OSRELEASE ${TMP_OSRELEASE})
 	else()
-		set(OSRELEASE "NOT DEBIAN OS")
+		set(OSRELEASE "NO COMPATIBLE !")
 	endif()
-	message(STATUS "OSRELEASE = ${OSRELEASE}")
+	message(STATUS "Distribution used ${OSRELEASE}")
 else()
-	set(OSRELEASE "NOT DEBIAN OS")
+	set(OSRELEASE "NO COMPATIBLE !")
 endif()
 
 if(DEFINED ENV{SDKTARGETSYSROOT})

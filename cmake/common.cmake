@@ -26,12 +26,20 @@
 
 file(GLOB project_cmakefiles ${PROJECT_APP_TEMPLATES_DIR}/cmake/cmake.d/[0-9][0-9]-*.cmake)
 list(SORT project_cmakefiles)
-file(GLOB home_cmakefiles $ENV{HOME}/.config/app-templates/cmake.d/[0-9][0-9]-common-*.cmake $ENV{HOME}/.config/app-templates/cmake.d/[0-9][0-9]-${PROJECT_NAME}-*.cmake)
+file(GLOB home_cmakefiles $ENV{HOME}/.config/app-templates/cmake.d/[0-9][0-9]-common*.cmake $ENV{HOME}/.config/app-templates/cmake.d/[0-9][0-9]-${PROJECT_NAME}*.cmake)
 list(SORT home_cmakefiles)
-file(GLOB system_cmakefiles /etc/app-templates/cmake.d/[0-9][0-9]-common-*.cmake /etc/app-templates/cmake.d/[0-9][0-9]-${PROJECT_NAME}-*.cmake)
+file(GLOB system_cmakefiles /etc/app-templates/cmake.d/[0-9][0-9]-common*.cmake /etc/app-templates/cmake.d/[0-9][0-9]-${PROJECT_NAME}*.cmake)
 list(SORT system_cmakefiles)
 
 foreach(file ${system_cmakefiles} ${home_cmakefiles} ${project_cmakefiles})
+	message(STATUS "Include: ${file}")
+	include(${file})
+endforeach()
+
+message(STATUS "${ENTRY_POINT}/cmake/[0-9][0-9]-${OSRELEASE}*.cmake")
+file(GLOB project_cmakefiles ${ENTRY_POINT}/cmake/[0-9][0-9]-common*.cmake ${ENTRY_POINT}/cmake/[0-9][0-9]-${OSRELEASE}*.cmake )
+list(SORT project_cmakefiles)
+foreach(file ${project_cmakefiles})
 	message(STATUS "Include: ${file}")
 	include(${file})
 endforeach()
