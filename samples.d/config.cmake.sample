@@ -144,10 +144,6 @@ set(WIDGET_ENTRY_POINT EntryPoint_Path_Not_Set)
 # -------------------------
 #set(EXTRA_LINK_LIBRARIES)
 
-# Optional force binding installation
-# ------------------------------------
-# set(BINDINGS_INSTALL_PREFIX PrefixPath )
-
 # Optional force binding Linking flag
 # ------------------------------------
 # set(BINDINGS_LINK_FLAG LinkOptions )

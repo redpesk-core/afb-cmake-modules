@@ -119,14 +119,6 @@ endif(kernel_minimal_version)
 
 # Project path variables
 # ----------------------
-
-# If no install dir try to guess some smart default
-if(BINDINGS_INSTALL_PREFIX)
-	set(BINDINGS_INSTALL_DIR ${BINDINGS_INSTALL_PREFIX}/${PROJECT_NAME} CACHE PATH "Where the binding will be installed in your system")
-else()
-	set(BINDINGS_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME} CACHE PATH "Where the binding will be installed in your system")
-endif()
-
 set(PKGOUT_DIR package CACHE PATH "Output directory for packages")
 
 # Define a default package directory
