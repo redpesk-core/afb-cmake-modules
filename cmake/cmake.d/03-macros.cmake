@@ -22,6 +22,79 @@
 #     Do not change this cmake template
 #     Customise your preferences in "./conf.d/cmake/config.cmake"
 #--------------------------------------------------------------------------
+# CMake 3.6 imported macros to simulate list(FILTER ...) subcommand
+# -----------------------
+MACRO(PARSE_ARGUMENTS prefix arg_names option_names)
+SET(DEFAULT_ARGS)
+FOREACH(arg_name ${arg_names})
+  SET(${prefix}_${arg_name})
+ENDFOREACH(arg_name)
+FOREACH(option ${option_names})
+  SET(${prefix}_${option} FALSE)
+ENDFOREACH(option)
+
+SET(current_arg_name DEFAULT_ARGS)
+SET(current_arg_list)
+FOREACH(arg ${ARGN})
+  LIST_CONTAINS(is_arg_name ${arg} ${arg_names})
+  IF (is_arg_name)
+	SET(${prefix}_${current_arg_name} ${current_arg_list})
+	SET(current_arg_name ${arg})
+	SET(current_arg_list)
+  ELSE (is_arg_name)
+	LIST_CONTAINS(is_option ${arg} ${option_names})
+	IF (is_option)
+  SET(${prefix}_${arg} TRUE)
+	ELSE (is_option)
+  SET(current_arg_list ${current_arg_list} ${arg})
+	ENDIF (is_option)
+  ENDIF (is_arg_name)
+ENDFOREACH(arg)
+SET(${prefix}_${current_arg_name} ${current_arg_list})
+ENDMACRO(PARSE_ARGUMENTS)
+
+MACRO(LIST_CONTAINS var value)
+SET(${var})
+FOREACH (value2 ${ARGN})
+  IF (${value} STREQUAL ${value2})
+	SET(${var} TRUE)
+  ENDIF (${value} STREQUAL ${value2})
+ENDFOREACH (value2)
+ENDMACRO(LIST_CONTAINS)
+
+MACRO(LIST_FILTER)
+PARSE_ARGUMENTS(LIST_FILTER "OUTPUT_VARIABLE" "" ${ARGV})
+# Check arguments.
+LIST(LENGTH LIST_FILTER_DEFAULT_ARGS LIST_FILTER_default_length)
+IF(${LIST_FILTER_default_length} EQUAL 0)
+  MESSAGE(FATAL_ERROR "LIST_FILTER: missing list variable.")
+ENDIF(${LIST_FILTER_default_length} EQUAL 0)
+IF(${LIST_FILTER_default_length} EQUAL 1)
+  MESSAGE(FATAL_ERROR "LIST_FILTER: missing regular expression variable.")
+ENDIF(${LIST_FILTER_default_length} EQUAL 1)
+# Reset output variable
+IF(NOT LIST_FILTER_OUTPUT_VARIABLE)
+  SET(LIST_FILTER_OUTPUT_VARIABLE "LIST_FILTER_internal_output")
+ENDIF(NOT LIST_FILTER_OUTPUT_VARIABLE)
+SET(${LIST_FILTER_OUTPUT_VARIABLE})
+# Extract input list from arguments
+LIST(GET LIST_FILTER_DEFAULT_ARGS 0 LIST_FILTER_input_list)
+LIST(REMOVE_AT LIST_FILTER_DEFAULT_ARGS 0)
+FOREACH(LIST_FILTER_item ${${LIST_FILTER_input_list}})
+  FOREACH(LIST_FILTER_regexp_var ${LIST_FILTER_DEFAULT_ARGS})
+	FOREACH(LIST_FILTER_regexp ${${LIST_FILTER_regexp_var}})
+	  IF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
+		LIST(APPEND ${LIST_FILTER_OUTPUT_VARIABLE} ${LIST_FILTER_item})
+	  ENDIF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
+	ENDFOREACH(LIST_FILTER_regexp ${${LIST_FILTER_regexp_var}})
+  ENDFOREACH(LIST_FILTER_regexp_var)
+ENDFOREACH(LIST_FILTER_item)
+# If OUTPUT_VARIABLE is not specified, overwrite the input list.
+IF(${LIST_FILTER_OUTPUT_VARIABLE} STREQUAL "LIST_FILTER_internal_output")
+  SET(${LIST_FILTER_input_list} ${${LIST_FILTER_OUTPUT_VARIABLE}})
+ENDIF(${LIST_FILTER_OUTPUT_VARIABLE} STREQUAL "LIST_FILTER_internal_output")
+ENDMACRO(LIST_FILTER)
+
 # Generic useful macro
 # -----------------------
 macro(PROJECT_TARGET_ADD TARGET_NAME)
@@ -53,9 +126,14 @@ macro(add_input_files INPUT_FILES)
 	set(XML_LIST ${INPUT_FILES})
 	set(LUA_LIST ${INPUT_FILES})
 	set(JSON_LIST ${INPUT_FILES})
-	list(FILTER XML_LIST INCLUDE REGEX "xml$")
-	list(FILTER LUA_LIST INCLUDE REGEX "lua$")
-	list(FILTER JSON_LIST INCLUDE REGEX "json$")
+	# These are v3.6 subcommand. Not used as default for now as
+	# many dev use Ubuntu 16.04 which have only 3.5 version
+	#list(FILTER XML_LIST INCLUDE REGEX "xml$")
+	#list(FILTER LUA_LIST INCLUDE REGEX "lua$")
+	#list(FILTER JSON_LIST INCLUDE REGEX "json$")
+	list_filter(XML_LIST "xml$")
+	list_filter(LUA_LIST "lua$")
+	list_filter(JSON_LIST "json$")
 
 	add_custom_target(${TARGET_NAME} 
 	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
