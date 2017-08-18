@@ -338,16 +338,20 @@ macro(wgt_package_build)
 	endif()
 	if(NOT DEFINED PROJECT_ICON)
 		if( ${WIDGET_TYPE} MATCHES "agl.native")
-			set(PROJECT_ICON ${PKG_APP_TEMPLATE_DIR}/wgt/icon-native.png)
+			set(ICON_PATH ${PKG_APP_TEMPLATE_DIR}/wgt/icon-native.png)
 		elseif( ${WIDGET_TYPE} MATCHES "agl.service")
-			set(PROJECT_ICON ${PKG_APP_TEMPLATE_DIR}/wgt/icon-service.png)
+			set(ICON_PATH ${PKG_APP_TEMPLATE_DIR}/wgt/icon-service.png)
 		elseif( ${WIDGET_TYPE} MATCHES "x-executable")
-			set(PROJECT_ICON ${PKG_APP_TEMPLATE_DIR}/wgt/icon-qml.png)
+			set(ICON_PATH ${PKG_APP_TEMPLATE_DIR}/wgt/icon-qml.png)
 		elseif( ${WIDGET_TYPE} MATCHES "text/html")
-			set(PROJECT_ICON ${PKG_APP_TEMPLATE_DIR}/wgt/icon-html5.png)
-		else()
-			set(PROJECT_ICON ${PKG_APP_TEMPLATE_DIR}/wgt/icon-default.png)
+			set(ICON_PATH ${PKG_APP_TEMPLATE_DIR}/wgt/icon-html5.png)
 		endif()
+	elseif(EXISTS "${CMAKE_SOURCE_DIR}/${WIDGET_ICON}")
+		set(ICON_PATH "${CMAKE_SOURCE_DIR}/${WIDGET_ICON}")
+	elseif(EXISTS "${WIDGET_ICON}")
+		set(ICON_PATH "${WIDGET_ICON}")
+	else()
+		set(ICON_PATH ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/wgt/icon-default.png)
 	endif()
 
 	if(NOT WIDGET_ENTRY_POINT)
@@ -356,7 +360,7 @@ macro(wgt_package_build)
 
 	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/config.xml
 		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
-		COMMAND cp ${TEMPLATE_DIR}/icon-default.png ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
+		COMMAND cp ${ICON_PATH} ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
 
 	)
 	add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml)

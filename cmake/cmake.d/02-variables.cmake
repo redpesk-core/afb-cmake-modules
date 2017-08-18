@@ -131,12 +131,11 @@ endif()
 # Paths to templates files
 set(TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/template.d" CACHE PATH "Subpath to a directory where are stored needed files to launch on remote target to debuging purposes")
 
-if(NOT WIDGET_CONFIG_TEMPLATE)
-	set(WIDGET_CONFIG_TEMPLATE ${TEMPLATE_DIR}/config.xml.in CACHE PATH "Path to widget config file template (config.xml.in)")
-endif()
-
 string(REGEX REPLACE "^(.*)/.*$" "\\1" ENTRY_POINT "${PKG_TEMPLATE_PREFIX}")
 set(PROJECT_PKG_ENTRY_POINT ${ENTRY_POINT}/packaging CACHE PATH "Where package build files, like rpm.spec file or config.xml, are write.")
+
+set(WIDGET_ICON "${ENTRY_POINT}/wgt/${PROJECT_ICON}" CACHE PATH "Path to the widget icon")
+set(WIDGET_CONFIG_TEMPLATE ${TEMPLATE_DIR}/config.xml.in CACHE PATH "Path to widget config file template (config.xml.in)")
 
 # Path to autobuild template
 set(PROJECT_TEMPLATE_AGL_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/conf.d/autobuild/agl CACHE PATH "Subpath to a directory where are stored autobuild script")
