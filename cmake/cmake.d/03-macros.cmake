@@ -177,38 +177,76 @@ endmacro()
 # Pre-packaging
 macro(project_targets_populate)
 	# Default Widget default directory
-	set(PACKAGE_BINDIR  ${PROJECT_PKG_BUILD_DIR}/bin)
-	set(PACKAGE_ETCDIR  ${PROJECT_PKG_BUILD_DIR}/etc)
-	set(PACKAGE_LIBDIR  ${PROJECT_PKG_BUILD_DIR}/lib)
-	set(PACKAGE_HTTPDIR ${PROJECT_PKG_BUILD_DIR}/htdocs)
-	set(PACKAGE_DATADIR ${PROJECT_PKG_BUILD_DIR}/data)
+	set(BINDIR bin)
+	set(ETCDIR etc)
+	set(LIBDIR lib)
+	set(HTTPDIR htdocs)
+	set(DATADIR data)
+	set(PACKAGE_BINDIR  ${PROJECT_PKG_BUILD_DIR}/${BINDIR})
+	set(PACKAGE_ETCDIR  ${PROJECT_PKG_BUILD_DIR}/${ETCDIR})
+	set(PACKAGE_LIBDIR  ${PROJECT_PKG_BUILD_DIR}/${LIBDIR})
+	set(PACKAGE_HTTPDIR ${PROJECT_PKG_BUILD_DIR}/${HTTPDIR})
+	set(PACKAGE_DATADIR ${PROJECT_PKG_BUILD_DIR}/${DATADIR})
 
 	add_custom_command(OUTPUT ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR}
 		COMMAND mkdir -p ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR})
 	add_custom_target(populate DEPENDS ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR})
-		get_property(PROJECT_TARGETS GLOBAL PROPERTY PROJECT_TARGETS)
+
+	INSTALL(CODE "execute_process(COMMAND make populate)")
+	INSTALL(DIRECTORY ${PROJECT_PKG_BUILD_DIR}/
+		DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}
+	)
+
+	get_property(PROJECT_TARGETS GLOBAL PROPERTY PROJECT_TARGETS)
 	foreach(TARGET ${PROJECT_TARGETS})
-		get_target_property(T ${TARGET} LABELS)
-		if(T)
-			# Declaration of a custom command that will populate widget tree with the target
-			set(POPULE_PACKAGE_TARGET "project_populate_${TARGET}")
+	get_target_property(T ${TARGET} LABELS)
+	if(T)
+		# Declaration of a custom command that will populate widget tree with the target
+		set(POPULE_PACKAGE_TARGET "project_populate_${TARGET}")
 
-			get_target_property(P ${TARGET} PREFIX)
-			get_target_property(BD ${TARGET} BINARY_DIR)
-			get_target_property(SD ${TARGET} SOURCE_DIR)
-			get_target_property(OUT ${TARGET} OUTPUT_NAME)
+		get_target_property(P ${TARGET} PREFIX)
+		get_target_property(BD ${TARGET} BINARY_DIR)
+		get_target_property(SD ${TARGET} SOURCE_DIR)
+		get_target_property(OUT ${TARGET} OUTPUT_NAME)
 
-			if(P MATCHES "NOTFOUND$")
-				if (${T} STREQUAL "BINDING")
-					set(P "lib")
-				else()
-					set(P "")
-				endif()
+		if(P MATCHES "NOTFOUND$")
+			if (${T} STREQUAL "BINDING")
+				set(P "lib")
+			else()
+				set(P "")
+			endif()
+		endif()
+
+		if(${T} STREQUAL "BINDING")
+			list(APPEND BINDINGS_LIST "${P}${OUT}")
+			add_custom_command(OUTPUT ${PACKAGE_LIBDIR}/${P}${OUT}.so
+				DEPENDS ${BD}/${P}${OUT}.so
+				COMMAND mkdir -p ${PACKAGE_LIBDIR}
+				COMMAND cp ${BD}/${P}${OUT}.so ${PACKAGE_LIBDIR}
+			)
+			add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${OUT}.so)
+			add_dependencies(populate ${POPULE_PACKAGE_TARGET})
+			add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
+		elseif(${T} STREQUAL "BINDINGV2")
+			if (OPENAPI_DEF)
+				add_custom_command(OUTPUT ${SD}/${OPENAPI_DEF}.h
+					DEPENDS ${SD}/${OPENAPI_DEF}.json
+					COMMAND afb-genskel ${SD}/${OPENAPI_DEF}.json > ${SD}/${OPENAPI_DEF}.h
+				)
+				add_custom_target("${TARGET}_GENSKEL" DEPENDS ${SD}/${OPENAPI_DEF}.h
+					COMMENT "Generating OpenAPI header file ${OPENAPI_DEF}.h")
+				add_dependencies(${TARGET} "${TARGET}_GENSKEL")
+			else()
+				add_custom_command(OUTPUT ${SD}/${OUT}-apidef.h
+					DEPENDS ${SD}/${OUT}-apidef.json
+					COMMAND afb-genskel ${SD}/${OUT}-apidef.json > ${SD}/${OUT}-apidef.h
+				)
+				add_custom_target("${TARGET}_GENSKEL" DEPENDS ${SD}/${OUT}-apidef.h
+					COMMENT "Generating OpenAPI header file ${OUT}-apidef.h")
+				add_dependencies(${TARGET} "${TARGET}_GENSKEL")
 			endif()
 
-			if(${T} STREQUAL "BINDING")
-				list(APPEND BINDINGS_LIST "${P}${OUT}")
-				add_custom_command(OUTPUT ${PACKAGE_LIBDIR}/${P}${OUT}.so
+			add_custom_command(OUTPUT ${PACKAGE_LIBDIR}/${P}${OUT}.so
 					DEPENDS ${BD}/${P}${OUT}.so
 					COMMAND mkdir -p ${PACKAGE_LIBDIR}
 					COMMAND cp ${BD}/${P}${OUT}.so ${PACKAGE_LIBDIR}
@@ -216,69 +254,42 @@ macro(project_targets_populate)
 				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${OUT}.so)
 				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
 				add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
-			elseif(${T} STREQUAL "BINDINGV2")
-				if (OPENAPI_DEF)
-					add_custom_command(OUTPUT ${SD}/${OPENAPI_DEF}.h
-						DEPENDS ${SD}/${OPENAPI_DEF}.json
-						COMMAND afb-genskel ${SD}/${OPENAPI_DEF}.json > ${SD}/${OPENAPI_DEF}.h
-					)
-					add_custom_target("${TARGET}_GENSKEL" DEPENDS ${SD}/${OPENAPI_DEF}.h
-						COMMENT "Generating OpenAPI header file ${OPENAPI_DEF}.h")
-					add_dependencies(${TARGET} "${TARGET}_GENSKEL")
-				else()
-					add_custom_command(OUTPUT ${SD}/${OUT}-apidef.h
-						DEPENDS ${SD}/${OUT}-apidef.json
-						COMMAND afb-genskel ${SD}/${OUT}-apidef.json > ${SD}/${OUT}-apidef.h
-					)
-					add_custom_target("${TARGET}_GENSKEL" DEPENDS ${SD}/${OUT}-apidef.h
-						COMMENT "Generating OpenAPI header file ${OUT}-apidef.h")
-					add_dependencies(${TARGET} "${TARGET}_GENSKEL")
-				endif()
-
-				add_custom_command(OUTPUT ${PACKAGE_LIBDIR}/${P}${OUT}.so
-						DEPENDS ${BD}/${P}${OUT}.so
-						COMMAND mkdir -p ${PACKAGE_LIBDIR}
-						COMMAND cp ${BD}/${P}${OUT}.so ${PACKAGE_LIBDIR}
-					)
-					add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${OUT}.so)
-					add_dependencies(populate ${POPULE_PACKAGE_TARGET})
-					add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
-			elseif(${T} STREQUAL "EXECUTABLE")
-				add_custom_command(OUTPUT ${PACKAGE_BINDIR}/${P}${OUT}
-					DEPENDS ${BD}/${P}${OUT}
-					COMMAND mkdir -p ${PACKAGE_BINDIR}
-					COMMAND cp ${BD}/${P}${OUT} ${PACKAGE_BINDIR}
-				)
-				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_BINDIR}/${P}${OUT})
-				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
-				add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
-			elseif(${T} STREQUAL "HTDOCS")
-				add_custom_command(OUTPUT ${PACKAGE_HTTPDIR}-xx
-					DEPENDS ${BD}/${P}${OUT}
-					COMMAND mkdir -p ${PACKAGE_HTTPDIR}
-					COMMAND touch ${PACKAGE_HTTPDIR}
-					COMMAND cp -r ${BD}/${P}${OUT}/* ${PACKAGE_HTTPDIR}
-				)
-				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_HTTPDIR}-xx)
-				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
-				add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
-			elseif(${T} STREQUAL "DATA")
-				# Generate list of output files instead of just one output directory
-				get_target_property(SF ${TARGET} SOURCES)
-				foreach(file ${SF})
-					get_filename_component(JUST_FILENAME ${file} NAME)
-					list(APPEND OUTPUT_FILES ${PACKAGE_DATADIR}/${JUST_FILENAME})
-				endforeach()
-				add_custom_target(${POPULE_PACKAGE_TARGET})
-				add_custom_command(TARGET ${POPULE_PACKAGE_TARGET}
-					POST_BUILD
-					COMMAND mkdir -p ${PACKAGE_DATADIR}
-					COMMAND touch ${PACKAGE_DATADIR}
-					COMMAND cp -r ${BD}/${TARGET} ${PACKAGE_DATADIR}
-				)
-				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
-				add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
-			endif(${T} STREQUAL "BINDING")
+		elseif(${T} STREQUAL "EXECUTABLE")
+			add_custom_command(OUTPUT ${PACKAGE_BINDIR}/${P}${OUT}
+				DEPENDS ${BD}/${P}${OUT}
+				COMMAND mkdir -p ${PACKAGE_BINDIR}
+				COMMAND cp ${BD}/${P}${OUT} ${PACKAGE_BINDIR}
+			)
+			add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_BINDIR}/${P}${OUT})
+			add_dependencies(populate ${POPULE_PACKAGE_TARGET})
+			add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
+		elseif(${T} STREQUAL "HTDOCS")
+			add_custom_command(OUTPUT ${PACKAGE_HTTPDIR}-xx
+				DEPENDS ${BD}/${P}${OUT}
+				COMMAND mkdir -p ${PACKAGE_HTTPDIR}
+				COMMAND touch ${PACKAGE_HTTPDIR}
+				COMMAND cp -r ${BD}/${P}${OUT}/* ${PACKAGE_HTTPDIR}
+			)
+			add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_HTTPDIR}-xx)
+			add_dependencies(populate ${POPULE_PACKAGE_TARGET})
+			add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
+		elseif(${T} STREQUAL "DATA")
+			# Generate list of output files instead of just one output directory
+			get_target_property(SF ${TARGET} SOURCES)
+			foreach(file ${SF})
+				get_filename_component(JUST_FILENAME ${file} NAME)
+				list(APPEND OUTPUT_FILES ${PACKAGE_DATADIR}/${JUST_FILENAME})
+			endforeach()
+			add_custom_target(${POPULE_PACKAGE_TARGET})
+			add_custom_command(TARGET ${POPULE_PACKAGE_TARGET}
+				POST_BUILD
+				COMMAND mkdir -p ${PACKAGE_DATADIR}
+				COMMAND touch ${PACKAGE_DATADIR}
+				COMMAND cp -r ${BD}/${TARGET} ${PACKAGE_DATADIR}
+			)
+			add_dependencies(populate ${POPULE_PACKAGE_TARGET})
+			add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
+		endif(${T} STREQUAL "BINDING")
 		elseif(${CMAKE_BUILD_TYPE} MATCHES "[Dd][Ee][Bb][Uu][Gg]")
 			MESSAGE("${Yellow}.. Warning: ${TARGET} ignored when packaging.${ColourReset}")
 		endif()
