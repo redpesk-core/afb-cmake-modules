@@ -217,13 +217,6 @@ macro(project_targets_populate)
 				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
 				add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
 			elseif(${T} STREQUAL "BINDINGV2")
-				add_custom_command(OUTPUT ${PACKAGE_LIBDIR}/${P}${OUT}.so
-					DEPENDS ${BD}/${P}${OUT}.so
-					COMMAND mkdir -p ${PACKAGE_LIBDIR}
-					COMMAND cp ${BD}/${P}${OUT}.so ${PACKAGE_LIBDIR}
-				)
-				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${OUT}.so)
-
 				if (OPENAPI_DEF)
 					add_custom_command(OUTPUT ${SD}/${OPENAPI_DEF}.h
 						DEPENDS ${SD}/${OPENAPI_DEF}.json
@@ -241,6 +234,15 @@ macro(project_targets_populate)
 						COMMENT "Generating OpenAPI header file ${OUT}-apidef.h")
 					add_dependencies(${TARGET} "${TARGET}_GENSKEL")
 				endif()
+
+				add_custom_command(OUTPUT ${PACKAGE_LIBDIR}/${P}${OUT}.so
+						DEPENDS ${BD}/${P}${OUT}.so
+						COMMAND mkdir -p ${PACKAGE_LIBDIR}
+						COMMAND cp ${BD}/${P}${OUT}.so ${PACKAGE_LIBDIR}
+					)
+					add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${OUT}.so)
+					add_dependencies(populate ${POPULE_PACKAGE_TARGET})
+					add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
 			elseif(${T} STREQUAL "EXECUTABLE")
 				add_custom_command(OUTPUT ${PACKAGE_BINDIR}/${P}${OUT}
 					DEPENDS ${BD}/${P}${OUT}
