@@ -163,6 +163,6 @@ set(GDB_INITIAL_BREAK "personality" CACHE STRING "Initial Break Point for GDB re
 # Define some checker binaries to verify input DATA files
 # to be included in package. Schema aren't checked for now.
 # Dummy checker about JSON.
-set(LUA_CHECKER "luac" CACHE STRING "LUA compiler")
+set(LUA_CHECKER "luac -o /dev/null" CACHE STRING "LUA compiler")
 set(XML_CHECKER "xmllint" CACHE STRING "XML linter")
 set(JSON_CHECKER "echo" CACHE STRING "JSON linter")
