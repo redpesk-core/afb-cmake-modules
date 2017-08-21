@@ -36,7 +36,6 @@ foreach(file ${system_cmakefiles} ${home_cmakefiles} ${project_cmakefiles})
 	include(${file})
 endforeach()
 
-message(STATUS "${ENTRY_POINT}/cmake/[0-9][0-9]-${OSRELEASE}*.cmake")
 file(GLOB project_cmakefiles ${ENTRY_POINT}/cmake/[0-9][0-9]-common*.cmake ${ENTRY_POINT}/cmake/[0-9][0-9]-${OSRELEASE}*.cmake )
 list(SORT project_cmakefiles)
 foreach(file ${project_cmakefiles})
