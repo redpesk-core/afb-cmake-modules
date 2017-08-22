@@ -84,22 +84,54 @@ set (PKG_REQUIRED_LIST
 # Either separate options with ";", or each options must be quoted separately
 # DO NOT PUT ALL OPTION QUOTED AT ONCE , COMPILATION COULD FAILED !
 # ----------------------------------------------------------------------------
-#set(COMPILE_OPTIONS -Wall -Wextra -Wconversion -Wno-unused-parameter -Wno-sign-compare -Wno-sign-conversion -Werror=maybe-uninitialized -Werror=implicit-function-declaration -ffunction-sections -fdata-sections -fPIC CACHE STRING "Compilation flags")
+#set(COMPILE_OPTIONS 
+# -Wall
+# -Wextra
+# -Wconversion
+# -Wno-unused-parameter
+# -Wno-sign-compare
+# -Wno-sign-conversion
+# -Werror=maybe-uninitialized
+# -Werror=implicit-function-declaration
+# -ffunction-sections
+# -fdata-sections
+# -fPIC
+# CACHE STRING "Compilation flags")
 #set(C_COMPILE_OPTIONS "" CACHE STRING "Compilation flags for C language.")
 #set(CXX_COMPILE_OPTIONS "" CACHE STRING "Compilation flags for C++ language.")
-#set(PROFILING_COMPILE_OPTIONS -g -O0 -pg -Wp,-U_FORTIFY_SOURCE CACHE STRING "Compilation flags for PROFILING build type.")
-#set(DEBUG_COMPILE_OPTIONS -g -ggdb -Wp,-U_FORTIFY_SOURCE CACHE STRING "Compilation flags for DEBUG build type.")
-#set(CCOV_COMPILE_OPTIONS -g -O2 --coverage CACHE STRING "Compilation flags for CCOV build type.")
-#set(RELEASE_COMPILE_OPTIONS -g -O2 CACHE STRING "Compilation flags for RELEASE build type.")
+#set(PROFILING_COMPILE_OPTIONS
+# -g
+# -O0
+# -pg
+# -Wp,-U_FORTIFY_SOURCE
+# CACHE STRING "Compilation flags for PROFILING build type.")
+#set(DEBUG_COMPILE_OPTIONS
+# -g
+# -ggdb
+# -Wp,-U_FORTIFY_SOURCE
+# CACHE STRING "Compilation flags for DEBUG build type.")
+#set(CCOV_COMPILE_OPTIONS
+# -g
+# -O2
+# --coverage
+# CACHE STRING "Compilation flags for CCOV build type.")
+#set(RELEASE_COMPILE_OPTIONS
+# -g
+# -O2
+# CACHE STRING "Compilation flags for RELEASE build type.")
 
 # Print a helper message when every thing is finished
 # ----------------------------------------------------
 #set(CLOSING_MESSAGE "")
 #set(PACKAGE_MESSAGE "Install widget file using in the target : afm-util install ${PROJECT_NAME}.wgt")
 
+# Prefix path where will be installed the files
+# Default: /usr/local (need root permission to write in)
+# ------------------------------------------------------
+#set(CMAKE_INSTALL_PREFIX $ENV{HOME}/opt)
+
 # (BUG!!!) as PKG_CONFIG_PATH does not work [should be an env variable]
 # ---------------------------------------------------------------------
-set(CMAKE_INSTALL_PREFIX $ENV{HOME}/opt)
 set(CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
 set(LD_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib64 ${CMAKE_INSTALL_PREFIX}/lib)
 
@@ -161,7 +193,7 @@ set(WIDGET_ENTRY_POINT EntryPoint_Path_Not_Set)
 # Optional schema validator about now only XML, LUA and JSON
 # are supported
 #------------------------------------------------------------
-#set(LUA_CHECKER "luac" CACHE STRING "LUA compiler")
+#set(LUA_CHECKER "luac -o /dev/null" CACHE STRING "LUA compiler")
 #set(XML_CHECKER "xmllint" CACHE STRING "XML linter")
 #set(JSON_CHECKER "json_verify" CACHE STRING "JSON linter")
 
