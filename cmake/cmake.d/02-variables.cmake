@@ -51,19 +51,20 @@ set(NPKG_PROJECT_NAME agl-${PROJECT_NAME})
 # Get the os type
 # Used to package .deb
 if(EXISTS "/etc/os-release")
-	execute_process(COMMAND grep -E "^ID(=|_LIKE=)" /etc/os-release
+	execute_process(COMMAND bash "-c" "grep -E '^ID(_LIKE)?=' /etc/os-release | tail -n 1"
 		OUTPUT_VARIABLE TMP_OSRELEASE
 	)
 
 	if (NOT TMP_OSRELEASE STREQUAL "")
-		string(REGEX REPLACE ".*=([0-9a-z._-]*)\n" "\\1" OSRELEASE ${TMP_OSRELEASE})
+		string(REGEX REPLACE ".*=\"?([0-9a-z\._-]*)\"?\n" "\\1" OSRELEASE ${TMP_OSRELEASE})
 	else()
-		set(OSRELEASE "NO COMPATIBLE !")
+		set(OSRELEASE "NOT COMPATIBLE !")
 	endif()
-	message(STATUS "Distribution used ${OSRELEASE}")
+
 else()
-	set(OSRELEASE "NO COMPATIBLE !")
+	set(OSRELEASE "NOT COMPATIBLE ! Missing /etc/os-release file.")
 endif()
+message(STATUS "Distribution used ${OSRELEASE}")
 
 if(DEFINED ENV{SDKTARGETSYSROOT})
 	file(STRINGS $ENV{SDKTARGETSYSROOT}/usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
