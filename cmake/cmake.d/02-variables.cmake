@@ -48,10 +48,29 @@ endif()
 # Native packaging name
 set(NPKG_PROJECT_NAME agl-${PROJECT_NAME})
 
+if(DEFINED ENV{SDKTARGETSYSROOT})
+file(STRINGS $ENV{SDKTARGETSYSROOT}/usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
+set(BUILD_ENV_SYSROOT $ENV{SDKTARGETSYSROOT})
+elseif(DEFINED ENV{PKG_CONFIG_SYSROOT_DIR})
+file(STRINGS $ENV{PKG_CONFIG_SYSROOT_DIR}/usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
+set(BUILD_ENV_SYSROOT $ENV{PKG_CONFIG_SYSROOT_DIR})
+else()
+file(STRINGS /usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
+set(BUILD_ENV_SYSROOT "")
+endif()
+
+string(REGEX MATCH "[0-9]+" LINUX_VERSION_CODE ${LINUX_VERSION_CODE_LINE})
+math(EXPR a "${LINUX_VERSION_CODE} >> 16")
+math(EXPR b "(${LINUX_VERSION_CODE} >> 8) & 255")
+math(EXPR c "(${LINUX_VERSION_CODE} & 255)")
+
+set(KERNEL_VERSION "${a}.${b}.${c}")
+
 # Get the os type
 # Used to package .deb
-if(EXISTS "/etc/os-release")
-	execute_process(COMMAND bash "-c" "grep -E '^ID(_LIKE)?=' /etc/os-release | tail -n 1"
+set(OS_RELEASE_PATH "${BUILD_ENV_SYSROOT}/etc/os-release")
+if(EXISTS ${OS_RELEASE_PATH})
+	execute_process(COMMAND bash "-c" "grep -E '^ID(_LIKE)?=' ${OS_RELEASE_PATH} | tail -n 1"
 		OUTPUT_VARIABLE TMP_OSRELEASE
 	)
 
@@ -62,24 +81,9 @@ if(EXISTS "/etc/os-release")
 	endif()
 
 else()
-	set(OSRELEASE "NOT COMPATIBLE ! Missing /etc/os-release file.")
+	set(OSRELEASE "NOT COMPATIBLE ! Missing ${OS_RELEASE_PATH} file.")
 endif()
 message(STATUS "Distribution used ${OSRELEASE}")
-
-if(DEFINED ENV{SDKTARGETSYSROOT})
-	file(STRINGS $ENV{SDKTARGETSYSROOT}/usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
-elseif(DEFINED ENV{PKG_CONFIG_SYSROOT_DIR})
-	file(STRINGS $ENV{PKG_CONFIG_SYSROOT_DIR}/usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
-else()
-	file(STRINGS /usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
-endif()
-
-string(REGEX MATCH "[0-9]+" LINUX_VERSION_CODE ${LINUX_VERSION_CODE_LINE})
-math(EXPR a "${LINUX_VERSION_CODE} >> 16")
-math(EXPR b "(${LINUX_VERSION_CODE} >> 8) & 255")
-math(EXPR c "(${LINUX_VERSION_CODE} & 255)")
-
-set(KERNEL_VERSION "${a}.${b}.${c}")
 
 # Include project configuration
 # ------------------------------
