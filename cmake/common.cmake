@@ -36,8 +36,12 @@ foreach(file ${system_cmakefiles} ${home_cmakefiles} ${project_cmakefiles})
 	include(${file})
 endforeach()
 
-file(GLOB project_cmakefiles ${ENTRY_POINT}/cmake/[0-9][0-9]-common*.cmake ${ENTRY_POINT}/cmake/[0-9][0-9]-${OSRELEASE}*.cmake )
+file(GLOB project_cmakefiles ${ENTRY_POINT}/cmake/[0-9][0-9]-${OSRELEASE}*.cmake )
 list(SORT project_cmakefiles)
+if(NOT ${project_cmakefiles})
+	file(GLOB project_cmakefiles ${ENTRY_POINT}/cmake/[0-9][0-9]-default*.cmake)
+endif()
+
 foreach(file ${project_cmakefiles})
 	message(STATUS "Include: ${file}")
 	include(${file})
