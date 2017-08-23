@@ -38,7 +38,7 @@ endforeach()
 
 file(GLOB project_cmakefiles ${ENTRY_POINT}/cmake/[0-9][0-9]-${OSRELEASE}*.cmake )
 list(SORT project_cmakefiles)
-if(NOT ${project_cmakefiles})
+if(NOT project_cmakefiles)
 	file(GLOB project_cmakefiles ${ENTRY_POINT}/cmake/[0-9][0-9]-default*.cmake)
 endif()
 
