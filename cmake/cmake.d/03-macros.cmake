@@ -144,7 +144,7 @@ macro(add_input_files INPUT_FILES)
 	list_filter(LUA_LIST "lua$")
 	list_filter(JSON_LIST "json$")
 
-	add_custom_target(${TARGET_NAME} 
+	add_custom_target(${TARGET_NAME}
 	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
 	)
 

@@ -48,7 +48,7 @@ For each target part of your project, you need to use ***PROJECT_TARGET_ADD***
 to include this target to your project.
 
 Using it, make available the cmake variable ***TARGET_NAME*** until the next
-***PROJECT_TARGET_ADD*** is invoked with a new target name. 
+***PROJECT_TARGET_ADD*** is invoked with a new target name.
 
 So, typical usage defining a target is:
 
