@@ -132,17 +132,24 @@ endmacro(add_required_module)
 
 # Create custom target dedicated for HTML5 and DATA AGL target type
 macro(add_input_files INPUT_FILES)
-	set(XML_LIST ${INPUT_FILES})
-	set(LUA_LIST ${INPUT_FILES})
-	set(JSON_LIST ${INPUT_FILES})
+	if(NOT DEFINED XML_FILES)
+		set(XML_LIST ${INPUT_FILES})
+		list_filter(XML_LIST "xml$")
+	endif()
+	if(NOT DEFINED LUA_FILES)
+		set(LUA_LIST ${INPUT_FILES})
+		list_filter(LUA_LIST "lua$")
+	endif()
+	if(NOT DEFINED JSON_FILES)
+		set(JSON_LIST ${INPUT_FILES})
+		list_filter(JSON_LIST "json$")
+	endif()
+
 	# These are v3.6 subcommand. Not used as default for now as
 	# many dev use Ubuntu 16.04 which have only 3.5 version
 	#list(FILTER XML_LIST INCLUDE REGEX "xml$")
 	#list(FILTER LUA_LIST INCLUDE REGEX "lua$")
 	#list(FILTER JSON_LIST INCLUDE REGEX "json$")
-	list_filter(XML_LIST "xml$")
-	list_filter(LUA_LIST "lua$")
-	list_filter(JSON_LIST "json$")
 
 	add_custom_target(${TARGET_NAME}
 	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
