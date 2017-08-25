@@ -76,12 +76,15 @@ foreach(option ${RELEASE_COMPILE_OPTIONS})
 endforeach()
 
 # Env variable overload default
-if(DEFINED ENV{INSTALL_PREFIX})
-	set(INSTALL_PREFIX $ENV{INSTALL_PREFIX} CACHE PATH "The path where to install")
-else()
-	set(INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/Install" CACHE PATH "The path where to install")
-endif()
-set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX} CACHE STRING "Installation Prefix")
+# Disabled by default now. Tell me if you need really it
+# but you should not have needs for that since you can
+# set CMAKE_INSTALL_PREFIX in your config.cmake.
+#if(DEFINED ENV{INSTALL_PREFIX})
+#	set(INSTALL_PREFIX $ENV{INSTALL_PREFIX} CACHE PATH "The path where to install")
+#else()
+#	set(INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/Install" CACHE PATH "The path where to install")
+#endif()
+#set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX} CACHE PATH "Installation Prefix")
 
 # Loop on required package and add options
 foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
