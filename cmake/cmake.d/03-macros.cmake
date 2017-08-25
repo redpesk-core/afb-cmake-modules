@@ -154,7 +154,7 @@ macro(add_input_files INPUT_FILES)
 	#list(FILTER LUA_LIST INCLUDE REGEX "lua$")
 	#list(FILTER JSON_LIST INCLUDE REGEX "json$")
 
-	add_custom_target(${TARGET_NAME}
+	add_custom_target(${TARGET_NAME} ALL
 	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
 	)
 
