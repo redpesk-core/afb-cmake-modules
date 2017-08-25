@@ -45,6 +45,9 @@ Choose between:
 - **EXECUTABLE**: Entry point of your application executed by the AGL
  Application Framework
 
+> **TIP** you should use the prefix _afb-_ with your **BINDING* targets which
+> stand for **Application Framework Binding**.
+
 Example:
 
 ```cmake
@@ -54,13 +57,9 @@ SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
 	)
 ```
 
-If your target output is not named as the ***TARGET_NAME***, you need to specify
-***OUTPUT_NAME*** property that will be used by the ***populate_widget*** macro.
-
-Use the ***populate_widget*** macro as latest statement of your target
-definition. Then at the end of your project definition you should use the macro
-***build_widget*** that make an archive from the populated widget tree using the
-`wgtpkg-pack` Application Framework tools.
+> **NOTE**: You doesn't need to specify an **INSTALL** command for these
+> targets. This is already handle by template and will be installed in the
+> following path : **${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}**
 
 ## Macro reference
 

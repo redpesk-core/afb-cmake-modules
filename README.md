@@ -59,8 +59,6 @@ add_executable/add_library(${TARGET_NAME}.... --> defining your target sources
 
 SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES.... --> fit target properties
 for macros usage
-
-INSTALL(TARGETS ${TARGET_NAME}....
 ```
 
 ### Targets PROPERTIES
@@ -89,15 +87,20 @@ Choose between:
 - **EXECUTABLE**: Entry point of your application executed by the AGL
  Application Framework
 
+> **TIP** you should use the prefix _afb-_ with your **BINDING* targets which
+> stand for **Application Framework Binding**.
+
 ```cmake
 SET_TARGET_PROPERTIES(${TARGET_NAME}
 	PREFIX "afb-"
 	LABELS "BINDING"
-	OUTPUT_NAME "file_output_name")
+	OUTPUT_NAME "file_output_name"
+)
 ```
 
-> **TIP** you should use the prefix _afb-_ with your **BINDING* targets which
-> stand for **Application Framework Binding**.
+> **NOTE**: You doesn't need to specify an **INSTALL** command for these
+> targets. This is already handle by template and will be installed in the
+> following path : **${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}**
 
 ## More details: Typical project architecture
 
@@ -240,6 +243,9 @@ Choose between:
 - **EXECUTABLE**: Entry point of your application executed by the AGL
  Application Framework
 
+> **TIP** you should use the prefix _afb-_ with your **BINDING* targets which
+> stand for **Application Framework Binding**.
+
 Example:
 
 ```cmake
@@ -249,13 +255,9 @@ SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
 	)
 ```
 
-If your target output is not named as the ***TARGET_NAME***, you need to specify
-***OUTPUT_NAME*** property that will be used by the ***populate_widget*** macro.
-
-Use the ***populate_widget*** macro as latest statement of your target
-definition. Then at the end of your project definition you should use the macro
-***build_widget*** that make an archive from the populated widget tree using the
-`wgtpkg-pack` Application Framework tools.
+> **NOTE**: You doesn't need to specify an **INSTALL** command for these
+> targets. This is already handle by template and will be installed in the
+> following path : **${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}**
 
 ## Macro reference
 
@@ -300,6 +302,8 @@ project_subdirs_add("[0-9]-*")
 
 ### Including additionnals cmake files
 
+#### Machine and system custom cmake files
+
 Advanced tuning is possible using addionnals cmake files that are included
 automatically from some specifics locations. They are included in that order:
 
@@ -307,8 +311,8 @@ automatically from some specifics locations. They are included in that order:
 - Home CMake files located in _$HOME/.config/app-templates/cmake.d_
 - System CMake files located in _/etc/app-templates/cmake.d_
 
-CMake files has to be named using the following convention: `XX-common-*.cmake`
-or `XX-${PROJECT_NAME}-*.cmake`, where `XX` are numbers, `*` file name
+CMake files has to be named using the following convention: `XX-common*.cmake`
+or `XX-${PROJECT_NAME}*.cmake`, where `XX` are numbers, `*` file name
 (ie. `99-common-my_customs.cmake`).
 
 > **NOTE** You need to specify after numbers that indicate include order, to
@@ -325,6 +329,23 @@ Example:
 ```cmake
 set(VARIABLE_NAME 'value string random' CACHE STRING 'docstring')
 ```
+
+#### OS custom cmake files
+
+This is meant to personalize the project depending on the OS your are using.
+At the end of config.cmake, common.cmake will include lot of cmake file to
+customize project build depending on your plateform. It will detect your OS
+deducing it from file _/etc/os-release_ now as default in almost all Linux
+distribution.
+
+So you can use the value of field **ID_LIKE** or **ID** if the
+first one doesn't exists and add a cmake file for that distribution in your
+_conf.d/cmake/_ directory or relatively to your _app-templates_ submodule path
+_app-templates/../cmake/_
+
+Those files has to be named use the following scheme _XX-${OSRELEASE}*.cmake_
+where _XX_ are numbers, ${OSRELEASE} the **ID_LIKE** or **ID** field from
+_/etc/os-release_ file.
 
 ### Include customs templated scripts
 

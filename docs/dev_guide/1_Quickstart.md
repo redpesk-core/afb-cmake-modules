@@ -1,4 +1,3 @@
-
 # Quickstart
 
 ## Initialization
@@ -70,6 +69,9 @@ Choose between:
 - **EXECUTABLE**: Entry point of your application executed by the AGL
  Application Framework
 
+> **TIP** you should use the prefix _afb-_ with your **BINDING* targets which
+> stand for **Application Framework Binding**.
+
 ```cmake
 SET_TARGET_PROPERTIES(${TARGET_NAME}
 	PREFIX "afb-"
@@ -77,5 +79,6 @@ SET_TARGET_PROPERTIES(${TARGET_NAME}
 	OUTPUT_NAME "file_output_name")
 ```
 
-> **TIP** you should use the prefix _afb-_ with your **BINDING* targets which
-> stand for **Application Framework Binding**.
+> **NOTE**: You doesn't need to specify an **INSTALL** command for these
+> targets. This is already handle by template and will be installed in the
+> following path : **${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}**
