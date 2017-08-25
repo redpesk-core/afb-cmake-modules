@@ -24,15 +24,6 @@
 #     Customise your preferences in "./conf.d/cmake/config.cmake"
 #--------------------------------------------------------------------------
 
-# Add a dummy target to enable global dependency order
-# -----------------------------------------------------
-if(EXTRA_DEPENDENCIES_ORDER)
-	set(DEPENDENCIES_TARGET ${PROJECT_NAME}_extra_dependencies)
-	add_custom_target(${DEPENDENCIES_TARGET} ALL
-		DEPENDS ${EXTRA_DEPENDENCY_ORDER}
-	)
-endif()
-
 # ----------------------------------------------------------------------------
 #                                Archive target
 # ----------------------------------------------------------------------------

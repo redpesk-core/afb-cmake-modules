@@ -495,7 +495,7 @@ macro(project_closing_msg)
 		add_custom_target(${PROJECT_NAME}_build_done ALL
 			COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${CLOSING_MESSAGE}"
 		)
-		 add_dependencies(${PROJECT_NAME}_build_done
-		 	${DEPENDENCIES_TARGET} ${PROJECT_TARGETS})
+		add_dependencies(${PROJECT_NAME}_build_done
+			${PROJECT_TARGETS} populate)
 	endif()
 endmacro()
