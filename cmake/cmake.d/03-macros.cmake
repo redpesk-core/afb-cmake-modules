@@ -355,8 +355,13 @@ macro(remote_targets_populate)
 		add_custom_target(remote-target-populate
 			COMMAND chmod +x ${CMAKE_CURRENT_BINARY_DIR}/target/*.sh
 			COMMAND rsync -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --archive --delete ${PROJECT_PKG_BUILD_DIR}/ ${RSYNC_TARGET}:${RSYNC_PREFIX}/${PROJECT_NAME}
-			COMMENT "${REMOTE_LAUNCH}"
 		)
+
+		add_custom_command(TARGET remote-target-populate
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --green --bold ${REMOTE_LAUNCH}
+		)
+
 		add_dependencies(remote-target-populate populate)
 	endif()
 endmacro(remote_targets_populate)
