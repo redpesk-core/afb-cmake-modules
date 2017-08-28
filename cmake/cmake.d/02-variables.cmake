@@ -66,25 +66,6 @@ math(EXPR c "(${LINUX_VERSION_CODE} & 255)")
 
 set(KERNEL_VERSION "${a}.${b}.${c}")
 
-# Get the os type
-# Used to package .deb
-set(OS_RELEASE_PATH "${BUILD_ENV_SYSROOT}/etc/os-release")
-if(EXISTS ${OS_RELEASE_PATH})
-	execute_process(COMMAND bash "-c" "grep -E '^ID(_LIKE)?=' ${OS_RELEASE_PATH} | tail -n 1"
-		OUTPUT_VARIABLE TMP_OSRELEASE
-	)
-
-	if (NOT TMP_OSRELEASE STREQUAL "")
-		string(REGEX REPLACE ".*=\"?([0-9a-z\._-]*)\"?\n" "\\1" OSRELEASE ${TMP_OSRELEASE})
-	else()
-		set(OSRELEASE "NOT COMPATIBLE !")
-	endif()
-
-else()
-	set(OSRELEASE "NOT COMPATIBLE ! Missing ${OS_RELEASE_PATH} file.")
-endif()
-message(STATUS "Distribution used ${OSRELEASE}")
-
 # Include project configuration
 # ------------------------------
 project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES ${PROJECT_LANGUAGES})

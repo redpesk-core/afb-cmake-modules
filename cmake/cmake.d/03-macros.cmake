@@ -121,15 +121,6 @@ macro(configure_files_in_dir dir)
 	endforeach()
 endmacro(configure_files_in_dir)
 
-macro(add_required_module PKG_CONFIG)
-	string(REGEX REPLACE "[<>]?=.*$" "" XPREFIX ${PKG_CONFIG})
-	PKG_CHECK_MODULES(${XPREFIX} REQUIRED ${PKG_CONFIG})
-
-	INCLUDE_DIRECTORIES(${${XPREFIX}_INCLUDE_DIRS})
-	list(APPEND link_libraries ${${XPREFIX}_LDFLAGS})
-	add_compile_options (${${XPREFIX}_CFLAGS})
-endmacro(add_required_module)
-
 # Create custom target dedicated for HTML5 and DATA AGL target type
 macro(add_input_files INPUT_FILES)
 	if(NOT DEFINED XML_FILES)

@@ -24,25 +24,41 @@
 #     Customise your preferences in "./conf.d/cmake/config.cmake"
 #--------------------------------------------------------------------------
 
+# Get the os type
+# Used to package .deb
+set(OS_RELEASE_PATH "${BUILD_ENV_SYSROOT}/etc/os-release")
+if(EXISTS ${OS_RELEASE_PATH})
+	execute_process(COMMAND bash "-c" "grep -E '^ID(_LIKE)?=' ${OS_RELEASE_PATH} | tail -n 1"
+		OUTPUT_VARIABLE TMP_OSRELEASE
+	)
+
+	if (NOT TMP_OSRELEASE STREQUAL "")
+		string(REGEX REPLACE ".*=\"?([0-9a-z\._-]*)\"?\n" "\\1" OSRELEASE ${TMP_OSRELEASE})
+	else()
+		set(OSRELEASE "NOT COMPATIBLE !")
+	endif()
+
+else()
+	set(OSRELEASE "NOT COMPATIBLE ! Missing ${OS_RELEASE_PATH} file.")
+endif()
+message(STATUS "Distribution used ${OSRELEASE}")
+
 file(GLOB project_cmakefiles ${PROJECT_APP_TEMPLATES_DIR}/cmake/cmake.d/[0-9][0-9]-*.cmake)
+file(GLOB distro_cmakefiles ${PROJECT_APP_TEMPLATES_DIR}/../cmake/[0-9][0-9]-${OSRELEASE}*.cmake ${PROJECT_APP_TEMPLATES_DIR}/../cmake/[0-9][0-9]-common*.cmake)
+list(SORT distro_cmakefiles)
+if(NOT distro_cmakefiles)
+	file(GLOB distro_cmakefiles ${PROJECT_APP_TEMPLATES_DIR}/../cmake/[0-9][0-9]-default*.cmake)
+endif()
+
+list(APPEND project_cmakefiles "${distro_cmakefiles}")
 list(SORT project_cmakefiles)
+
 file(GLOB home_cmakefiles $ENV{HOME}/.config/app-templates/cmake.d/[0-9][0-9]-common*.cmake $ENV{HOME}/.config/app-templates/cmake.d/[0-9][0-9]-${PROJECT_NAME}*.cmake)
 list(SORT home_cmakefiles)
 file(GLOB system_cmakefiles /etc/app-templates/cmake.d/[0-9][0-9]-common*.cmake /etc/app-templates/cmake.d/[0-9][0-9]-${PROJECT_NAME}*.cmake)
 list(SORT system_cmakefiles)
 
 foreach(file ${system_cmakefiles} ${home_cmakefiles} ${project_cmakefiles})
-	message(STATUS "Include: ${file}")
-	include(${file})
-endforeach()
-
-file(GLOB project_cmakefiles ${ENTRY_POINT}/cmake/[0-9][0-9]-${OSRELEASE}*.cmake )
-list(SORT project_cmakefiles)
-if(NOT project_cmakefiles)
-	file(GLOB project_cmakefiles ${ENTRY_POINT}/cmake/[0-9][0-9]-default*.cmake)
-endif()
-
-foreach(file ${project_cmakefiles})
 	message(STATUS "Include: ${file}")
 	include(${file})
 endforeach()
