@@ -75,7 +75,7 @@ foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
 	# Only doable within a native environment not under SDK
 	if( OSRELEASE MATCHES "debian" AND NOT DEFINED ENV{SDKTARGETSYSROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 		execute_process(
-			COMMAND pkg-config --print-provides ${XPREFIX}
+			COMMAND dpkg -S *${XPREFIX}.pc
 					OUTPUT_VARIABLE TMP_PKG_BIN
 		)
 		if(TMP_PKG_BIN)
