@@ -79,7 +79,7 @@ foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
 					OUTPUT_VARIABLE TMP_PKG_BIN
 		)
 		if(TMP_PKG_BIN)
-			string(REGEX REPLACE " *=.*$" "" PKG_BIN ${TMP_PKG_BIN})
+			string(REGEX REPLACE ":.*$" "" PKG_BIN ${TMP_PKG_BIN})
 			set(DEB_PKG_DEPS "${DEB_PKG_DEPS} ${PKG_BIN} ${DEB_EXTRA_DEP}")
 		else()
 			message(FATAL_ERROR "-- ${Red}${XPREFIX} development files not installed. Abort.${ColourReset}")
