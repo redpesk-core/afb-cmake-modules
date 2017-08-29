@@ -24,6 +24,17 @@
 #     Customise your preferences in "./conf.d/cmake/config.cmake"
 #--------------------------------------------------------------------------
 
+if(DEFINED ENV{SDKTARGETSYSROOT})
+file(STRINGS $ENV{SDKTARGETSYSROOT}/usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
+set(BUILD_ENV_SYSROOT $ENV{SDKTARGETSYSROOT})
+elseif(DEFINED ENV{PKG_CONFIG_SYSROOT_DIR})
+file(STRINGS $ENV{PKG_CONFIG_SYSROOT_DIR}/usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
+set(BUILD_ENV_SYSROOT $ENV{PKG_CONFIG_SYSROOT_DIR})
+else()
+file(STRINGS /usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
+set(BUILD_ENV_SYSROOT "")
+endif()
+
 # Get the os type
 # Used to package .deb
 set(OS_RELEASE_PATH "${BUILD_ENV_SYSROOT}/etc/os-release")
