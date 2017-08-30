@@ -469,17 +469,17 @@ macro(deb_package_build)
 endmacro(deb_package_build)
 
 macro(project_package_build)
-	if(EXISTS ${TEMPLATE_DIR})
-		rpm_package_build()
-	endif()
+#	if(EXISTS ${TEMPLATE_DIR})
+#		rpm_package_build()
+#	endif()
 
 	if(EXISTS ${TEMPLATE_DIR})
 		wgt_package_build()
 	endif()
 
-	if(EXISTS ${TEMPLATE_DIR})
-		deb_package_build()
-	endif()
+#	if(EXISTS ${TEMPLATE_DIR})
+#		deb_package_build()
+#	endif()
 endmacro(project_package_build)
 
 macro(project_subdirs_add)
