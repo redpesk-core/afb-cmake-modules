@@ -299,6 +299,22 @@ macro(project_targets_populate)
 			)
 			add_dependencies(populate ${POPULE_PACKAGE_TARGET})
 			add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
+			elseif(${T} STREQUAL "BINDING-CONFIG")
+			# Generate list of output files instead of just one output directory
+			get_target_property(SF ${TARGET} SOURCES)
+			foreach(file ${SF})
+				get_filename_component(JUST_FILENAME ${file} NAME)
+				list(APPEND OUTPUT_FILES ${PACKAGE_ETCDIR}/${JUST_FILENAME})
+			endforeach()
+			add_custom_target(${POPULE_PACKAGE_TARGET})
+			add_custom_command(TARGET ${POPULE_PACKAGE_TARGET}
+				POST_BUILD
+				COMMAND mkdir -p ${PACKAGE_ETCDIR}
+				COMMAND touch ${PACKAGE_ETCDIR}
+				COMMAND cp -r ${BD}/${TARGET} ${PACKAGE_ETCDIR}
+			)
+			add_dependencies(populate ${POPULE_PACKAGE_TARGET})
+			add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
 		endif(${T} STREQUAL "BINDING")
 		elseif(${CMAKE_BUILD_TYPE} MATCHES "[Dd][Ee][Bb][Uu][Gg]")
 			MESSAGE("${Yellow}.. Warning: ${TARGET} ignored when packaging.${ColourReset}")
