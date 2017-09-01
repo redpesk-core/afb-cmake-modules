@@ -311,7 +311,7 @@ macro(project_targets_populate)
 				POST_BUILD
 				COMMAND mkdir -p ${PACKAGE_ETCDIR}
 				COMMAND touch ${PACKAGE_ETCDIR}
-				COMMAND cp -r ${BD}/${TARGET} ${PACKAGE_ETCDIR}
+				COMMAND cp -r ${BD}/${TARGET}/* ${PACKAGE_ETCDIR}
 			)
 			add_dependencies(populate ${POPULE_PACKAGE_TARGET})
 			add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
