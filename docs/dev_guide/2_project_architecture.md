@@ -15,24 +15,34 @@ A typical project architecture would be :
 │   │       └── autobuild
 │   ├── app-templates/
 │   │   ├── README.md
-│   │   ├── autobuild/
-│   │   │   ├── agl
-│   │   │   │   └── autobuild.in
-│   │   │   ├── linux
-│   │   │   │   └── autobuild.in
-│   │   │   └── windows
-│   │   │       └── autobuild.in
 │   │   ├── cmake/
-│   │   │   ├── config.cmake.sample
 │   │   │   ├── export.map
 │   │   │   └── macros.cmake
-│   │   ├── deb/
-│   │   │   └── config.deb.in
-│   │   ├── rpm/
-│   │   │   └── config.spec.in
+│   │   ├── samples.d/
+│   │   │   ├── CMakeLists.txt.sample
+│   │   │   ├── config.cmake.sample
+│   │   │   ├── config.xml.in.sample
+│   │   │   └── xds-config.env.sample
+│   │   ├── template.d/
+│   │   │   ├── autobuild/
+│   │   │   │   ├── agl
+│   │   │   │   │   └── autobuild.in
+│   │   │   │   ├── linux
+│   │   │   │   │   └── autobuild.in
+│   │   │   │   └── windows
+│   │   │   │       └── autobuild.in
+│   │   │   ├── config.xml.in
+│   │   │   ├── deb-config.dsc.in
+│   │   │   ├── deb-config.install.in
+│   │   │   ├── debian.changelog.in
+│   │   │   ├── debian.compat.in
+│   │   │   ├── debian.rules.in
+│   │   │   ├── gdb-on-target.ini.in
+│   │   │   ├── install-wgt-on-target.sh.in
+│   │   │   ├── start-on-target.sh.in
+│   │   │   ├── rpm-config.spec.in
+│   │   │   └── xds-project-target.conf.in
 │   │   └── wgt/
-│   │       ├── config.xml.in
-│   │       ├── config.xml.in.sample
 │   │       ├── icon-default.png
 │   │       ├── icon-html5.png
 │   │       ├── icon-native.png

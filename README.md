@@ -28,7 +28,7 @@ To use these templates files on your project just install the reference files us
 ```bash
 git submodule add https://gerrit.automotivelinux.org/gerrit/p/apps/app-templates.git conf.d/app-templates
 mkdir conf.d/cmake
-cp conf.d/app-templates/cmake/config.cmake.sample conf.d/cmake/config.cmake
+cp conf.d/app-templates/samples.d/config.cmake.sample conf.d/cmake/config.cmake
 ```
 
 Edit the copied config.cmake file to fit your needs.
@@ -39,7 +39,7 @@ An example is available in **app-templates** submodule that you can copy and
 use:
 
 ```bash
-cp conf.d/app-templates/cmake/CMakeLists.txt.sample CMakeLists.txt
+cp conf.d/app-templates/samples.d/CMakeLists.txt.sample CMakeLists.txt
 ```
 
 ### Create your CMake targets
@@ -119,24 +119,34 @@ A typical project architecture would be :
 │   │       └── autobuild
 │   ├── app-templates/
 │   │   ├── README.md
-│   │   ├── autobuild/
-│   │   │   ├── agl
-│   │   │   │   └── autobuild.in
-│   │   │   ├── linux
-│   │   │   │   └── autobuild.in
-│   │   │   └── windows
-│   │   │       └── autobuild.in
 │   │   ├── cmake/
-│   │   │   ├── config.cmake.sample
 │   │   │   ├── export.map
 │   │   │   └── macros.cmake
-│   │   ├── deb/
-│   │   │   └── config.deb.in
-│   │   ├── rpm/
-│   │   │   └── config.spec.in
+│   │   ├── samples.d/
+│   │   │   ├── CMakeLists.txt.sample
+│   │   │   ├── config.cmake.sample
+│   │   │   ├── config.xml.in.sample
+│   │   │   └── xds-config.env.sample
+│   │   ├── template.d/
+│   │   │   ├── autobuild/
+│   │   │   │   ├── agl
+│   │   │   │   │   └── autobuild.in
+│   │   │   │   ├── linux
+│   │   │   │   │   └── autobuild.in
+│   │   │   │   └── windows
+│   │   │   │       └── autobuild.in
+│   │   │   ├── config.xml.in
+│   │   │   ├── deb-config.dsc.in
+│   │   │   ├── deb-config.install.in
+│   │   │   ├── debian.changelog.in
+│   │   │   ├── debian.compat.in
+│   │   │   ├── debian.rules.in
+│   │   │   ├── gdb-on-target.ini.in
+│   │   │   ├── install-wgt-on-target.sh.in
+│   │   │   ├── start-on-target.sh.in
+│   │   │   ├── rpm-config.spec.in
+│   │   │   └── xds-project-target.conf.in
 │   │   └── wgt/
-│   │       ├── config.xml.in
-│   │       ├── config.xml.in.sample
 │   │       ├── icon-default.png
 │   │       ├── icon-html5.png
 │   │       ├── icon-native.png
@@ -345,7 +355,12 @@ _app-templates/../cmake/_
 
 Those files has to be named use the following scheme _XX-${OSRELEASE}*.cmake_
 where _XX_ are numbers, ${OSRELEASE} the **ID_LIKE** or **ID** field from
-_/etc/os-release_ file.
+_/etc/os-release_ file. You can also define default OS configuration file
+to use as fallback is none specific OS configuration is available using the
+scheme _XX-default*.cmake_. Then is you need by example a module that isn't
+named the same in one distro only, you only has to define a specific file to
+handle that case then for all the other case put the configuration in the
+default file.
 
 ### Include customs templated scripts
 

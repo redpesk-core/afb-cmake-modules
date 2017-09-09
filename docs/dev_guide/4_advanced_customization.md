@@ -32,6 +32,7 @@ set(VARIABLE_NAME 'value string random' CACHE STRING 'docstring')
 
 ### OS custom cmake files
 
+
 This is meant to personalize the project depending on the OS your are using.
 At the end of config.cmake, common.cmake will include lot of cmake file to
 customize project build depending on your plateform. It will detect your OS
@@ -45,7 +46,12 @@ _app-templates/../cmake/_
 
 Those files has to be named use the following scheme _XX-${OSRELEASE}*.cmake_
 where _XX_ are numbers, ${OSRELEASE} the **ID_LIKE** or **ID** field from
-_/etc/os-release_ file.
+_/etc/os-release_ file. You can also define default OS configuration file
+to use as fallback is none specific OS configuration is available using the
+scheme _XX-default*.cmake_. Then is you need by example a module that isn't
+named the same in one distro only, you only has to define a specific file to
+handle that case then for all the other case put the configuration in the
+default file.
 
 ## Include customs templated scripts
 

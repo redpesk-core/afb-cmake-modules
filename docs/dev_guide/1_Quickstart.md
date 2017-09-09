@@ -6,9 +6,9 @@ To use these templates files on your project just install the reference files us
 **git submodule** then use `config.cmake` file to configure your project specificities :
 
 ```bash
-git submodule add https://gerrit.automotivelinux.org/gerrit/apps/app-templatesconf.d/app-templates conf.d/app-templates
+git submodule add https://gerrit.automotivelinux.org/gerrit/p/apps/app-templates.git conf.d/app-templates
 mkdir conf.d/cmake
-cp conf.d/app-templates/cmake/config.cmake.sample conf.d/cmake/config.cmake
+cp conf.d/app-templates/samples.d/config.cmake.sample conf.d/cmake/config.cmake
 ```
 
 Edit the copied config.cmake file to fit your needs.
@@ -19,7 +19,7 @@ An example is available in **app-templates** submodule that you can copy and
 use:
 
 ```bash
-cp conf.d/app-templates/cmake/CMakeLists.txt CMakeLists.txt
+cp conf.d/app-templates/samples.d/CMakeLists.txt.sample CMakeLists.txt
 ```
 
 ## Create your CMake targets
