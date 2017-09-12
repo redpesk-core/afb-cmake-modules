@@ -153,21 +153,21 @@ macro(add_input_files INPUT_FILES)
 		add_custom_command(TARGET ${TARGET_NAME}
 			PRE_BUILD
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			COMMAND which ${XML_CHECKER} && ${XML_CHECKER} ${file} || ${CMAKE_COMMAND} -E cmake_echo_color --red "Warning: XML_CHECKER not found"
+			COMMAND which ${XML_CHECKER} > /dev/null 2>&1 && ${XML_CHECKER} ${file} || ${CMAKE_COMMAND} -E cmake_echo_color --red "Warning: XML_CHECKER not found"
 		)
 	endforeach()
 	foreach(file ${LUA_LIST})
 	add_custom_command(TARGET ${TARGET_NAME}
 		PRE_BUILD
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		COMMAND which ${LUA_CHECKER} && ${LUA_CHECKER} ${file} || ${CMAKE_COMMAND} -E cmake_echo_color --red "Warning: LUA_CHECKER not found"
+		COMMAND which ${LUA_CHECKER} > /dev/null 2>&1 && ${LUA_CHECKER} ${file} || ${CMAKE_COMMAND} -E cmake_echo_color --red "Warning: LUA_CHECKER not found"
 	)
 	endforeach()
 	foreach(file ${JSON_LIST})
 	add_custom_command(TARGET ${TARGET_NAME}
 		PRE_BUILD
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		COMMAND which ${JSON_CHECKER} && ${JSON_CHECKER} ${file} || ${CMAKE_COMMAND} -E cmake_echo_color --red "Warning: JSON_CHECKER not found"
+		COMMAND which ${JSON_CHECKER} > /dev/null 2>&1 && ${JSON_CHECKER} ${file} || ${CMAKE_COMMAND} -E cmake_echo_color --red "Warning: JSON_CHECKER not found"
 	)
 	endforeach()
 
