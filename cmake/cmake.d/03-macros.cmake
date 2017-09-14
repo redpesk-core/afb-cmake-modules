@@ -215,6 +215,7 @@ macro(project_targets_populate)
 		set(POPULE_PACKAGE_TARGET "project_populate_${TARGET}")
 
 		get_target_property(P ${TARGET} PREFIX)
+		get_target_property(S ${TARGET} SUFFIX)
 		get_target_property(BD ${TARGET} BINARY_DIR)
 		get_target_property(SD ${TARGET} SOURCE_DIR)
 		get_target_property(OUT ${TARGET} OUTPUT_NAME)
@@ -227,16 +228,24 @@ macro(project_targets_populate)
 			endif()
 		endif()
 
-		if(${T} STREQUAL "BINDING")
-			list(APPEND BINDINGS_LIST "${P}${OUT}")
-			add_custom_command(OUTPUT ${PACKAGE_LIBDIR}/${P}${OUT}.so
-				DEPENDS ${BD}/${P}${OUT}.so
+		if(${T} STREQUAL "BINDING" OR ${T} STREQUAL "PLUGIN")
+			if(NOT S)
+				list(APPEND BINDINGS_LIST "${P}${OUT}")
+				set(S ".so")
+			else()
+				set(PACKAGE_LIBDIR_BCK "${PACKAGE_LIBDIR}")
+				set(PACKAGE_LIBDIR "${PACKAGE_LIBDIR}/plugins")
+			endif()
+
+			add_custom_command(OUTPUT ${PACKAGE_LIBDIR}/${P}${OUT}${S}
+				DEPENDS ${BD}/${P}${OUT}${S}
 				COMMAND mkdir -p ${PACKAGE_LIBDIR}
-				COMMAND cp ${BD}/${P}${OUT}.so ${PACKAGE_LIBDIR}
+				COMMAND cp ${BD}/${P}${OUT}${S} ${PACKAGE_LIBDIR}
 			)
-			add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${OUT}.so)
+			add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${OUT}${S})
 			add_dependencies(populate ${POPULE_PACKAGE_TARGET})
 			add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
+			set(PACKAGE_LIBDIR ${PACKAGE_LIBDIR_BCK})
 		elseif(${T} STREQUAL "BINDINGV2")
 			if (OPENAPI_DEF)
 				add_custom_command(OUTPUT ${SD}/${OPENAPI_DEF}.h
@@ -315,7 +324,7 @@ macro(project_targets_populate)
 			)
 			add_dependencies(populate ${POPULE_PACKAGE_TARGET})
 			add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
-		endif(${T} STREQUAL "BINDING")
+		endif()
 		elseif(${CMAKE_BUILD_TYPE} MATCHES "[Dd][Ee][Bb][Uu][Gg]")
 			MESSAGE("${Yellow}.. Warning: ${TARGET} ignored when packaging.${ColourReset}")
 		endif()
