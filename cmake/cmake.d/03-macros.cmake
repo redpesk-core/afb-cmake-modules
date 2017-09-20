@@ -127,16 +127,31 @@ macro(add_input_files INPUT_FILES)
 		set(ext_reg "xml$")
 		set(XML_LIST ${INPUT_FILES})
 		list_filter(XML_LIST ext_reg)
+		execute_process(
+			COMMAND which ${XML_CHECKER}
+			RESULT_VARIABLE XML_CHECKER_PRESENT
+			OUTPUT_QUIET ERROR_QUIET
+		)
 	endif()
 	if(NOT DEFINED LUA_LIST)
 		set(ext_reg "lua$")
 		set(LUA_LIST ${INPUT_FILES})
 		list_filter(LUA_LIST ext_reg)
+		execute_process(
+			COMMAND which ${LUA_CHECKER}
+			RESULT_VARIABLE LUA_CHECKER_PRESENT
+			OUTPUT_QUIET ERROR_QUIET
+		)
 	endif()
 	if(NOT DEFINED JSON_FILES)
 		set(ext_reg "json$")
 		set(JSON_LIST ${INPUT_FILES})
 		list_filter(JSON_LIST ext_reg)
+		execute_process(
+			COMMAND which ${JSON_CHECKER}
+			RESULT_VARIABLE JSON_CHECKER_PRESENT
+			OUTPUT_QUIET ERROR_QUIET
+		)
 	endif()
 
 	# These are v3.6 subcommand. Not used as default for now as
@@ -149,27 +164,48 @@ macro(add_input_files INPUT_FILES)
 	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
 	)
 
-	foreach(file ${XML_LIST})
+	if(XML_CHECKER_PRESENT EQUAL 0)
+		foreach(file ${XML_LIST})
+			add_custom_command(TARGET ${TARGET_NAME}
+				PRE_BUILD
+				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+				COMMAND ${XML_CHECKER} ${file}
+			)
+		endforeach()
+	elseif(XML_LIST)
+	add_custom_command(TARGET ${TARGET_NAME}
+	PRE_BUILD
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red "Warning: XML_CHECKER not found. Not verification made on files !")
+	endif()
+	if(LUA_CHECKER_PRESENT EQUAL 0)
+		foreach(file ${LUA_LIST})
 		add_custom_command(TARGET ${TARGET_NAME}
 			PRE_BUILD
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			COMMAND which ${XML_CHECKER} > /dev/null 2>&1 && ${XML_CHECKER} ${file} || ${CMAKE_COMMAND} -E cmake_echo_color --red "Warning: XML_CHECKER not found"
+			COMMAND ${LUA_CHECKER} ${file}
 		)
-	endforeach()
-	foreach(file ${LUA_LIST})
+		endforeach()
+	elseif(LUA_LIST)
+		add_custom_command(TARGET ${TARGET_NAME}
+			PRE_BUILD
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+			COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red "Warning: LUA_CHECKER not found. Not verification made on files !")
+	endif()
+	if(JSON_CHECKER_PRESENT EQUAL 0)
+		foreach(file ${JSON_LIST})
+		add_custom_command(TARGET ${TARGET_NAME}
+			PRE_BUILD
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+			COMMAND ${JSON_CHECKER} ${file}
+		)
+		endforeach()
+	elseif(JSON_LIST)
 	add_custom_command(TARGET ${TARGET_NAME}
-		PRE_BUILD
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		COMMAND which ${LUA_CHECKER} > /dev/null 2>&1 && ${LUA_CHECKER} ${file} || ${CMAKE_COMMAND} -E cmake_echo_color --red "Warning: LUA_CHECKER not found"
-	)
-	endforeach()
-	foreach(file ${JSON_LIST})
-	add_custom_command(TARGET ${TARGET_NAME}
-		PRE_BUILD
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		COMMAND which ${JSON_CHECKER} > /dev/null 2>&1 && ${JSON_CHECKER} ${file} || ${CMAKE_COMMAND} -E cmake_echo_color --red "Warning: JSON_CHECKER not found"
-	)
-	endforeach()
+	PRE_BUILD
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red "Warning: JSON_CHECKER not found. Not verification made on files !")
+	endif()
 
 	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
 	DEPENDS ${INPUT_FILES}
