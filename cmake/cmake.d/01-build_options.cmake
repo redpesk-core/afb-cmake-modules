@@ -97,7 +97,7 @@ foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
 endforeach(PKG_CONFIG)
 
 # Optional LibEfence Malloc debug library
-IF(CMAKE_BUILD_TYPE MATCHES DEBUG)
+IF(CMAKE_BUILD_TYPE MATCHES DEBUG AND USE_EFENCE)
 CHECK_LIBRARY_EXISTS(efence malloc "" HAVE_LIBEFENCE)
 IF(HAVE_LIBEFENCE)
 	MESSAGE(STATUS "Linking with ElectricFence for debugging purposes...")
