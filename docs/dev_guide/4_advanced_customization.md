@@ -1,4 +1,4 @@
-# Advanced customization
+# Advanced build customization
 
 ## Including additionnals cmake files
 
