@@ -24,6 +24,9 @@
 #     Customise your preferences in "./conf.d/cmake/config.cmake"
 #--------------------------------------------------------------------------
 
+# Include ExternalProject CMake module by default
+include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
+
 if(DEFINED ENV{SDKTARGETSYSROOT})
 file(STRINGS $ENV{SDKTARGETSYSROOT}/usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
 set(BUILD_ENV_SYSROOT $ENV{SDKTARGETSYSROOT})
