@@ -220,14 +220,51 @@ macro(set_openapi_filename openapi_filename)
 	set(OPENAPI_DEF ${openapi_filename} CACHE STRING "OpenAPI JSON file name used to generate binding header file before building a binding v2 target.")
 endmacro()
 
+# Common command to call inside project_targets_populate macro
+macro(generate_one_populate_target OUTPUTFILES PKG_DESTDIR)
+	add_custom_command(OUTPUT ${PKG_DESTDIR}/${OUTPUTFILES}
+		DEPENDS ${BD}/${OUTPUTFILES}
+		COMMAND mkdir -p ${PKG_DESTDIR}
+		COMMAND touch ${PKG_DESTDIR}
+		COMMAND cp -r ${BD}/${OUTPUTFILES}/* ${PKG_DESTDIR} 2> /dev/null || cp ${BD}/${OUTPUTFILES} ${PKG_DESTDIR}
+	)
+
+	add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PKG_DESTDIR}/${OUTPUTFILES})
+	add_dependencies(populate ${POPULE_PACKAGE_TARGET})
+	add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
+endmacro()
+
+# To be call inside project_targets_populate macro
+macro(afb_genskel)
+	if (OPENAPI_DEF)
+		add_custom_command(OUTPUT ${SD}/${OPENAPI_DEF}.h
+			DEPENDS ${SD}/${OPENAPI_DEF}.json
+			COMMAND afb-genskel ${SD}/${OPENAPI_DEF}.json > ${SD}/${OPENAPI_DEF}.h
+		)
+		add_custom_target("${TARGET}_GENSKEL" DEPENDS ${SD}/${OPENAPI_DEF}.h
+			COMMENT "Generating OpenAPI header file ${OPENAPI_DEF}.h")
+		add_dependencies(${TARGET} "${TARGET}_GENSKEL")
+	else()
+		add_custom_command(OUTPUT ${SD}/${OUT}-apidef.h
+			DEPENDS ${SD}/${OUT}-apidef.json
+			COMMAND afb-genskel ${SD}/${OUT}-apidef.json > ${SD}/${OUT}-apidef.h
+		)
+		add_custom_target("${TARGET}_GENSKEL" DEPENDS ${SD}/${OUT}-apidef.h
+			COMMENT "Generating OpenAPI header file ${OUT}-apidef.h")
+		add_dependencies(${TARGET} "${TARGET}_GENSKEL")
+	endif()
+endmacro()
+
 # Pre-packaging
 macro(project_targets_populate)
 	# Default Widget default directory
+	set(AFBDIR afb)
 	set(BINDIR bin)
 	set(ETCDIR etc)
 	set(LIBDIR lib)
 	set(HTTPDIR htdocs)
 	set(DATADIR data)
+	set(PACKAGE_AFBDIR  ${PROJECT_PKG_BUILD_DIR}/${AFBDIR})
 	set(PACKAGE_BINDIR  ${PROJECT_PKG_BUILD_DIR}/${BINDIR})
 	set(PACKAGE_ETCDIR  ${PROJECT_PKG_BUILD_DIR}/${ETCDIR})
 	set(PACKAGE_LIBDIR  ${PROJECT_PKG_BUILD_DIR}/${LIBDIR})
@@ -253,124 +290,65 @@ macro(project_targets_populate)
 
 	get_property(PROJECT_TARGETS GLOBAL PROPERTY PROJECT_TARGETS)
 	foreach(TARGET ${PROJECT_TARGETS})
-	get_target_property(T ${TARGET} LABELS)
-	if(T)
 		# Declaration of a custom command that will populate widget tree with the target
 		set(POPULE_PACKAGE_TARGET "project_populate_${TARGET}")
+		get_target_property(T ${TARGET} LABELS)
 
-		get_target_property(P ${TARGET} PREFIX)
-		get_target_property(S ${TARGET} SUFFIX)
-		get_target_property(BD ${TARGET} BINARY_DIR)
-		get_target_property(SD ${TARGET} SOURCE_DIR)
-		get_target_property(OUT ${TARGET} OUTPUT_NAME)
+		if(T)
+			get_target_property(P ${TARGET} PREFIX)
+			get_target_property(S ${TARGET} SUFFIX)
+			get_target_property(BD ${TARGET} BINARY_DIR)
+			get_target_property(SD ${TARGET} SOURCE_DIR)
+			get_target_property(OUT ${TARGET} OUTPUT_NAME)
 
-		if(P MATCHES "NOTFOUND$")
-			if (${T} STREQUAL "BINDING")
-				set(P "lib")
-			else()
-				set(P "")
-			endif()
-		endif()
-
-		if(${T} STREQUAL "BINDING" OR ${T} STREQUAL "PLUGIN")
-			if(NOT S)
-				list(APPEND BINDINGS_LIST "${P}${OUT}")
-				set(S ".so")
-			else()
-				set(PACKAGE_LIBDIR_BCK "${PACKAGE_LIBDIR}")
-				set(PACKAGE_LIBDIR "${PACKAGE_LIBDIR}/plugins")
+			if(P MATCHES "NOTFOUND$")
+				if (${T} STREQUAL "LIBRARY")
+					set(P "lib")
+				else()
+					set(P "")
+				endif()
 			endif()
 
-			add_custom_command(OUTPUT ${PACKAGE_LIBDIR}/${P}${OUT}${S}
-				DEPENDS ${BD}/${P}${OUT}${S}
-				COMMAND mkdir -p ${PACKAGE_LIBDIR}
-				COMMAND cp ${BD}/${P}${OUT}${S} ${PACKAGE_LIBDIR}
-			)
-			add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${OUT}${S})
-			add_dependencies(populate ${POPULE_PACKAGE_TARGET})
-			add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
-			set(PACKAGE_LIBDIR ${PACKAGE_LIBDIR_BCK})
-		elseif(${T} STREQUAL "BINDINGV2")
-			if (OPENAPI_DEF)
-				add_custom_command(OUTPUT ${SD}/${OPENAPI_DEF}.h
-					DEPENDS ${SD}/${OPENAPI_DEF}.json
-					COMMAND afb-genskel ${SD}/${OPENAPI_DEF}.json > ${SD}/${OPENAPI_DEF}.h
-				)
-				add_custom_target("${TARGET}_GENSKEL" DEPENDS ${SD}/${OPENAPI_DEF}.h
-					COMMENT "Generating OpenAPI header file ${OPENAPI_DEF}.h")
-				add_dependencies(${TARGET} "${TARGET}_GENSKEL")
-			else()
-				add_custom_command(OUTPUT ${SD}/${OUT}-apidef.h
-					DEPENDS ${SD}/${OUT}-apidef.json
-					COMMAND afb-genskel ${SD}/${OUT}-apidef.json > ${SD}/${OUT}-apidef.h
-				)
-				add_custom_target("${TARGET}_GENSKEL" DEPENDS ${SD}/${OUT}-apidef.h
-					COMMENT "Generating OpenAPI header file ${OUT}-apidef.h")
-				add_dependencies(${TARGET} "${TARGET}_GENSKEL")
-			endif()
-
-			add_custom_command(OUTPUT ${PACKAGE_LIBDIR}/${P}${OUT}.so
-					DEPENDS ${BD}/${P}${OUT}.so
-					COMMAND mkdir -p ${PACKAGE_LIBDIR}
-					COMMAND cp ${BD}/${P}${OUT}.so ${PACKAGE_LIBDIR}
-				)
-				add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_LIBDIR}/${P}${OUT}.so)
-				add_dependencies(populate ${POPULE_PACKAGE_TARGET})
-				add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
-		elseif(${T} STREQUAL "EXECUTABLE")
-			add_custom_command(OUTPUT ${PACKAGE_BINDIR}/${P}${OUT}
-				DEPENDS ${BD}/${P}${OUT}
-				COMMAND mkdir -p ${PACKAGE_BINDIR}
-				COMMAND cp ${BD}/${P}${OUT} ${PACKAGE_BINDIR}
-			)
-			add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_BINDIR}/${P}${OUT})
-			add_dependencies(populate ${POPULE_PACKAGE_TARGET})
-			add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
-		elseif(${T} STREQUAL "HTDOCS")
-			add_custom_command(OUTPUT ${PACKAGE_HTTPDIR}-xx
-				DEPENDS ${BD}/${P}${OUT}
-				COMMAND mkdir -p ${PACKAGE_HTTPDIR}
-				COMMAND touch ${PACKAGE_HTTPDIR}
-				COMMAND cp -r ${BD}/${P}${OUT}/* ${PACKAGE_HTTPDIR}
-			)
-			add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PACKAGE_HTTPDIR}-xx)
-			add_dependencies(populate ${POPULE_PACKAGE_TARGET})
-			add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
-		elseif(${T} STREQUAL "DATA")
-			# Generate list of output files instead of just one output directory
-			get_target_property(SF ${TARGET} SOURCES)
-			foreach(file ${SF})
-				get_filename_component(JUST_FILENAME ${file} NAME)
-				list(APPEND OUTPUT_FILES ${PACKAGE_DATADIR}/${JUST_FILENAME})
-			endforeach()
-			add_custom_target(${POPULE_PACKAGE_TARGET})
-			add_custom_command(TARGET ${POPULE_PACKAGE_TARGET}
-				POST_BUILD
-				COMMAND mkdir -p ${PACKAGE_DATADIR}
-				COMMAND touch ${PACKAGE_DATADIR}
-				COMMAND cp -r ${BD}/${TARGET} ${PACKAGE_DATADIR}
-			)
-			add_dependencies(populate ${POPULE_PACKAGE_TARGET})
-			add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
+			get_target_property(IMPPATH ${TARGET} IMPORTED_LOCATION)
+			if(${T} STREQUAL "LIBRARY")
+				unset(BD)
+				generate_one_populate_target(${IMPPATH} ${PACKAGE_LIBDIR})
+			elseif(${T} STREQUAL "PLUGIN")
+				if(NOT S)
+					set(S ".ctlso")
+				endif()
+				generate_one_populate_target(${P}${OUT}${S} "${PACKAGE_AFBDIR}/plugins")
+			elseif(${T} STREQUAL "BINDING")
+				if(NOT S)
+					set(S ".so")
+				endif()
+				list(APPEND BINDINGS_LIST "${P}${OUT}${S}")
+				generate_one_populate_target(${P}${OUT}${S} ${PACKAGE_AFBDIR})
+			elseif(${T} STREQUAL "BINDINGV2")
+				if(NOT S)
+					set(S ".so")
+				endif()
+				afb_genskel()
+				generate_one_populate_target(${P}${OUT}${S} ${PACKAGE_AFBDIR})
+			elseif(${T} STREQUAL "EXECUTABLE")
+				if(NOT S)
+					set(S "")
+				endif()
+				if(NOT OUT AND IMPPATH)
+					unset(BD)
+					generate_one_populate_target(${IMPPATH} ${PACKAGE_BINDIR})
+				else()
+					generate_one_populate_target(${P}${OUT}${S} ${PACKAGE_BINDIR})
+				endif()
+			elseif(${T} STREQUAL "HTDOCS")
+				generate_one_populate_target(${P}${OUT} ${PACKAGE_HTTPDIR})
+			elseif(${T} STREQUAL "DATA")
+				generate_one_populate_target(${TARGET} ${PACKAGE_DATADIR})
 			elseif(${T} STREQUAL "BINDING-CONFIG")
-			# Generate list of output files instead of just one output directory
-			get_target_property(SF ${TARGET} SOURCES)
-			foreach(file ${SF})
-				get_filename_component(JUST_FILENAME ${file} NAME)
-				list(APPEND OUTPUT_FILES ${PACKAGE_ETCDIR}/${JUST_FILENAME})
-			endforeach()
-			add_custom_target(${POPULE_PACKAGE_TARGET})
-			add_custom_command(TARGET ${POPULE_PACKAGE_TARGET}
-				POST_BUILD
-				COMMAND mkdir -p ${PACKAGE_ETCDIR}
-				COMMAND touch ${PACKAGE_ETCDIR}
-				COMMAND cp -r ${BD}/${TARGET}/* ${PACKAGE_ETCDIR}
-			)
-			add_dependencies(populate ${POPULE_PACKAGE_TARGET})
-			add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
-		endif()
-		elseif(${CMAKE_BUILD_TYPE} MATCHES "[Dd][Ee][Bb][Uu][Gg]")
-			MESSAGE("${Yellow}.. Warning: ${TARGET} ignored when packaging.${ColourReset}")
+				generate_one_populate_target(${TARGET} ${PACKAGE_ETCDIR})
+			endif()
+			elseif(${CMAKE_BUILD_TYPE} MATCHES "[Dd][Ee][Bb][Uu][Gg]")
+				MESSAGE("${Yellow}.. Warning: ${TARGET} ignored when packaging.${ColourReset}")
 		endif()
 	endforeach()
 endmacro(project_targets_populate)
