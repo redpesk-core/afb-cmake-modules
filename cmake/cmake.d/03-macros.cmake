@@ -269,11 +269,6 @@ endmacro()
 # Pre-packaging
 macro(project_targets_populate)
 	# Default Widget default directory
-	set(BINDIR bin)
-	set(ETCDIR etc)
-	set(LIBDIR lib)
-	set(HTTPDIR htdocs)
-	set(DATADIR data)
 	set(PACKAGE_BINDIR  ${PROJECT_PKG_BUILD_DIR}/${BINDIR})
 	set(PACKAGE_ETCDIR  ${PROJECT_PKG_BUILD_DIR}/${ETCDIR})
 	set(PACKAGE_LIBDIR  ${PROJECT_PKG_BUILD_DIR}/${LIBDIR})

@@ -144,3 +144,10 @@ set(GDB_INITIAL_BREAK "personality" CACHE STRING "Initial Break Point for GDB re
 set(LUA_CHECKER "luac" "-p" CACHE STRING "LUA compiler")
 set(XML_CHECKER "xmllint" CACHE STRING "XML linter")
 set(JSON_CHECKER "" CACHE STRING "JSON linter")
+
+# Default GNU directories path variables
+set(BINDIR bin CACHE PATH "User executables")
+set(ETCDIR etc CACHE PATH "Read only system configuration data")
+set(LIBDIR lib CACHE PATH "System library directory")
+set(HTTPDIR htdocs CACHE PATH "HTML5 data directory")
+set(DATADIR data CACHE PATH "External data resources files")
