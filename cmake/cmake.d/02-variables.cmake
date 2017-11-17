@@ -55,9 +55,37 @@ math(EXPR c "(${LINUX_VERSION_CODE} & 255)")
 
 set(KERNEL_VERSION "${a}.${b}.${c}")
 
+# Setup project and app-templates version variables
+execute_process(COMMAND git describe --abbrev=0
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	OUTPUT_VARIABLE GIT_PROJECT_VERSION
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+execute_process(COMMAND git describe --abbrev=0
+	WORKING_DIRECTORY ${PKG_TEMPLATE_PREFIX}
+	OUTPUT_VARIABLE APP_TEMPLATES_VERSION
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# Detect unstaged or untracked changes
+execute_process(COMMAND git status --short
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	OUTPUT_VARIABLE DIRTY_FLAG
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
 # Include project configuration
 # ------------------------------
+if(NOT DEFINED PROJECT_VERSION)
+	set(PROJECT_VERSION ${GIT_PROJECT_VERSION})
+endif()
+# Release additionnals informations isn't supported so setting project
+# attributes then add the dirty flag if git repo not sync'ed
 project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES ${PROJECT_LANGUAGES})
+if(NOT ${DIRTY_FLAG})
+set(PROJECT_VERSION "${PROJECT_VERSION}-dirty")
+endif()
+
 set(PROJECT_LIBDIR "${CMAKE_SOURCE_DIR}/libs" CACHE PATH "Subpath to libraries")
 set(PROJECT_RESOURCES "${CMAKE_SOURCE_DIR}/data" CACHE PATH "Subpath to data")
 

@@ -87,6 +87,7 @@ configure_files_in_dir(${PROJECT_APP_TEMPLATES_DIR}/${ENTRY_POINT}/template.d)
 configure_files_in_dir($ENV{HOME}/.config/app-templates/scripts)
 configure_files_in_dir(/etc/app-templates/scripts)
 
+check_version()
 project_targets_populate()
 remote_targets_populate()
 project_package_build()
