@@ -100,6 +100,8 @@ INCLUDE_DIRECTORIES(${EXTRA_INCLUDE_DIRS})
 
 # Default Linkflag
 set(PKG_TEMPLATE_PREFIX "\"${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}\"" CACHE PATH "Default Package Templates Directory")
+set(BARE_PKG_TEMPLATE_PREFIX "${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}" CACHE PATH "Default Package Templates Directory")
+
 if(NOT BINDINGS_LINK_FLAG)
 	set(BINDINGS_LINK_FLAG "-Wl,--version-script=${PKG_TEMPLATE_PREFIX}/cmake/export.map")
 endif()

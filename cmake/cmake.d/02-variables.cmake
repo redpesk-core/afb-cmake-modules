@@ -62,7 +62,7 @@ execute_process(COMMAND git describe --abbrev=0
 	OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 execute_process(COMMAND git describe --abbrev=0
-	WORKING_DIRECTORY ${PKG_TEMPLATE_PREFIX}
+	WORKING_DIRECTORY ${BARE_PKG_TEMPLATE_PREFIX}
 	OUTPUT_VARIABLE APP_TEMPLATES_VERSION
 	OUTPUT_STRIP_TRAILING_WHITESPACE
 )
@@ -133,9 +133,9 @@ else()
 endif()
 
 # Paths to templates files
-set(TEMPLATE_DIR "${PKG_TEMPLATE_PREFIX}/template.d" CACHE PATH "Subpath to a directory where are stored needed files to launch on remote target to debuging purposes")
+set(TEMPLATE_DIR "${BARE_PKG_TEMPLATE_PREFIX}/template.d" CACHE PATH "Subpath to a directory where are stored needed files to launch on remote target to debuging purposes")
 
-string(REGEX REPLACE "^(.*)/.*$" "\\1" ENTRY_POINT "${PKG_TEMPLATE_PREFIX}")
+string(REGEX REPLACE "^(.*)/.*$" "\\1" ENTRY_POINT "${BARE_PKG_TEMPLATE_PREFIX}")
 set(PROJECT_PKG_ENTRY_POINT ${ENTRY_POINT}/packaging CACHE PATH "Where package build files, like rpm.spec file or config.xml, are write.")
 
 set(WIDGET_ICON "${ENTRY_POINT}/wgt/${PROJECT_ICON}" CACHE PATH "Path to the widget icon")
