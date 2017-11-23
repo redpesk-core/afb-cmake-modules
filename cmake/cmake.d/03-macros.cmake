@@ -536,14 +536,14 @@ macro(project_closing_msg)
 endmacro()
 
 macro(check_version)
-	if(${GIT_PROJECT_VERSION})
+	if(GIT_PROJECT_VERSION)
 		if(${GIT_PROJECT_VERSION} VERSION_GREATER ${APP_TEMPLATES_VERSION})
 			message(STATUS "${Yellow}.. Your app-templates submodule version seems outdated. You should update it with 'git submodule update --remote ${PROJECT_APP_TEMPLATES_DIR}'.
 		- App-templates version: ${APP_TEMPLATES_VERSION}
 		- Project version according AGL Git tag: ${GIT_PROJECT_VERSION}"
 		)
 		endif()
-	elseif(${PROJECT_VERSION})
+	elseif(PROJECT_VERSION)
 		if(${PROJECT_VERSION} VERSION_GREATER ${APP_TEMPLATES_VERSION})
 			message(STATUS "${Yellow}.. Your app-templates submodule version seems outdated. You should update it with 'git submodule update --remote ${PROJECT_APP_TEMPLATES_DIR}'.
 		- App-templates version: ${APP_TEMPLATES_VERSION}
