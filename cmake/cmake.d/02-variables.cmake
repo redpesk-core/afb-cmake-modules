@@ -86,8 +86,8 @@ if(NOT ${DIRTY_FLAG})
 set(PROJECT_VERSION "${PROJECT_VERSION}-dirty")
 endif()
 
-set(PROJECT_LIBDIR "\"${CMAKE_SOURCE_DIR}/libs\"" CACHE PATH "Subpath to libraries")
-set(PROJECT_RESOURCES "\"${CMAKE_SOURCE_DIR}/data\"" CACHE PATH "Subpath to data")
+#set(PROJECT_LIBDIR "${CMAKE_SOURCE_DIR}/libs" CACHE PATH "Subpath to libraries")
+#set(PROJECT_RESOURCES "${CMAKE_SOURCE_DIR}/data" CACHE PATH "Subpath to data")
 
 set(AFB_TOKEN   ""      CACHE PATH "Default AFB_TOKEN")
 set(AFB_REMPORT "1234" CACHE PATH "Default AFB_TOKEN")
