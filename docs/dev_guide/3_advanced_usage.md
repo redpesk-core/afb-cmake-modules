@@ -70,6 +70,8 @@ SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
 
 ## Add external 3rd party library
 
+### Build, link and ship external library with the project
+
 You could need to include an external library that isn't shipped in the
 platform. Then you have to bundle the required library in the `lib` widget
 directory.
@@ -114,8 +116,12 @@ add_dependencies(${TARGET_NAME} ${MXML})
 
 Here we define an external project that drive the build of the library then we
 define new CMake target of type **IMPORTED**. Meaning that this target hasn't
-be built using CMake but is available at the location defined in the target
+been built using CMake but is available at the location defined in the target
 property *IMPORTED_LOCATION*.
+
+You could want to build the library as *SHARED* or *STATIC* depending on your needs
+and goals. Then you only have to modify the external project configure step and change
+filename used by **IMPORTED** library target defined after external project.
 
 Then target *LABELS* property is set to **LIBRARY** to ship it in the widget.
 
@@ -124,6 +130,31 @@ property *INTERFACE_INCLUDE_DIRECTORIES*. Setting that when another target link
 to that imported target, it can access to the include directories.
 
 We bound the target to the external project using a CMake dependency at last.
+
+Then this target could be use like any other CMake target and be linked etc.
+
+### Only link and ship external library with the project
+
+If you already have a binary version of the library that you want to use and you
+can't or don't want to build the library then you only have to add an **IMPORTED**
+library target.
+
+So, taking the above example, `mxml` library inclusion would be:
+
+```cmake
+PROJECT_TARGET_ADD(mxml)
+
+add_library(${TARGET_NAME} SHARED IMPORTED GLOBAL)
+
+SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
+    LABELS LIBRARY
+    IMPORTED_LOCATION /path/to/library/libmxml.so.1
+    INTERFACE_INCLUDE_DIRECTORIES /path/to/mxml/include/dir
+)
+```
+
+Finally, you can link any other lib or executable target with this imported
+library like any other target.
 
 ## Macro reference
 

@@ -32,7 +32,6 @@ set(VARIABLE_NAME 'value string random' CACHE STRING 'docstring')
 
 ### OS custom cmake files
 
-
 This is meant to personalize the project depending on the OS your are using.
 At the end of config.cmake, common.cmake will include lot of cmake file to
 customize project build depending on your plateform. It will detect your OS
