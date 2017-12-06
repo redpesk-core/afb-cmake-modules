@@ -79,15 +79,13 @@ execute_process(COMMAND git status --short
 if(NOT DEFINED PROJECT_VERSION)
 	set(PROJECT_VERSION ${GIT_PROJECT_VERSION})
 endif()
+
 # Release additionnals informations isn't supported so setting project
 # attributes then add the dirty flag if git repo not sync'ed
 project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES ${PROJECT_LANGUAGES})
 if(NOT ${DIRTY_FLAG})
 set(PROJECT_VERSION "${PROJECT_VERSION}-dirty")
 endif()
-
-#set(PROJECT_LIBDIR "${CMAKE_SOURCE_DIR}/libs" CACHE PATH "Subpath to libraries")
-#set(PROJECT_RESOURCES "${CMAKE_SOURCE_DIR}/data" CACHE PATH "Subpath to data")
 
 set(AFB_TOKEN   ""      CACHE PATH "Default AFB_TOKEN")
 set(AFB_REMPORT "1234" CACHE PATH "Default AFB_TOKEN")
@@ -179,3 +177,11 @@ set(ETCDIR etc CACHE PATH "Read only system configuration data")
 set(LIBDIR lib CACHE PATH "System library directory")
 set(HTTPDIR htdocs CACHE PATH "HTML5 data directory")
 set(DATADIR data CACHE PATH "External data resources files")
+
+# Normally CMake uses the build tree for the RPATH when building executables
+# etc on systems that use RPATH. When the software is installed the executables
+# etc are relinked by CMake to have the install RPATH. If this variable is set
+# to true then the software is always built with the install path for the RPATH
+# and does not need to be relinked when installed.
+# Rpath could be set and controlled by target property INSTALL_RPATH
+set(CMAKE_BUILD_WITH_INSTALL_RPATH true)

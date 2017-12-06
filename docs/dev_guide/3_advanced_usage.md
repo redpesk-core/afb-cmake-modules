@@ -68,6 +68,9 @@ SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
 > targets. This is already handle by template and will be installed in the
 > following path : **${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}**
 
+> **NOTE**: if you want to set and use `rpath` with your target you should use
+> and set the target property `INSTALL_RPATH`.
+
 ## Add external 3rd party library
 
 ### Build, link and ship external library with the project
