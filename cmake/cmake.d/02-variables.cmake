@@ -176,7 +176,7 @@ set(BINDIR bin CACHE PATH "User executables")
 set(ETCDIR etc CACHE PATH "Read only system configuration data")
 set(LIBDIR lib CACHE PATH "System library directory")
 set(HTTPDIR htdocs CACHE PATH "HTML5 data directory")
-set(DATADIR data CACHE PATH "External data resources files")
+set(DATADIR var CACHE PATH "External data resources files")
 
 # Normally CMake uses the build tree for the RPATH when building executables
 # etc on systems that use RPATH. When the software is installed the executables
