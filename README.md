@@ -75,12 +75,10 @@ Choose between:
 - **BINDINGV2**: Shared library that be loaded by the AGL Application Framework
  This has to be accompagnied with a JSON file named like the
  *${OUTPUT_NAME}-apidef* of the target that describe the API with OpenAPI
- syntax (e.g: *mybinding-apidef*). Or you can choose the name, without the
- extension, by setting the *CACHE* cmake variable *OPENAPI_DEF* (***CAUTION***:
- setting a CACHE variable is needed, or set a normal variable with the
- *PARENT_SCOPE* option to make it visible for the parent scope where the target
- is defined) JSON file will be used to generate header file using `afb-genskel`
- tool.
+ syntax (e.g: *mybinding-apidef*).
+ Or Alternatively, you can choose the name, without the extension, using macro
+ **set_openapi_filename**. If you use C++, you have to set
+ **PROJECT_LANGUAGES** with *CXX*.
 - **PLUGIN**: Shared library meant to be used as a binding plugin. Binding
  would load it as a plugin to extend its functionnalities. It should be named
  with a special extension that you choose with SUFFIX cmake target property or
@@ -100,7 +98,7 @@ Choose between:
 ```cmake
 SET_TARGET_PROPERTIES(${TARGET_NAME}
 	PREFIX "afb-"
-	LABELS "BINDING"
+	LABELS "BINDINGV2"
 	OUTPUT_NAME "file_output_name"
 )
 ```
@@ -248,12 +246,10 @@ Choose between:
 - **BINDINGV2**: Shared library that be loaded by the AGL Application Framework
  This has to be accompagnied with a JSON file named like the
  *${OUTPUT_NAME}-apidef* of the target that describe the API with OpenAPI
- syntax (e.g: *mybinding-apidef*). Or you can choose the name, without the
- extension, by setting the *CACHE* cmake variable *OPENAPI_DEF* (***CAUTION***:
- setting a CACHE variable is needed, or set a normal variable with the
- *PARENT_SCOPE* option to make it visible for the parent scope where the target
- is defined) JSON file will be used to generate header file using `afb-genskel`
- tool.
+ syntax (e.g: *mybinding-apidef*).
+ Or Alternatively, you can choose the name, without the extension, using macro
+ **set_openapi_filename**. If you use C++, you have to set
+ **PROJECT_LANGUAGES** with *CXX*.
 - **PLUGIN**: Shared library meant to be used as a binding plugin. Binding
  would load it as a plugin to extend its functionnalities. It should be named
  with a special extension that you choose with SUFFIX cmake target property or
@@ -412,6 +408,41 @@ anything:
 ```cmake
 project_subdirs_add("[0-9]-*")
 ```
+
+### set_openapi_filename
+
+Used with a target labelized **BINDINGV2** to define the file name, and
+possibly a relative path with the current *CMakeLists.txt*.
+
+If you don't use that macro to specify the name of your definition file
+then the default one will be used, *${OUTPUT_NAME}-apidef* with
+**OUTPUT_NAME** as the [target property].
+
+> **CAUTION** you must only specify the name **WITHOUT** the extension.
+
+```cmake
+set_openapi_filename('binding/mybinding_definition')
+```
+
+[target property]: https://cmake.org/cmake/help/v3.6/prop_tgt/OUTPUT_NAME.html "OUTPUT_NAME property documentation"
+
+### add_input_files
+
+Create custom target dedicated for HTML5 and data resource files. This macro
+provides syntax and schema verification for differents languages which are
+about now: LUA, JSON and XML.
+
+You could change the tools used to check files with the following variables:
+
+- XML_CHECKER: set to use **xmllint** provided with major linux distribution.
+- LUA_CHECKER: set to use **luac** provided with major linux distribution.
+- JSON_CHECKER: no tools found at the moment.
+
+```cmake
+add_input_file("${MY_FILES_LIST}")
+```
+
+> **NOTE**: an issue at the check step on a file will stop at the build step.
 
 ## Advanced build customization
 
