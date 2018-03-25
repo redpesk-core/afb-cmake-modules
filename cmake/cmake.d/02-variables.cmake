@@ -67,6 +67,13 @@ execute_process(COMMAND git describe --abbrev=0
 	OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
+# Get the git commit hash to append to the version
+execute_process(COMMAND git rev-parse --short HEAD
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	OUTPUT_VARIABLE COMMIT_HASH
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
 # Detect unstaged or untracked changes
 execute_process(COMMAND git status --short
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -84,7 +91,9 @@ endif()
 # attributes then add the dirty flag if git repo not sync'ed
 project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES ${PROJECT_LANGUAGES})
 if(NOT ${DIRTY_FLAG})
-set(PROJECT_VERSION "${PROJECT_VERSION}-dirty")
+	set(PROJECT_VERSION "${PROJECT_VERSION}-${COMMIT_HASH}-dirty")
+else()
+	set(PROJECT_VERSION "${PROJECT_VERSION}-${COMMIT_HASH}")
 endif()
 
 set(AFB_TOKEN   ""      CACHE PATH "Default AFB_TOKEN")
