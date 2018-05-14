@@ -42,7 +42,7 @@ endif()
 # Used to package .deb
 set(OS_RELEASE_PATH "${BUILD_ENV_SYSROOT}/etc/os-release")
 if(EXISTS ${OS_RELEASE_PATH})
-	execute_process(COMMAND bash "-c" "grep -E '^ID(_LIKE)?=' ${OS_RELEASE_PATH} | tail -n 1"
+	execute_process(COMMAND bash "-c" "grep -E '^ID(_LIKE)?=' /etc/os-release | tail -n 1 | sed -r 's:.*=\"(.*)\":\\1:' | awk '{print $1}'"
 		OUTPUT_VARIABLE TMP_OSRELEASE
 	)
 
