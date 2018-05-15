@@ -6,8 +6,8 @@ AGL Application Framework.
 To build your AGL project using these templates, you have to install
 them within your project and adjust compilation option in `config.cmake`.
 For technical reasons, you also have to specify **cmake** target in
-sub CMakeLists.txt installed. Make a globbing search to find source files
-isn't recommended now to handle project build especially in a multiuser
+sub CMakeLists.txt installed. Make a global search to find source files
+isn't recommended now to handle project build especially in a multi-users
 project because CMake will not be aware of new or removed source files.
 
 You'll find usage samples here:
@@ -73,14 +73,14 @@ Choose between:
 
 - **BINDING**: Shared library that be loaded by the AGL Application Framework
 - **BINDINGV2**: Shared library that be loaded by the AGL Application Framework
- This has to be accompagnied with a JSON file named like the
+ This has to be accompanied with a JSON file named like the
  *${OUTPUT_NAME}-apidef* of the target that describe the API with OpenAPI
  syntax (e.g: *mybinding-apidef*).
  Or Alternatively, you can choose the name, without the extension, using macro
  **set_openapi_filename**. If you use C++, you have to set
  **PROJECT_LANGUAGES** with *CXX*.
 - **PLUGIN**: Shared library meant to be used as a binding plugin. Binding
- would load it as a plugin to extend its functionnalities. It should be named
+ would load it as a plugin to extend its functionalities. It should be named
  with a special extension that you choose with SUFFIX cmake target property or
  it'd be **.ctlso** by default.
 - **HTDOCS**: Root directory of a web app. This target has to build its
@@ -178,7 +178,7 @@ A typical project architecture would be :
 | \<root-path\> | - | Path to your project. Hold master CMakeLists.txt and general files of your projects. |
 | conf.d | \<root-path\> | Holds needed files to build, install, debug, package an AGL app project |
 | app-templates | conf.d | Git submodule to app-templates AGL repository which provides CMake helpers macros library, and build scripts. config.cmake is a copy of config.cmake.sample configured for the projects. SHOULD NOT BE MODIFIED MANUALLY !|
-| autobuild | conf.d | Scripts generated from app-templates to build packages the same way for differents platforms.|
+| autobuild | conf.d | Scripts generated from app-templates to build packages the same way for various platforms.|
 | cmake | conf.d | Contains at least config.cmake file modified from the sample provided in app-templates submodule. |
 | wgt | conf.d | Contains at least config.xml.in template file modified from the sample provided in app-templates submodule for the needs of project (See config.xml.in.sample file for more details). |
 | packaging | conf.d | Contains output files used to build packages. |
@@ -220,7 +220,7 @@ how Application Framework would launch it. This repo provide a simple default
 file _config.xml.in_ that should work for simple application without
 interactions with others bindings.
 
-It is recommanded that you use the sample one which is more complete. You can
+It is recommended that you use the sample one which is more complete. You can
 find it at the same location under the name _config.xml.in.sample_ (stunning
 isn't it). Just copy the sample file to your _conf.d/wgt_ directory and name it
 _config.xml.in_, then edit it to fit your needs.
@@ -429,7 +429,7 @@ set_openapi_filename('binding/mybinding_definition')
 ### add_input_files
 
 Create custom target dedicated for HTML5 and data resource files. This macro
-provides syntax and schema verification for differents languages which are
+provides syntax and schema verification for various languages which are
 about now: LUA, JSON and XML.
 
 You could change the tools used to check files with the following variables:
@@ -446,14 +446,14 @@ add_input_file("${MY_FILES_LIST}")
 
 ## Advanced build customization
 
-### Including additionnals cmake files
+### Including additional cmake files
 
 #### Machine and system custom cmake files
 
-Advanced tuning is possible using addionnals cmake files that are included
+Advanced tuning is possible using additional cmake files that are included
 automatically from some specifics locations. They are included in that order:
 
-- Project CMake files normaly located in _<project-root-path>/conf.d/app-templates/cmake/cmake.d_
+- Project CMake files normally located in _<project-root-path>/conf.d/app-templates/cmake/cmake.d_
 - Home CMake files located in _$HOME/.config/app-templates/cmake.d_
 - System CMake files located in _/etc/app-templates/cmake.d_
 
@@ -466,7 +466,7 @@ which project that file applies, if it applies to all project then use keyword
 `common`.
 
 So, saying that you should be aware that every normal cmake variables used at
-project level could be overwrited by home or system located cmake files if
+project level could be overwritten by home or system located cmake files if
 variables got the same name. Exceptions are cached variables set using
 **CACHE** keyword:
 
@@ -480,7 +480,7 @@ set(VARIABLE_NAME 'value string random' CACHE STRING 'docstring')
 
 This is meant to personalize the project depending on the OS your are using.
 At the end of config.cmake, common.cmake will include lot of cmake file to
-customize project build depending on your plateform. It will detect your OS
+customize project build depending on your platform. It will detect your OS
 deducing it from file _/etc/os-release_ now as default in almost all Linux
 distribution.
 
@@ -500,7 +500,7 @@ default file.
 
 ### Include customs templated scripts
 
-As well as for additionnals cmake files you can include your own templated
+As well as for additional cmake files you can include your own templated
 scripts that will be passed to cmake command `configure_file`.
 
 Just create your own script to the following directories:
