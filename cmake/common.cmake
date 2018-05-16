@@ -42,12 +42,13 @@ endif()
 # Used to package .deb
 set(OS_RELEASE_PATH "${BUILD_ENV_SYSROOT}/etc/os-release")
 if(EXISTS ${OS_RELEASE_PATH})
-	execute_process(COMMAND bash "-c" "grep -E '^ID(_LIKE)?=' /etc/os-release | tail -n 1 | sed -r 's:.*=\"(.*)\":\\1:' | awk '{print $1}'"
+	execute_process(COMMAND bash "-c" "grep -E '^ID(_LIKE)?=' /etc/os-release | tail -n 1"
 		OUTPUT_VARIABLE TMP_OSRELEASE
 	)
 
 	if (NOT TMP_OSRELEASE STREQUAL "")
-		string(REGEX REPLACE ".*=\"?([0-9a-z\._-]*)\"?\n" "\\1" OSRELEASE ${TMP_OSRELEASE})
+		string(REGEX REPLACE ".*=\"?([0-9a-z\._ -]*)\"?\n" "\\1" OSDETECTED ${TMP_OSRELEASE})
+		string(REPLACE " " ";" OSRELEASE ${OSDETECTED})
 	else()
 		set(OSRELEASE "NOT COMPATIBLE !")
 	endif()
@@ -55,11 +56,17 @@ if(EXISTS ${OS_RELEASE_PATH})
 else()
 	set(OSRELEASE "NOT COMPATIBLE ! Missing ${OS_RELEASE_PATH} file.")
 endif()
-message(STATUS "Distribution used ${OSRELEASE}")
+message(STATUS "Distribution detected (separated by ';' choose one of them) ${OSRELEASE}")
 
 file(GLOB project_cmakefiles ${PROJECT_APP_TEMPLATES_DIR}/cmake/cmake.d/[0-9][0-9]-*.cmake)
-file(GLOB distro_cmakefiles ${PROJECT_APP_TEMPLATES_DIR}/../cmake/[0-9][0-9]-${OSRELEASE}*.cmake ${PROJECT_APP_TEMPLATES_DIR}/../cmake/[0-9][0-9]-common*.cmake)
+foreach(OS IN LISTS OSRELEASE)
+	list(APPEND PATTERN "${PROJECT_APP_TEMPLATES_DIR}/../cmake/[0-9][0-9]-${OS}*.cmake")
+endforeach()
+list(APPEND PATTERN "${PROJECT_APP_TEMPLATES_DIR}/../cmake/[0-9][0-9]-common*.cmake")
+
+file(GLOB distro_cmakefiles ${PATTERN})
 list(SORT distro_cmakefiles)
+
 if(NOT distro_cmakefiles)
 	file(GLOB distro_cmakefiles ${PROJECT_APP_TEMPLATES_DIR}/../cmake/[0-9][0-9]-default*.cmake)
 endif()
