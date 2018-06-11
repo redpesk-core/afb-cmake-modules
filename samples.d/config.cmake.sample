@@ -110,7 +110,7 @@ set (PKG_REQUIRED_LIST
 #set(DEBUG_COMPILE_OPTIONS
 # -g
 # -ggdb
-# -Wp,-U_FORTIFY_SOURCE
+# -D_FORTIFY_SOURCE=2
 # CACHE STRING "Compilation flags for DEBUG build type.")
 #set(CCOV_COMPILE_OPTIONS
 # -g
@@ -120,6 +120,7 @@ set (PKG_REQUIRED_LIST
 #set(RELEASE_COMPILE_OPTIONS
 # -g
 # -O2
+# -D_FORTIFY_SOURCE=2
 # CACHE STRING "Compilation flags for RELEASE build type.")
 
 # (BUG!!!) as PKG_CONFIG_PATH does not work [should be an env variable]
