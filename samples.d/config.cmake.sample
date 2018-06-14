@@ -66,9 +66,12 @@ set (gcc_minimal_version 4.9)
 # -----------------------------
 set (PKG_REQUIRED_LIST
 	json-c
-	libsystemd>=222
 	afb-daemon
 )
+
+# You can also consider to include libsystemd
+# -----------------------------------
+#list (APPEND PKG_REQUIRED_LIST libsystemd>=222)
 
 # Prefix path where will be installed the files
 # Default: /usr/local (need root permission to write in)
