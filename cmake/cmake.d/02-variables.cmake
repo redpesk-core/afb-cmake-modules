@@ -103,7 +103,7 @@ set(AFB_REMPORT "1234" CACHE PATH "Default AFB_TOKEN")
 if (gcc_minimal_version)
 message (STATUS "${Cyan}-- Check gcc_minimal_version (found gcc version ${CMAKE_C_COMPILER_VERSION}) \
 (found g++ version ${CMAKE_CXX_COMPILER_VERSION})${ColourReset}")
-if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${gcc_minimal_version} OR CMAKE_C_COMPILER_VERSION VERSION_LESS ${gcc_minimal_version})
+if (("${PROJECT_LANGUAGES}" MATCHES "CXX" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${gcc_minimal_version}) OR CMAKE_C_COMPILER_VERSION VERSION_LESS ${gcc_minimal_version})
 message(FATAL_ERROR "${Red}**** FATAL: Require at least gcc-${gcc_minimal_version} please set CMAKE_C[XX]_COMPILER")
 endif()
 endif(gcc_minimal_version)
