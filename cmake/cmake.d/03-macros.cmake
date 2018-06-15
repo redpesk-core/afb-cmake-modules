@@ -453,9 +453,19 @@ macro(wgt_package_build)
 		file(COPY "${TEMPLATE_DIR}/etc/*" DESTINATION ${PROJECT_PKG_BUILD_DIR}/etc/)
 	endif(${PROJECT_CONF_FILES})
 
+	find_program(wgtpkgCMD "wgtpkg-pack")
+	if(wgtpkgCMD)
+		message(STATUS "------ Create widget using WGTPKG")
+		set(packCMD ${wgtpkgCMD} "-f" "-o" "${PROJECT_NAME}.wgt" ${PROJECT_PKG_BUILD_DIR})
+	else()
+		message(STATUS "----- Create widget using ZIP")
+
+		set(packCMD cd ${PROJECT_PKG_BUILD_DIR} && ${CMAKE_COMMAND} "-E" "tar" "cf" "../${PROJECT_NAME}.wgt" "--format=zip" "*")
+	endif()
+
 	add_custom_command(OUTPUT ${PROJECT_NAME}.wgt
 		DEPENDS ${PROJECT_TARGETS}
-		COMMAND wgtpkg-pack -f -o ${PROJECT_NAME}.wgt ${PROJECT_PKG_BUILD_DIR}
+		COMMAND ${packCMD}
 	)
 
 	add_custom_target(widget DEPENDS ${PROJECT_NAME}.wgt)
