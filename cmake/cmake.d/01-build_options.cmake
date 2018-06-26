@@ -40,9 +40,6 @@ set(CMP0048 1)
 ############################################################################
 link_libraries(-Wl,--as-needed -Wl,--gc-sections)
 set(COMPILE_OPTIONS -Wall -Wextra -Wconversion -Wno-unused-parameter -Wno-sign-compare -Wno-sign-conversion -Werror=maybe-uninitialized -Werror=implicit-function-declaration -ffunction-sections -fdata-sections -fPIC CACHE STRING "Compilation flags")
-foreach(option ${COMPILE_OPTIONS})
-	add_compile_options($<$<CONFIG:PROFILING>:${option}>)
-endforeach()
 
 # Compilation OPTIONS depending on language
 #########################################
