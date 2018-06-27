@@ -85,6 +85,8 @@ foreach(file ${system_cmakefiles} ${home_cmakefiles} ${project_cmakefiles})
 	include(${file})
 endforeach()
 
+prevent_in_source_build()
+
 if(DEFINED PROJECT_SRC_DIR_PATTERN)
 	project_subdirs_add(${PROJECT_SRC_DIR_PATTERN})
 else()
