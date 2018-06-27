@@ -45,8 +45,12 @@ endforeach()
 #                                Autobuild target
 # ----------------------------------------------------------------------------
 
-add_custom_target(autobuild ALL DEPENDS ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/template.d/autobuild/agl/autobuild.in
+add_custom_command(OUTPUT ${PROJECT_TEMPLATE_AGL_AUTOBUILD_DIR}/autobuild ${PROJECT_TEMPLATE_LINUX_AUTOBUILD_DIR}/autobuild
+	DEPENDS ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/template.d/autobuild/agl/autobuild.in
 	${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/template.d/autobuild/linux/autobuild.in
-	COMMAND ${CMAKE_COMMAND} -DINFILE=${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/template.d/autobuild/agl/autobuild.in -DOUTFILE=${PROJECT_TEMPLATE_AGL_AUTOBUILD_DIR}/autobuild -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
-	COMMAND ${CMAKE_COMMAND} -DINFILE=${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/template.d/autobuild/agl/autobuild.in -DOUTFILE=${PROJECT_TEMPLATE_LINUX_AUTOBUILD_DIR}/autobuild -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+
+	COMMAND [ ! -f "${PROJECT_TEMPLATE_AGL_AUTOBUILD_DIR}/autobuild" ] && ${CMAKE_COMMAND} -DINFILE=${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/template.d/autobuild/agl/autobuild.in -DOUTFILE=${PROJECT_TEMPLATE_AGL_AUTOBUILD_DIR}/autobuild -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake || exit 0
+	COMMAND [ ! -f "${PROJECT_TEMPLATE_LINUX_AUTOBUILD_DIR}/autobuild" ] && ${CMAKE_COMMAND} -DINFILE=${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/template.d/autobuild/agl/autobuild.in -DOUTFILE=${PROJECT_TEMPLATE_LINUX_AUTOBUILD_DIR}/autobuild -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake || exit 0
 )
+
+add_custom_target(autobuild ALL DEPENDS ${PROJECT_TEMPLATE_AGL_AUTOBUILD_DIR}/autobuild ${PROJECT_TEMPLATE_LINUX_AUTOBUILD_DIR}/autobuild)
