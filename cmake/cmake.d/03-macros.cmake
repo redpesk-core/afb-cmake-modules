@@ -440,6 +440,10 @@ macro(wgt_package_build)
 		set(WIDGET_ENTRY_POINT lib)
 	endif()
 
+	if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
+		string(TOLOWER "${PROJECT_NAME}-${CMAKE_BUILD_TYPE}" WGT_NAME)
+	endif()
+
 	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/config.xml
 		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 		COMMAND cp ${ICON_PATH} ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
@@ -455,22 +459,19 @@ macro(wgt_package_build)
 
 	find_program(wgtpkgCMD "wgtpkg-pack")
 	if(wgtpkgCMD)
-		message(STATUS "------ Create widget using WGTPKG")
-		set(packCMD ${wgtpkgCMD} "-f" "-o" "${PROJECT_NAME}.wgt" ${PROJECT_PKG_BUILD_DIR})
+		set(packCMD ${wgtpkgCMD} "-f" "-o" "${WGT_NAME}.wgt" ${PROJECT_PKG_BUILD_DIR})
 	else()
-		message(STATUS "----- Create widget using ZIP")
-
-		set(packCMD cd ${PROJECT_PKG_BUILD_DIR} && ${CMAKE_COMMAND} "-E" "tar" "cf" "../${PROJECT_NAME}.wgt" "--format=zip" "*")
+		set(packCMD cd ${PROJECT_PKG_BUILD_DIR} && ${CMAKE_COMMAND} "-E" "tar" "cf" "../${WGT_NAME}.wgt" "--format=zip" "*")
 	endif()
 
-	add_custom_command(OUTPUT ${PROJECT_NAME}.wgt
+	add_custom_command(OUTPUT ${WGT_NAME}.wgt
 		DEPENDS ${PROJECT_TARGETS}
 		COMMAND ${packCMD}
 	)
 
-	add_custom_target(widget DEPENDS ${PROJECT_NAME}.wgt)
+	add_custom_target(widget DEPENDS ${WGT_NAME}.wgt)
 	add_dependencies(widget populate packaging_wgt)
-	set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.wgt")
+	set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/${WGT_NAME}.wgt")
 
 	if(NOT RSYNC_TARGET)
 		message ("${Yellow}.. Warning: RSYNC_TARGET not defined 'make widget-target-install' not instanciated${ColourReset}")
