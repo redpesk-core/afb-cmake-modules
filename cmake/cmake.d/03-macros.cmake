@@ -442,6 +442,8 @@ macro(wgt_package_build)
 
 	if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
 		string(TOLOWER "${PROJECT_NAME}-${CMAKE_BUILD_TYPE}" WGT_NAME)
+	else()
+		string(TOLOWER "${PROJECT_NAME}" WGT_NAME)
 	endif()
 
 	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/config.xml
