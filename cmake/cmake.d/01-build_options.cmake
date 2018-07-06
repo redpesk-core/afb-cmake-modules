@@ -32,7 +32,14 @@ INCLUDE(CheckIncludeFiles)
 INCLUDE(CheckLibraryExists)
 INCLUDE(GNUInstallDirs)
 
-set(CMAKE_BUILD_TYPE Debug CACHE STRING "the type of build")
+if(NOT CMAKE_BUILD_TYPE)
+	if(BUILD_TYPE)
+		set(CMAKE_BUILD_TYPE ${BUILD_TYPE} CACHE STRING "the type of build" FORCE)
+	else()
+		set(CMAKE_BUILD_TYPE DEBUG CACHE STRING "the type of build" FORCE)
+	endif()
+endif()
+
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMP0048 1)
 
