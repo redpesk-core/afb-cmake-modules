@@ -108,6 +108,13 @@ ENDMACRO(LIST_FILTER)
 
 # Generic useful macro
 # -----------------------
+macro(set_install_prefix)
+	if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND INSTALL_PREFIX)
+		message(STATUS "-- Overwrite the CMAKE default install prefix with ${INSTALL_PREFIX}")
+		set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX} CACHE PATH "Install prefix" FORCE)
+	endif()
+endmacro()
+
 macro(PROJECT_TARGET_ADD TARGET_NAME)
 	set_property(GLOBAL APPEND PROPERTY PROJECT_TARGETS ${TARGET_NAME})
 	set(TARGET_NAME ${TARGET_NAME})
