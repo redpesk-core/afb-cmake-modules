@@ -474,7 +474,12 @@ macro(wgt_package_build)
 	if(wgtpkgCMD)
 		set(packCMD ${wgtpkgCMD} "-f" "-o" "${WGT_NAME}.wgt" ${PROJECT_PKG_BUILD_DIR})
 	else()
-		set(packCMD cd ${PROJECT_PKG_BUILD_DIR} && ${CMAKE_COMMAND} "-E" "tar" "cf" "../${WGT_NAME}.wgt" "--format=zip" "*")
+		find_program(wgtpkgCMD "zip")
+		if(wgtpkgCMD)
+			set(packCMD ${CMAKE_COMMAND} -E cmake_echo_color --yellow "Warning: Widget will be built using Zip, NOT using the Application Framework widget pack command." && cd ${PROJECT_PKG_BUILD_DIR} && ${wgtpkgCMD} "../${WGT_NAME}.wgt" "*")
+		else()
+			set(packCMD ${CMAKE_COMMAND} -E cmake_echo_color --red "Error: No utility found to build a widget. Either install wgtpkg-pack from App Framework or zip command")
+		endif()
 	endif()
 
 	add_custom_command(OUTPUT ${WGT_NAME}.wgt
