@@ -112,11 +112,11 @@ set (PKG_REQUIRED_LIST
 #set(DEBUG_COMPILE_OPTIONS
 # -g
 # -ggdb
+# -Og
 # -D_FORTIFY_SOURCE=2
 # CACHE STRING "Compilation flags for DEBUG build type.")
 #set(CCOV_COMPILE_OPTIONS
 # -g
-# -O2
 # --coverage
 # CACHE STRING "Compilation flags for CCOV build type.")
 #set(RELEASE_COMPILE_OPTIONS
