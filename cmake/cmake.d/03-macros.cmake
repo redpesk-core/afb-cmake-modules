@@ -258,13 +258,16 @@ endmacro()
 
 # To be call inside project_targets_populate macro
 macro(afb_genskel)
+	set (ARGSLIST ${ARGN})
+
 	if ("${PROJECT_LANGUAGES}" MATCHES "CXX")
-		list(APPEND GENSKEL_OPTS "--cpp")
+		list(APPEND ARGSLIST "--cpp")
 	endif()
+
 	if (OPENAPI_DEF)
 		add_custom_command(OUTPUT ${SD}/${OPENAPI_DEF}.h
 			DEPENDS ${SD}/${OPENAPI_DEF}.json
-			COMMAND afb-genskel ${GENSKEL_OPTS} ${SD}/${OPENAPI_DEF}.json > ${SD}/${OPENAPI_DEF}.h
+			COMMAND afb-genskel ${ARGSLIST} ${SD}/${OPENAPI_DEF}.json > ${SD}/${OPENAPI_DEF}.h
 		)
 		add_custom_target("${TARGET}_GENSKEL" DEPENDS ${SD}/${OPENAPI_DEF}.h
 			COMMENT "Generating OpenAPI header file ${OPENAPI_DEF}.h")
@@ -272,7 +275,7 @@ macro(afb_genskel)
 	else()
 		add_custom_command(OUTPUT ${SD}/${OUT}-apidef.h
 			DEPENDS ${SD}/${OUT}-apidef.json
-			COMMAND afb-genskel ${GENSKEL_OPTS} ${SD}/${OUT}-apidef.json > ${SD}/${OUT}-apidef.h
+			COMMAND afb-genskel ${ARGSLIST} ${SD}/${OUT}-apidef.json > ${SD}/${OUT}-apidef.h
 		)
 		add_custom_target("${TARGET}_GENSKEL" DEPENDS ${SD}/${OUT}-apidef.h
 			COMMENT "Generating OpenAPI header file ${OUT}-apidef.h")
@@ -346,7 +349,13 @@ macro(project_targets_populate)
 				if(NOT S)
 					set(S ".so")
 				endif()
-				afb_genskel()
+				afb_genskel("-2")
+				generate_one_populate_target(${P}${OUT}${S} ${PACKAGE_LIBDIR})
+			elseif(${T} STREQUAL "BINDINGV3")
+				if(NOT S)
+					set(S ".so")
+				endif()
+				afb_genskel("-3")
 				generate_one_populate_target(${P}${OUT}${S} ${PACKAGE_LIBDIR})
 			elseif(${T} STREQUAL "EXECUTABLE")
 				if(NOT S)
