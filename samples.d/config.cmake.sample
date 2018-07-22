@@ -32,10 +32,6 @@ set(PROJECT_LANGUAGES "C")
 # relative to the root project directory
 set(PROJECT_APP_TEMPLATES_DIR "conf.d/app-templates")
 
-# Where are stored your external libraries for your project. This is 3rd party library that you don't maintain
-# but used and must be built and linked.
-# set(PROJECT_LIBDIR "libs")
-
 # Which directories inspect to find CMakeLists.txt target files
 # set(PROJECT_SRC_DIR_PATTERN "*")
 
@@ -125,10 +121,14 @@ set (PKG_REQUIRED_LIST
 # -D_FORTIFY_SOURCE=2
 # CACHE STRING "Compilation flags for RELEASE build type.")
 
-# Optional location for config.xml.in
-# -----------------------------------
-#set(WIDGET_ICON "\"conf.d/wgt/${PROJECT_ICON}\"" CACHE PATH "Path to the widget icon")
-#set(WIDGET_CONFIG_TEMPLATE "\"${CMAKE_CURRENT_SOURCE_DIR}/conf.d/wgt/config.xml.in\"" CACHE PATH "Path to widget config file template (config.xml.in)")
+# Location for config.xml.in template file.
+#
+# If you keep them commented then it will build with a default minimal widget
+# template which is very simple and it is highly probable that it will not suit
+# to your app.
+# -----------------------------------------
+#set(WIDGET_ICON "conf.d/wgt/${PROJECT_ICON}" CACHE PATH "Path to the widget icon")
+#set(WIDGET_CONFIG_TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/conf.d/wgt/config.xml.in" CACHE PATH "Path to widget config file template (config.xml.in)")
 
 # Mandatory widget Mimetype specification of the main unit
 # --------------------------------------------------------------------------
