@@ -35,8 +35,15 @@ Choose between:
  *${OUTPUT_NAME}-apidef* of the target that describe the API with OpenAPI
  syntax (e.g: *mybinding-apidef*).
  Or Alternatively, you can choose the name, without the extension, using macro
- **set_openapi_filename**. If you use C++, you have to set
- **PROJECT_LANGUAGES** with *CXX*.
+ **set_openapi_filename**. If you use C++, you have to set **PROJECT_LANGUAGES**
+ with *CXX*.
+- **BINDINGV3**: Shared library that be loaded by the AGL Application Framework
+ This has to be accompagnied with a JSON file named like the
+ *${OUTPUT_NAME}-apidef* of the target that describe the API with OpenAPI
+ syntax (e.g: *mybinding-apidef*).
+ Or Alternatively, you can choose the name, without the extension, using macro
+ **set_openapi_filename**. If you use C++, you have to set **PROJECT_LANGUAGES**
+ with *CXX*.
 - **PLUGIN**: Shared library meant to be used as a binding plugin. Binding
  would load it as a plugin to extend its functionnalities. It should be named
  with a special extension that you choose with SUFFIX cmake target property or
@@ -49,6 +56,32 @@ Choose between:
  Application Framework
 - **LIBRARY**: An external 3rd party library bundled with the binding for its
  own purpose because platform doesn't provide it.
+- **BINDING-CONFIG**: Any files used as configuration by your binding.
+
+Two optionnals **LABELS** are available to define which resources are your tests
+materials:
+
+- **TEST-CONFIG**: JSON configuration files that will be used by the afb-test
+ binding to know how to execute tests.
+- **TEST-DATA**: Resources used to test your binding. It is at least your test
+ plan and also could be fixtures and any needed files by your tests. These files
+ will appear in a separate test widget.
+
+Here is a mapping between LABELS and directories where files will be puted in
+the widget:
+
+- **EXECUTABLE** : \<wgtrootdir\>/bin
+- **BINDING-CONFIG** : \<wgtrootdir\>/etc
+- **BINDING** | **BINDINGV2** | **BINDINGV3** | **LIBRARY** : \<wgtrootdir\>/lib
+- **PLUGIN** : \<wgtrootdir\>/lib/plugins
+- **HTDOCS** : \<wgtrootdir\>/htdocs
+- **BINDING-DATA** : \<wgtrootdir\>/var
+- **DATA** : \<wgtrootdir\>/var
+
+And about test dedicated **LABELS**:
+
+- **TEST-CONFIG** : \<TESTwgtrootdir\>/etc
+- **TEST-DATA** : \<TESTwgtrootdir\>/var
 
 > **TIP** you should use the prefix _afb-_ with your **BINDING* targets which
 > stand for **Application Framework Binding**.

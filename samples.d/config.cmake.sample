@@ -19,6 +19,7 @@
 # Project Info
 # ------------------
 set(PROJECT_NAME example)
+set(API_NAME api-test)
 set(PROJECT_PRETTY_NAME "Example")
 set(PROJECT_DESCRIPTION "AGL application example")
 set(PROJECT_URL "https://gerrit.automotivelinux.org/gerrit/apps/app-templates")

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" id="@PROJECT_NAME@-test" version="@PROJECT_VERSION@">
+	<name>@PROJECT_NAME@-test</name>
+	<icon src="@PROJECT_ICON@"/>
+	<content src="bin/launcher" type="application/vnd.agl.native"/>
+	<description>Supplementary widget used to launch tests for the project @PROJECT_NAME@</description>
+	<author>Romain Forlot &lt;romain.forlot@iot.bzh&gt;</author>
+	<license>APL2.0</license>
+
+	<feature name="urn:AGL:widget:required-binding">
+		<param name="aft" value="auto" />
+	</feature>
+
+	<feature name="urn:AGL:widget:required-api">
+		<param name="@API_NAME@" value="auto" />
+	</feature>
+
+	<feature name="urn:AGL:widget:required-permission">
+		<param name="urn:AGL:permission:test" value="required" />
+	</feature>
+
+	<feature name="urn:AGL:widget:file-properties">
+		<param name="bin/launcher" value="executable" />
+	</feature>
+</widget>

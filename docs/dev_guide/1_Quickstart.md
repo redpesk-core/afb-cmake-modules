@@ -59,8 +59,15 @@ Choose between:
  *${OUTPUT_NAME}-apidef* of the target that describe the API with OpenAPI
  syntax (e.g: *mybinding-apidef*).
  Or Alternatively, you can choose the name, without the extension, using macro
- **set_openapi_filename**. If you use C++, you have to set
- **PROJECT_LANGUAGES** with *CXX*.
+ **set_openapi_filename**. If you use C++, you have to set **PROJECT_LANGUAGES**
+ with *CXX*.
+- **BINDINGV3**: Shared library that be loaded by the AGL Application Framework
+ This has to be accompagnied with a JSON file named like the
+ *${OUTPUT_NAME}-apidef* of the target that describe the API with OpenAPI
+ syntax (e.g: *mybinding-apidef*).
+ Or Alternatively, you can choose the name, without the extension, using macro
+ **set_openapi_filename**. If you use C++, you have to set **PROJECT_LANGUAGES**
+ with *CXX*.
 - **PLUGIN**: Shared library meant to be used as a binding plugin. Binding
  would load it as a plugin to extend its functionnalities. It should be named
  with a special extension that you choose with SUFFIX cmake target property or
@@ -73,6 +80,7 @@ Choose between:
  Application Framework
 - **LIBRARY**: An external 3rd party library bundled with the binding for its
  own purpose because platform doesn't provide it.
+- **BINDING-CONFIG**: Any files used as configuration by your binding.
 
 > **TIP** you should use the prefix _afb-_ with your **BINDING* targets which
 > stand for **Application Framework Binding**.
@@ -80,7 +88,7 @@ Choose between:
 ```cmake
 SET_TARGET_PROPERTIES(${TARGET_NAME}
 	PREFIX "afb-"
-	LABELS "BINDINGV2"
+	LABELS "BINDINGV3"
 	OUTPUT_NAME "file_output_name")
 ```
 

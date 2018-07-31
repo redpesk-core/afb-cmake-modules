@@ -291,10 +291,24 @@ macro(project_targets_populate)
 	set(PACKAGE_LIBDIR  ${PROJECT_PKG_BUILD_DIR}/${LIBDIR})
 	set(PACKAGE_HTTPDIR ${PROJECT_PKG_BUILD_DIR}/${HTTPDIR})
 	set(PACKAGE_DATADIR ${PROJECT_PKG_BUILD_DIR}/${DATADIR})
+	# Default test Widget default directory
+	string(REGEX REPLACE "/([^/]*)$" "/\\1-test" PROJECT_PKG_TEST_DIR "${PROJECT_PKG_BUILD_DIR}")
+	set(PACKAGE_TEST_BINDIR  ${PROJECT_PKG_TEST_DIR}/${BINDIR})
+	set(PACKAGE_TEST_ETCDIR  ${PROJECT_PKG_TEST_DIR}/${ETCDIR})
+	set(PACKAGE_TEST_LIBDIR  ${PROJECT_PKG_TEST_DIR}/${LIBDIR})
+	set(PACKAGE_TEST_HTTPDIR ${PROJECT_PKG_TEST_DIR}/${HTTPDIR})
+	set(PACKAGE_TEST_DATADIR ${PROJECT_PKG_TEST_DIR}/${DATADIR})
 
-	add_custom_command(OUTPUT ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR}
-		COMMAND mkdir -p ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR})
-	add_custom_target(populate DEPENDS ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR})
+	if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
+		add_custom_command(OUTPUT ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR} ${PACKAGE_TEST_BINDIR} ${PACKAGE_TEST_ETCDIR} ${PACKAGE_TEST_LIBDIR} ${PACKAGE_TEST_HTTPDIR} ${PACKAGE_TEST_DATADIR}
+			COMMAND mkdir -p ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR}
+			COMMAND mkdir -p ${PACKAGE_TEST_BINDIR} ${PACKAGE_TEST_ETCDIR} ${PACKAGE_TEST_LIBDIR} ${PACKAGE_TEST_HTTPDIR} ${PACKAGE_TEST_DATADIR})
+		add_custom_target(populate DEPENDS ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR} ${PACKAGE_TEST_BINDIR} ${PACKAGE_TEST_ETCDIR} ${PACKAGE_TEST_LIBDIR} ${PACKAGE_TEST_HTTPDIR} ${PACKAGE_TEST_DATADIR})
+	else()
+		add_custom_command(OUTPUT ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR}
+			COMMAND mkdir -p ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR})
+		add_custom_target(populate DEPENDS ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR})
+	endif()
 
 	# Dirty trick to define a default INSTALL command for app-templates handled
 	# targets
@@ -369,10 +383,14 @@ macro(project_targets_populate)
 				endif()
 			elseif(${T} STREQUAL "HTDOCS")
 				generate_one_populate_target(${P}${OUT} ${PACKAGE_HTTPDIR})
-			elseif(${T} STREQUAL "DATA")
+			elseif(${T} STREQUAL "DATA" )
 				generate_one_populate_target(${TARGET} ${PACKAGE_DATADIR})
-			elseif(${T} STREQUAL "BINDING-CONFIG")
+			elseif(${T} STREQUAL "BINDING-CONFIG" )
 				generate_one_populate_target(${TARGET} ${PACKAGE_ETCDIR})
+			elseif(NOT ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE" AND ${T} STREQUAL "TEST-DATA")
+				generate_one_populate_target(${TARGET} ${PACKAGE_TEST_DATADIR})
+			elseif(NOT ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE" AND ${T} STREQUAL "TEST-CONFIG")
+				generate_one_populate_target(${TARGET} ${PACKAGE_TEST_ETCDIR})
 			endif()
 			elseif(${CMAKE_BUILD_TYPE} MATCHES "[Dd][Ee][Bb][Uu][Gg]")
 				MESSAGE("${Yellow}.. Warning: ${TARGET} ignored when packaging.${ColourReset}")
@@ -460,18 +478,23 @@ macro(wgt_package_build)
 		set(WIDGET_ENTRY_POINT lib)
 	endif()
 
-	if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
-		string(TOLOWER "${PROJECT_NAME}-${CMAKE_BUILD_TYPE}" WGT_NAME)
-	else()
-		string(TOLOWER "${PROJECT_NAME}" WGT_NAME)
-	endif()
-
 	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/config.xml
 		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 		COMMAND cp ${ICON_PATH} ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
-
 	)
-	add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml)
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/test-config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher
+		COMMAND ${CMAKE_COMMAND} -DINFILE=${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/test-widget/test-config.xml.in -DOUTFILE=${PROJECT_PKG_TEST_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		COMMAND cp ${ICON_PATH} ${PROJECT_PKG_TEST_DIR}/${PROJECT_ICON}
+		COMMAND cp ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}//test-widget/launcher.sh.in ${PROJECT_PKG_TEST_DIR}/bin/launcher
+	)
+
+	if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
+		string(TOLOWER "${PROJECT_NAME}-${CMAKE_BUILD_TYPE}" WGT_NAME)
+		add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml ${PROJECT_PKG_TEST_DIR}/test-config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher)
+	else()
+		string(TOLOWER "${PROJECT_NAME}" WGT_NAME)
+		add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml)
+	endif()
 
 	# Fulup ??? copy any extra file in wgt/etc into populate package before building the widget
 	file(GLOB PROJECT_CONF_FILES "${TEMPLATE_DIR}/etc/*")
@@ -482,10 +505,12 @@ macro(wgt_package_build)
 	find_program(wgtpkgCMD "wgtpkg-pack")
 	if(wgtpkgCMD)
 		set(packCMD ${wgtpkgCMD} "-f" "-o" "${WGT_NAME}.wgt" ${PROJECT_PKG_BUILD_DIR})
+		set(packCMDTest ${wgtpkgCMD} "-f" "-o" "${WGT_NAME}-test.wgt" ${PROJECT_PKG_TEST_DIR})
 	else()
 		find_program(wgtpkgCMD "zip")
 		if(wgtpkgCMD)
 			set(packCMD ${CMAKE_COMMAND} -E cmake_echo_color --yellow "Warning: Widget will be built using Zip, NOT using the Application Framework widget pack command." && cd ${PROJECT_PKG_BUILD_DIR} && ${wgtpkgCMD} "../${WGT_NAME}.wgt" "*")
+			set(packCMDTest ${CMAKE_COMMAND} -E cmake_echo_color --yellow "Warning: Test widget will be built using Zip, NOT using the Application Framework widget pack command." && cd ${PROJECT_PKG_TEST_DIR} && ${wgtpkgCMD} "../${WGT_NAME}-test.wgt" "*")
 		else()
 			set(packCMD ${CMAKE_COMMAND} -E cmake_echo_color --red "Error: No utility found to build a widget. Either install wgtpkg-pack from App Framework or zip command")
 		endif()
@@ -496,7 +521,18 @@ macro(wgt_package_build)
 		COMMAND ${packCMD}
 	)
 
-	add_custom_target(widget DEPENDS ${WGT_NAME}.wgt)
+	add_custom_command(OUTPUT ${WGT_NAME}-test.wgt
+		DEPENDS ${PROJECT_TARGETS}
+		COMMAND ${packCMDTest}
+	)
+
+	if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
+		add_custom_target(widget DEPENDS ${WGT_NAME}.wgt ${WGT_NAME}-test.wgt)
+		set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/${WGT_NAME}-test.wgt")
+	else()
+		add_custom_target(widget DEPENDS ${WGT_NAME}.wgt)
+	endif()
+
 	add_dependencies(widget populate packaging_wgt)
 	set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/${WGT_NAME}.wgt")
 
@@ -507,13 +543,13 @@ macro(wgt_package_build)
 			COMMAND exit -1
 		)
 	else()
-	configure_files_in_dir(${TEMPLATE_DIR})
-	add_custom_target(widget-target-install
-	DEPENDS widget
-	COMMAND chmod +x ${CMAKE_CURRENT_BINARY_DIR}/target/install-wgt-on-${RSYNC_TARGET}.sh
-	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/target/install-wgt-on-${RSYNC_TARGET}.sh
-	)
-endif()
+		configure_files_in_dir(${TEMPLATE_DIR})
+		add_custom_target(widget-target-install
+			DEPENDS widget
+			COMMAND chmod +x ${CMAKE_CURRENT_BINARY_DIR}/target/install-wgt-on-${RSYNC_TARGET}.sh
+			COMMAND ${CMAKE_CURRENT_BINARY_DIR}/target/install-wgt-on-${RSYNC_TARGET}.sh
+		)
+	endif()
 
 	if(PACKAGE_MESSAGE)
 	add_custom_command(TARGET widget

@@ -1,0 +1,60 @@
+#!/bin/bash -x
+
+###########################################################################
+# Copyright (C) 2017, 2018 IoT.bzh
+#
+# Author: Romain Forlot <romain.forlot@iot.bzh>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###########################################################################
+
+PORT=$1
+TOKEN=$2
+
+# Research the Api name used
+CFGFILE=$(find ${AFM_APP_INSTALL_DIR} -name "*json" -print0 | head -n1)
+API=$(grep '\"api\"' ${CFGFILE} | cut -d'"' -f4)
+
+AFBCLIENTIN=$(mktemp -u)
+AFBCLIENTOUT=$(mktemp -u)
+mkfifo $AFBCLIENTIN
+mkfifo $AFBCLIENTOUT
+
+declare -a testVerb
+
+if [[ $(jq '.testVerb|type' $CFGFILE) == "array" ]]
+then
+	testVerbLength=$(jq '.testVerb | length')
+	for (( idx=0; idx<testVerbLength; idx++ )) do
+		testVerb[$idx]=$(jq -r ".testVerb[$idx].uid" ${CFGFILE})
+	done
+else
+	testVerb[0]=$(jq -r ".testVerb.uid" ${CFGFILE})
+fi
+
+tail -f  $AFBCLIENTIN | afb-client-demo ws://localhost:${PORT}/api?token=${TOKEN} > $AFBCLIENTOUT 2>&1 &
+CLIENTPID=$!
+
+testVerbLength=${#testVerb[@]}
+for (( idx=0; idx<testVerbLength; idx++ )) do
+	echo "$API ${testVerb[$idx]}" > $AFBCLIENTIN
+done
+
+while read -r line
+do
+	[ "$(echo "${line}" | grep -E 'Ran [[:digit]]+ tests in')" ] && break
+done < $AFBCLIENTOUT
+
+rm -f $AFBCLIENTIN
+rm -f $AFBCLIENTOUT
+kill $CLIENTPID
