@@ -36,7 +36,7 @@ if(NOT CMAKE_BUILD_TYPE)
 	if(BUILD_TYPE)
 		set(CMAKE_BUILD_TYPE ${BUILD_TYPE} CACHE STRING "the type of build" FORCE)
 	else()
-		set(CMAKE_BUILD_TYPE DEBUG CACHE STRING "the type of build" FORCE)
+		set(CMAKE_BUILD_TYPE RELEASE CACHE STRING "the type of build" FORCE)
 	endif()
 endif()
 
@@ -86,9 +86,20 @@ endforeach()
 # Compilation option depending on CMAKE_BUILD_TYPE
 ##################################################
 set(PROFILING_COMPILE_OPTIONS -g -O0 -pg -Wp,-U_FORTIFY_SOURCE CACHE STRING "Compilation flags for PROFILING build type.")
-set(DEBUG_COMPILE_OPTIONS -g -ggdb -Og -D_FORTIFY_SOURCE=2 CACHE STRING "Compilation flags for DEBUG build type.")
+set(DEBUG_COMPILE_OPTIONS -g -ggdb CACHE STRING "Compilation flags for DEBUG build type.")
 set(COVERAGE_COMPILE_OPTIONS -g --coverage CACHE STRING "Compilation flags for COVERAGE build type.")
-set(RELEASE_COMPILE_OPTIONS -O2 -D_FORTIFY_SOURCE=2 CACHE STRING "Compilation flags for RELEASE build type.")
+set(RELEASE_COMPILE_OPTIONS -O2
+ -pipe
+ -D_FORTIFY_SOURCE=2
+ -fstack-protector-strong
+ -Wformat -Wformat-security
+ -Werror=format-security
+ -feliminate-unused-debug-types
+ -Wl,-O1
+ -Wl,--hash-style=gnu
+ -Wl,--as-needed
+ -fstack-protector-strong
+ -Wl,-z,relro,-z,now CACHE STRING "Compilation flags for RELEASE build type. This is a copy of default Yocto build compile flags.")
 foreach(option ${PROFILING_COMPILE_OPTIONS})
 	add_compile_options($<$<CONFIG:PROFILING>:${option}>)
 endforeach()
