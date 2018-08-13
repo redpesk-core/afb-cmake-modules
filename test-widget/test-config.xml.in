@@ -8,7 +8,7 @@
 	<license>APL2.0</license>
 
 	<feature name="urn:AGL:widget:required-binding">
-		<param name="aft" value="auto" />
+		<param name="aft" value="extern" />
 	</feature>
 
 	<feature name="urn:AGL:widget:required-api">

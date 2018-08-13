@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 ###########################################################################
 # Copyright (C) 2017, 2018 IoT.bzh
@@ -22,7 +22,7 @@ PORT=$1
 TOKEN=$2
 
 # Research the Api name used
-CFGFILE=$(find ${AFM_APP_INSTALL_DIR} -name "*json" -print0 | head -n1)
+CFGFILE=$(find ${AFM_APP_INSTALL_DIR} -name "*json" -print | head -n1)
 API=$(grep '\"api\"' ${CFGFILE} | cut -d'"' -f4)
 
 AFBCLIENTIN=$(mktemp -u)

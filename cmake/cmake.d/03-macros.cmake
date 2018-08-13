@@ -299,7 +299,7 @@ macro(project_targets_populate)
 	set(PACKAGE_TEST_HTTPDIR ${PROJECT_PKG_TEST_DIR}/${HTTPDIR})
 	set(PACKAGE_TEST_DATADIR ${PROJECT_PKG_TEST_DIR}/${DATADIR})
 
-	if(${CMAKE_BUILD_TYPE} STREQUAL "TEST")
+	if(${BUILD_TEST_WGT})
 		add_custom_command(OUTPUT ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR} ${PACKAGE_TEST_BINDIR} ${PACKAGE_TEST_ETCDIR} ${PACKAGE_TEST_LIBDIR} ${PACKAGE_TEST_HTTPDIR} ${PACKAGE_TEST_DATADIR}
 			COMMAND mkdir -p ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR}
 			COMMAND mkdir -p ${PACKAGE_TEST_BINDIR} ${PACKAGE_TEST_ETCDIR} ${PACKAGE_TEST_LIBDIR} ${PACKAGE_TEST_HTTPDIR} ${PACKAGE_TEST_DATADIR})
@@ -356,7 +356,7 @@ macro(project_targets_populate)
 					set(S ".ctlso")
 				endif()
 				generate_one_populate_target(${P}${OUT}${S} "${PACKAGE_LIBDIR}/plugins")
-			elseif(${CMAKE_BUILD_TYPE} STREQUAL "TEST" AND ${T} STREQUAL "TEST-PLUGIN")
+			elseif(${T} STREQUAL "TEST-PLUGIN")
 				if(NOT S)
 					set(S ".ctlso")
 				endif()
@@ -389,7 +389,7 @@ macro(project_targets_populate)
 				else()
 					generate_one_populate_target(${P}${OUT}${S} ${PACKAGE_BINDIR})
 				endif()
-			elseif(${CMAKE_BUILD_TYPE} STREQUAL "TEST" AND ${T} STREQUAL "TEST-EXECUTABLE")
+			elseif(${T} STREQUAL "TEST-EXECUTABLE")
 				if(NOT S)
 					set(S "")
 				endif()
@@ -401,18 +401,18 @@ macro(project_targets_populate)
 				endif()
 			elseif(${T} STREQUAL "HTDOCS")
 				generate_one_populate_target(${P}${OUT} ${PACKAGE_HTTPDIR})
-			elseif(${CMAKE_BUILD_TYPE} STREQUAL "TEST" AND ${T} STREQUAL "TEST-HTDOCS")
+			elseif(${T} STREQUAL "TEST-HTDOCS")
 				generate_one_populate_target(${P}${OUT} ${PACKAGE_HTTPDIR})
 			elseif(${T} STREQUAL "DATA" )
 				generate_one_populate_target(${TARGET} ${PACKAGE_DATADIR})
-			elseif(${CMAKE_BUILD_TYPE} STREQUAL "TEST" AND ${T} STREQUAL "TEST-DATA")
+			elseif(${T} STREQUAL "TEST-DATA")
 				generate_one_populate_target(${TARGET} ${PACKAGE_TEST_DATADIR})
 			elseif(${T} STREQUAL "BINDING-CONFIG" )
 				generate_one_populate_target(${TARGET} ${PACKAGE_ETCDIR})
-			elseif(${CMAKE_BUILD_TYPE} STREQUAL "TEST" AND ${T} STREQUAL "TEST-CONFIG")
+			elseif(${T} STREQUAL "TEST-CONFIG")
 				generate_one_populate_target(${TARGET} ${PACKAGE_TEST_ETCDIR})
 			endif()
-			elseif(${CMAKE_BUILD_TYPE} MATCHES "[Dd][Ee][Bb][Uu][Gg]")
+			elseif("${CMAKE_BUILD_TYPE}" MATCHES "[Dd][Ee][Bb][Uu][Gg]")
 				MESSAGE("${Yellow}.. Warning: ${TARGET} ignored when packaging.${ColourReset}")
 		endif()
 	endforeach()
@@ -498,22 +498,10 @@ macro(wgt_package_build)
 		set(WIDGET_ENTRY_POINT lib)
 	endif()
 
-	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/config.xml
-		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
-		COMMAND cp ${ICON_PATH} ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
-	)
-	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/test-config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher
-		COMMAND ${CMAKE_COMMAND} -DINFILE=${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/test-widget/test-config.xml.in -DOUTFILE=${PROJECT_PKG_TEST_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
-		COMMAND cp ${ICON_PATH} ${PROJECT_PKG_TEST_DIR}/${PROJECT_ICON}
-		COMMAND cp ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}//test-widget/launcher.sh.in ${PROJECT_PKG_TEST_DIR}/bin/launcher
-	)
-
-	if(${CMAKE_BUILD_TYPE} STREQUAL "TEST")
+	if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
 		string(TOLOWER "${PROJECT_NAME}-${CMAKE_BUILD_TYPE}" WGT_NAME)
-		add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml ${PROJECT_PKG_TEST_DIR}/test-config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher)
 	else()
 		string(TOLOWER "${PROJECT_NAME}" WGT_NAME)
-		add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml)
 	endif()
 
 	# Fulup ??? copy any extra file in wgt/etc into populate package before building the widget
@@ -536,6 +524,17 @@ macro(wgt_package_build)
 		endif()
 	endif()
 
+	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/config.xml
+		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		COMMAND cp ${ICON_PATH} ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
+	)
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/test-config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher
+		COMMAND ${CMAKE_COMMAND} -DINFILE=${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/test-widget/test-config.xml.in -DOUTFILE=${PROJECT_PKG_TEST_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		COMMAND mkdir -p ${PROJECT_PKG_TEST_DIR}/bin
+		COMMAND cp ${ICON_PATH} ${PROJECT_PKG_TEST_DIR}/${PROJECT_ICON}
+		COMMAND cp ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/test-widget/launcher.sh.in ${PROJECT_PKG_TEST_DIR}/bin/launcher
+	)
+
 	add_custom_command(OUTPUT ${WGT_NAME}.wgt
 		DEPENDS ${PROJECT_TARGETS}
 		COMMAND ${packCMD}
@@ -546,10 +545,12 @@ macro(wgt_package_build)
 		COMMAND ${packCMDTest}
 	)
 
-	if(${CMAKE_BUILD_TYPE} STREQUAL "TEST")
+	if(${BUILD_TEST_WGT})
+		add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml ${PROJECT_PKG_TEST_DIR}/test-config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher)
 		add_custom_target(widget DEPENDS ${WGT_NAME}.wgt ${WGT_NAME}-test.wgt)
 		set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/${WGT_NAME}-test.wgt")
 	else()
+		add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml)
 		add_custom_target(widget DEPENDS ${WGT_NAME}.wgt)
 	endif()
 
