@@ -73,13 +73,20 @@ Choose between:
 
 - **BINDING**: Shared library that be loaded by the AGL Application Framework
 - **BINDINGV2**: Shared library that be loaded by the AGL Application Framework
- This has to be accompanied with a JSON file named like the
- *${OUTPUT_NAME}-apidef* of the target that describe the API with OpenAPI
+ This has to be accompagnied with a JSON file named like the
+ *${OUTPUT_NAME}-apidef* of the target that describes the API with OpenAPI
  syntax (e.g: *mybinding-apidef*).
  Or Alternatively, you can choose the name, without the extension, using macro
- **set_openapi_filename**. If you use C++, you have to set
- **PROJECT_LANGUAGES** with *CXX*.
-- **PLUGIN**: Shared library meant to be used as a binding plugin. Binding
+ **set_openapi_filename**. If you use C++, you have to set **PROJECT_LANGUAGES**
+ to *CXX*.
+- **BINDINGV3**: Shared library that be loaded by the AGL Application Framework
+ This has to be accompagnied with a JSON file named like the
+ *${OUTPUT_NAME}-apidef* of the target that describes the API with OpenAPI
+ syntax (e.g: *mybinding-apidef*).
+ Or Alternatively, you can choose the name, without the extension, using macro
+ **set_openapi_filename**. If you use C++, you have to set **PROJECT_LANGUAGES**
+ to *CXX*.
+- **PLUGIN**: Shared library are meant to be used as a binding plugin. Binding
  would load it as a plugin to extend its functionalities. It should be named
  with a special extension that you choose with SUFFIX cmake target property or
  it'd be **.ctlso** by default.
@@ -91,6 +98,7 @@ Choose between:
  Application Framework
 - **LIBRARY**: An external 3rd party library bundled with the binding for its
  own purpose because platform doesn't provide it.
+- **BINDING-CONFIG**: Any files used as configuration by your binding.
 
 > **TIP** you should use the prefix _afb-_ with your **BINDING* targets which
 > stand for **Application Framework Binding**.
@@ -98,9 +106,8 @@ Choose between:
 ```cmake
 SET_TARGET_PROPERTIES(${TARGET_NAME}
 	PREFIX "afb-"
-	LABELS "BINDINGV2"
-	OUTPUT_NAME "file_output_name"
-)
+	LABELS "BINDINGV3"
+	OUTPUT_NAME "file_output_name")
 ```
 
 > **NOTE**: You doesn't need to specify an **INSTALL** command for these
@@ -213,7 +220,7 @@ git commit -s conf.d/app-templates
 
 ### Build a widget
 
-#### config.xml.in file
+## config.xml.in file
 
 To build a widget you need a _config.xml_ file describing what is your apps and
 how Application Framework would launch it. This repo provide a simple default
@@ -231,7 +238,7 @@ _config.xml.in_, then edit it to fit your needs.
 > _config.xml.in.sample_ which had all new Application Framework
 > features explained and examples.
 
-#### Using cmake template macros
+## Using cmake template macros
 
 To leverage all cmake templates features, you have to specify ***properties***
 on your targets. Some macros will not works without specifying which is the
@@ -248,9 +255,16 @@ Choose between:
  *${OUTPUT_NAME}-apidef* of the target that describe the API with OpenAPI
  syntax (e.g: *mybinding-apidef*).
  Or Alternatively, you can choose the name, without the extension, using macro
- **set_openapi_filename**. If you use C++, you have to set
- **PROJECT_LANGUAGES** with *CXX*.
-- **PLUGIN**: Shared library meant to be used as a binding plugin. Binding
+ **set_openapi_filename**. If you use C++, you have to set **PROJECT_LANGUAGES**
+ to *CXX*.
+- **BINDINGV3**: Shared library that be loaded by the AGL Application Framework
+ This has to be accompagnied with a JSON file named like the
+ *${OUTPUT_NAME}-apidef* of the target that describe the API with OpenAPI
+ syntax (e.g: *mybinding-apidef*).
+ Or Alternatively, you can choose the name, without the extension, using macro
+ **set_openapi_filename**. If you use C++, you have to set **PROJECT_LANGUAGES**
+ to *CXX*.
+- **PLUGIN**: Shared library are meant to be used as a binding plugin. A binding
  would load it as a plugin to extend its functionnalities. It should be named
  with a special extension that you choose with SUFFIX cmake target property or
  it'd be **.ctlso** by default.
@@ -262,6 +276,45 @@ Choose between:
  Application Framework
 - **LIBRARY**: An external 3rd party library bundled with the binding for its
  own purpose because platform doesn't provide it.
+- **BINDING-CONFIG**: Any files used as configuration by your binding.
+
+Optional **LABELS** are available to define which resources type your test
+materials are:
+
+- **TEST-CONFIG**: JSON configuration files that will be used by the afb-test
+ binding to know how to execute tests.
+- **TEST-DATA**: Resources used to test your binding. It is at least your test
+ plan and also could be fixtures and any files needed by your tests. These files
+ will appear in a separate test widget.
+- **TEST-PLUGIN**: Shared library meant to be used as a binding
+ plugin. Binding would load it as a plugin to extend its functionalities. It
+ should be named with a special extension that you choose with SUFFIX cmake
+ target property or it'd be **.ctlso** by default.
+- **TEST-HTDOCS**: Root directory of a web app. This target has to build its
+ directory and put its files in the ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
+- **TEST-EXECUTABLE**: Entry point of your application executed by the AGL
+ Application Framework
+- **TEST-LIBRARY**: An external 3rd party library bundled with the binding for its
+ own use in case the platform doesn't provide it.
+
+Here is a mapping between LABELS and directories where files will be placed in
+the widget:
+
+- **EXECUTABLE** : \<wgtrootdir\>/bin
+- **BINDING-CONFIG** : \<wgtrootdir\>/etc
+- **BINDING** | **BINDINGV2** | **BINDINGV3** | **LIBRARY** : \<wgtrootdir\>/lib
+- **PLUGIN** : \<wgtrootdir\>/lib/plugins
+- **HTDOCS** : \<wgtrootdir\>/htdocs
+- **BINDING-DATA** : \<wgtrootdir\>/var
+- **DATA** : \<wgtrootdir\>/var
+
+And about test dedicated **LABELS**:
+
+- **TEST-EXECUTABLE** : \<wgtrootdir\>/bin
+- **TEST-CONFIG** : \<TESTwgtrootdir\>/etc
+- **TEST-PLUGIN** : \<wgtrootdir\>/lib/plugins
+- **TEST-HTDOCS** : \<wgtrootdir\>/htdocs
+- **TEST-DATA** : \<TESTwgtrootdir\>/var
 
 > **TIP** you should use the prefix _afb-_ with your **BINDING* targets which
 > stand for **Application Framework Binding**.
@@ -370,9 +423,9 @@ SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
 Finally, you can link any other lib or executable target with this imported
 library like any other target.
 
-#### Macro reference
+## Macro reference
 
-##### PROJECT_TARGET_ADD
+### PROJECT_TARGET_ADD
 
 Typical usage would be to add the target to your project using macro
 `PROJECT_TARGET_ADD` with the name of your target as parameter.
@@ -387,7 +440,7 @@ PROJECT_TARGET_ADD(low-can-demo)
 > set with the specificied name. This variable will change at the next call
 > to this macros.
 
-##### project_subdirs_add
+### project_subdirs_add
 
 This macro will search in all subfolder any `CMakeLists.txt` file. If found then
 it will be added to your project. This could be use in an hybrid application by
@@ -429,7 +482,7 @@ set_openapi_filename('binding/mybinding_definition')
 ### add_input_files
 
 Create custom target dedicated for HTML5 and data resource files. This macro
-provides syntax and schema verification for various languages which are
+provides syntax and schema verification for different languages which are
 about now: LUA, JSON and XML.
 
 You could change the tools used to check files with the following variables:

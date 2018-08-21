@@ -7,7 +7,7 @@ how Application Framework would launch it. This repo provide a simple default
 file _config.xml.in_ that should work for simple application without
 interactions with others bindings.
 
-It is recommanded that you use the sample one which is more complete. You can
+It is recommended that you use the sample one which is more complete. You can
 find it at the same location under the name _config.xml.in.sample_ (stunning
 isn't it). Just copy the sample file to your _conf.d/wgt_ directory and name it
 _config.xml.in_, then edit it to fit your needs.
@@ -32,19 +32,19 @@ Choose between:
 - **BINDING**: Shared library that be loaded by the AGL Application Framework
 - **BINDINGV2**: Shared library that be loaded by the AGL Application Framework
  This has to be accompagnied with a JSON file named like the
- *${OUTPUT_NAME}-apidef* of the target that describe the API with OpenAPI
+ *${OUTPUT_NAME}-apidef* of the target that describes the API with OpenAPI
  syntax (e.g: *mybinding-apidef*).
  Or Alternatively, you can choose the name, without the extension, using macro
  **set_openapi_filename**. If you use C++, you have to set **PROJECT_LANGUAGES**
- with *CXX*.
+ to *CXX*.
 - **BINDINGV3**: Shared library that be loaded by the AGL Application Framework
  This has to be accompagnied with a JSON file named like the
- *${OUTPUT_NAME}-apidef* of the target that describe the API with OpenAPI
+ *${OUTPUT_NAME}-apidef* of the target that describes the API with OpenAPI
  syntax (e.g: *mybinding-apidef*).
  Or Alternatively, you can choose the name, without the extension, using macro
  **set_openapi_filename**. If you use C++, you have to set **PROJECT_LANGUAGES**
- with *CXX*.
-- **PLUGIN**: Shared library meant to be used as a binding plugin. Binding
+ to *CXX*.
+- **PLUGIN**: Shared library are meant to be used as a binding plugin. A binding
  would load it as a plugin to extend its functionnalities. It should be named
  with a special extension that you choose with SUFFIX cmake target property or
  it'd be **.ctlso** by default.
@@ -58,16 +58,26 @@ Choose between:
  own purpose because platform doesn't provide it.
 - **BINDING-CONFIG**: Any files used as configuration by your binding.
 
-Two optionnals **LABELS** are available to define which resources are your tests
-materials:
+Optional **LABELS** are available to define which resources type your test
+materials are:
 
 - **TEST-CONFIG**: JSON configuration files that will be used by the afb-test
  binding to know how to execute tests.
 - **TEST-DATA**: Resources used to test your binding. It is at least your test
  plan and also could be fixtures and any needed files by your tests. These files
  will appear in a separate test widget.
+- **TEST-PLUGIN**: Shared library are meant to be used as a binding
+ plugin. A binding would load it as a plugin to extend its functionalities. It
+ should be named with a special extension that you choose with SUFFIX cmake
+ target property or it'd be **.ctlso** by default.
+- **TEST-HTDOCS**: Root directory of a web app. This target has to build its
+ directory and put its files in the ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
+- **TEST-EXECUTABLE**: Entry point of your application executed by the AGL
+ Application Framework
+- **TEST-LIBRARY**: An external 3rd party library bundled with the binding for its
+ own use in case of platform doesn't provide it.
 
-Here is a mapping between LABELS and directories where files will be puted in
+Here is a mapping between LABELS and directories where files will be placed in
 the widget:
 
 - **EXECUTABLE** : \<wgtrootdir\>/bin
@@ -80,7 +90,10 @@ the widget:
 
 And about test dedicated **LABELS**:
 
+- **TEST-EXECUTABLE** : \<wgtrootdir\>/bin
 - **TEST-CONFIG** : \<TESTwgtrootdir\>/etc
+- **TEST-PLUGIN** : \<wgtrootdir\>/lib/plugins
+- **TEST-HTDOCS** : \<wgtrootdir\>/htdocs
 - **TEST-DATA** : \<TESTwgtrootdir\>/var
 
 > **TIP** you should use the prefix _afb-_ with your **BINDING* targets which
