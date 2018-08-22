@@ -52,7 +52,7 @@ done
 
 while read -r line
 do
-	[ "$(echo "${line}" | grep -E 'Ran [[:digit]]+ tests in')" ] && break
+	[ "$(echo "${line}" | grep -E 'Ran [[:digit:]]+ tests in')" ] && break
 done < $AFBCLIENTOUT
 
 rm -f $AFBCLIENTIN
