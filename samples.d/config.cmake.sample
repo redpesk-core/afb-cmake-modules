@@ -22,21 +22,17 @@ set(PROJECT_NAME example)
 set(API_NAME api-test)
 set(PROJECT_PRETTY_NAME "Example")
 set(PROJECT_DESCRIPTION "AGL application example")
-set(PROJECT_URL "https://gerrit.automotivelinux.org/gerrit/apps/app-templates")
+set(PROJECT_URL "https://gerrit.automotivelinux.org/gerrit/apps/cmake-apps-module")
 set(PROJECT_ICON "icon.png")
 set(PROJECT_AUTHOR "Last Name, First Name")
 set(PROJECT_AUTHOR_MAIL "example.man@bigouden.bzh")
 set(PROJECT_LICENSE "APL2.0")
 set(PROJECT_LANGUAGES "C")
 
-# Where are stored default templates files from submodule or subtree app-templates in your project tree
-# relative to the root project directory
-set(PROJECT_APP_TEMPLATES_DIR "conf.d/app-templates")
-
 # Which directories inspect to find CMakeLists.txt target files
 # set(PROJECT_SRC_DIR_PATTERN "*")
 
-# Compilation Mode (DEBUG, RELEASE)
+# Compilation Mode (DEBUG, RELEASE, COVERAGE or PROFILING)
 # ----------------------------------
 #set(BUILD_TYPE "DEBUG")
 #set(USE_EFENCE 1)
@@ -200,7 +196,4 @@ set(PACKAGE_MESSAGE "Install widget file using in the target : afm-util install 
 #set(XML_CHECKER "xmllint" CACHE STRING "XML linter")
 #set(JSON_CHECKER "json_verify" CACHE STRING "JSON linter")
 
-# This include is mandatory and MUST happens at the end
-# of this file, else you expose you to unexpected behavior
-# -----------------------------------------------------------
-include(${PROJECT_APP_TEMPLATES_DIR}/cmake/common.cmake)
+include(CMakeAfbTemplates)

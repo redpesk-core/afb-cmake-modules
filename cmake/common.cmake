@@ -1,5 +1,5 @@
 ###########################################################################
-# Copyright 2015, 2016, 2017 IoT.bzh
+# Copyright 2015 - 2018 IoT.bzh
 #
 # author: Fulup Ar Foll <fulup@iot.bzh>
 # contrib: Romain Forlot <romain.forlot@iot.bzh>
@@ -25,7 +25,7 @@
 #--------------------------------------------------------------------------
 
 # Include ExternalProject CMake module by default
-include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
+include(ExternalProject)
 
 if(DEFINED ENV{SDKTARGETSYSROOT})
 file(STRINGS $ENV{SDKTARGETSYSROOT}/usr/include/linux/version.h LINUX_VERSION_CODE_LINE REGEX "LINUX_VERSION_CODE")
@@ -57,31 +57,48 @@ elseif("${BUILD_ENV_SYSROOT}" STREQUAL "$ENV{PKG_CONFIG_SYSROOT_DIR}")
 else()
 	set(OSRELEASE "NOT COMPATIBLE ! Missing ${OS_RELEASE_PATH} file.")
 endif()
-message(STATUS "Distribution detected (separated by ';' choose one of them) ${OSRELEASE}")
+message("Distribution detected (separated by ';' choose one of them) ${OSRELEASE}")
 
-file(GLOB project_cmakefiles ${PROJECT_APP_TEMPLATES_DIR}/cmake/cmake.d/[0-9][0-9]-*.cmake)
+# Include CMake modules core files
+file(GLOB project_cmakefiles ${CMAKE_CURRENT_LIST_DIR}/cmake.d/[0-9][0-9]-*.cmake)
+
+# Include optionnal user defined OS relative CMake files
 foreach(OS IN LISTS OSRELEASE)
-	list(APPEND PATTERN "${PROJECT_APP_TEMPLATES_DIR}/../cmake/[0-9][0-9]-${OS}*.cmake")
+	list(APPEND PATTERN "${CMAKE_SOURCE_DIR}/${PROJECT_CMAKE_CONF_DIR}/cmake/[0-9][0-9]-${OS}*.cmake"
+			    "${CMAKE_SOURCE_DIR}/${PROJECT_CMAKE_CONF_DIR}/cmake.d/[0-9][0-9]-${OS}*.cmake")
 endforeach()
-list(APPEND PATTERN "${PROJECT_APP_TEMPLATES_DIR}/../cmake/[0-9][0-9]-common*.cmake")
+list(APPEND PATTERN "${PROJECT_CMAKE_CONF_DIR}/../cmake/[0-9][0-9]-common*.cmake"
+		    "${PROJECT_CMAKE_CONF_DIR}/../cmake.d/[0-9][0-9]-common*.cmake")
 
 file(GLOB distro_cmakefiles ${PATTERN})
 list(SORT distro_cmakefiles)
 
 if(NOT distro_cmakefiles)
-	file(GLOB distro_cmakefiles ${PROJECT_APP_TEMPLATES_DIR}/../cmake/[0-9][0-9]-default*.cmake)
+	file(GLOB distro_cmakefiles ${CMAKE_SOURCE_DIR}/${PROJECT_CMAKE_CONF_DIR}/cmake/[0-9][0-9]-default*.cmake
+				    ${CMAKE_SOURCE_DIR}/${PROJECT_CMAKE_CONF_DIR}/cmake.d/[0-9][0-9]-default*.cmake)
 endif()
 
 list(APPEND project_cmakefiles "${distro_cmakefiles}")
 list(SORT project_cmakefiles)
 
-file(GLOB home_cmakefiles $ENV{HOME}/.config/app-templates/cmake.d/[0-9][0-9]-common*.cmake $ENV{HOME}/.config/app-templates/cmake.d/[0-9][0-9]-${PROJECT_NAME}*.cmake)
+file(GLOB home_cmakefiles $ENV{HOME}/.config/app-templates/cmake.d/[0-9][0-9]-common*.cmake
+			  $ENV{HOME}/.config/app-templates/cmake.d/[0-9][0-9]-${PROJECT_NAME}*.cmake
+			  $ENV{HOME}/.config/cmake-apps-module/cmake.d/[0-9][0-9]-common*.cmake
+			  $ENV{HOME}/.config/cmake-apps-module/cmake.d/[0-9][0-9]-${PROJECT_NAME}*.cmake
+			  $ENV{HOME}/.config/CMakeAfbTemplates/cmake.d/[0-9][0-9]-common*.cmake
+			  $ENV{HOME}/.config/CMakeAfbTemplates/cmake.d/[0-9][0-9]-${PROJECT_NAME}*.cmake)
 list(SORT home_cmakefiles)
-file(GLOB system_cmakefiles /etc/app-templates/cmake.d/[0-9][0-9]-common*.cmake /etc/app-templates/cmake.d/[0-9][0-9]-${PROJECT_NAME}*.cmake)
+
+file(GLOB system_cmakefiles /etc/app-templates/cmake.d/[0-9][0-9]-common*.cmake
+			    /etc/app-templates/cmake.d/[0-9][0-9]-${PROJECT_NAME}*.cmake
+			    /etc/cmake-apps-module/cmake.d/[0-9][0-9]-common*.cmake
+			    /etc/cmake-apps-module/cmake.d/[0-9][0-9]-${PROJECT_NAME}*.cmake
+			    /etc/CMakeAfbTemplates/cmake.d/[0-9][0-9]-common*.cmake
+			    /etc/CMakeAfbTemplates/cmake.d/[0-9][0-9]-${PROJECT_NAME}*.cmake)
 list(SORT system_cmakefiles)
 
 foreach(file ${system_cmakefiles} ${home_cmakefiles} ${project_cmakefiles})
-	message(STATUS "Include: ${file}")
+	message("Include: ${file}")
 	include(${file})
 endforeach()
 
@@ -94,11 +111,10 @@ else()
 	project_subdirs_add()
 endif(DEFINED PROJECT_SRC_DIR_PATTERN)
 
-configure_files_in_dir(${PROJECT_APP_TEMPLATES_DIR}/${ENTRY_POINT}/template.d)
+configure_files_in_dir(${CMAKE_SOURCE_DIR}/${PROJECT_CMAKE_CONF_DIR}/template.d)
 configure_files_in_dir($ENV{HOME}/.config/app-templates/scripts)
 configure_files_in_dir(/etc/app-templates/scripts)
 
-check_version()
 project_targets_populate()
 remote_targets_populate()
 project_package_build()

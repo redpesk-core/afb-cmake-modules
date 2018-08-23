@@ -1,8 +1,8 @@
 ###########################################################################
 # Copyright 2015, 2016, 2017 IoT.bzh
 #
-# author: Fulup Ar Foll <fulup@iot.bzh>
-# contrib: Romain Forlot <romain.forlot@iot.bzh>
+# authors: Fulup Ar Foll <fulup@iot.bzh>
+#          Romain Forlot <romain.forlot@iot.bzh>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -132,8 +132,7 @@ ENDIF(${CMAKE_BUILD_TYPE} MATCHES COVERAGE)
 INCLUDE_DIRECTORIES(${EXTRA_INCLUDE_DIRS})
 
 # Default Linkflag
-set(PKG_TEMPLATE_PREFIX "\"${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}\"" CACHE PATH "Default Package Templates Directory")
-set(BARE_PKG_TEMPLATE_PREFIX "${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}" CACHE PATH "Default Package Templates Directory")
+get_filename_component(PKG_TEMPLATE_PREFIX "${CMAKE_CURRENT_LIST_DIR}/../.." REALPATH CACHE)
 
 if(NOT BINDINGS_LINK_FLAG)
 	set(BINDINGS_LINK_FLAG "-Wl,--version-script=${PKG_TEMPLATE_PREFIX}/cmake/export.map")

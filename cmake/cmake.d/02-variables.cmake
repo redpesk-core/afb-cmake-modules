@@ -60,11 +60,7 @@ execute_process(COMMAND git describe --abbrev=0
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	OUTPUT_VARIABLE GIT_PROJECT_VERSION
 	OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-execute_process(COMMAND git describe --abbrev=0
-	WORKING_DIRECTORY ${BARE_PKG_TEMPLATE_PREFIX}
-	OUTPUT_VARIABLE APP_TEMPLATES_VERSION
-	OUTPUT_STRIP_TRAILING_WHITESPACE
+	ERROR_QUIET
 )
 
 # Get the git commit hash to append to the version
@@ -72,6 +68,7 @@ execute_process(COMMAND git rev-parse --short HEAD
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	OUTPUT_VARIABLE COMMIT_HASH
 	OUTPUT_STRIP_TRAILING_WHITESPACE
+	ERROR_QUIET
 )
 
 # Detect unstaged or untracked changes
@@ -79,11 +76,14 @@ execute_process(COMMAND git status --short
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	OUTPUT_VARIABLE DIRTY_FLAG
 	OUTPUT_STRIP_TRAILING_WHITESPACE
+	ERROR_QUIET
 )
 
 # Include project configuration
 # ------------------------------
-if(NOT DEFINED PROJECT_VERSION)
+if(NOT DEFINED PROJECT_VERSION AND NOT DEFINED GIT_PROJECT_VERSION)
+	message(FATAL_ERROR "${Red}No version tag found from your project's source directory and no PROJECT_VERSION set in your config.cmake file. Abort!")
+elseif(NOT DEFINED PROJECT_VERSION AND DEFINED GIT_PROJECT_VERSION)
 	set(PROJECT_VERSION ${GIT_PROJECT_VERSION})
 endif()
 
@@ -139,10 +139,11 @@ else()
 	set(PROJECT_PKG_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/${PKGOUT_DIR} CACHE PATH "Application contents to be packaged")
 endif()
 
+set(PROJECT_APP_TEMPLATES_DIR "${CMAKE_CURRENT_LIST_DIR}/../..")
 # Paths to templates files
-set(TEMPLATE_DIR "${BARE_PKG_TEMPLATE_PREFIX}/template.d" CACHE PATH "Subpath to a directory where are stored needed files to launch on remote target to debuging purposes")
+set(TEMPLATE_DIR "${PROJECT_APP_TEMPLATES_DIR}/template.d" CACHE PATH "Subpath to a directory where are stored needed files to launch on remote target to debuging purposes")
 
-string(REGEX REPLACE "^(.*)/.*$" "\\1" ENTRY_POINT "${BARE_PKG_TEMPLATE_PREFIX}")
+string(REGEX REPLACE "^(.*)/.*$" "\\1" ENTRY_POINT "${PROJECT_CMAKE_CONF_DIR}")
 set(PROJECT_PKG_ENTRY_POINT ${ENTRY_POINT}/packaging CACHE PATH "Where package build files, like rpm.spec file or config.xml, are write.")
 
 set(WIDGET_ICON "${ENTRY_POINT}/wgt/${PROJECT_ICON}" CACHE PATH "Path to the widget icon")
@@ -151,14 +152,8 @@ if(NOT WIDGET_CONFIG_TEMPLATE)
 endif()
 
 # Path to autobuild template
-set(PROJECT_TEMPLATE_AGL_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/conf.d/autobuild/agl CACHE PATH "Subpath to a directory where are stored autobuild script")
-set(PROJECT_TEMPLATE_LINUX_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/conf.d/autobuild/linux CACHE PATH "Subpath to a directory where are stored autobuild script")
-
-# Archive target variables
-set(ARCHIVE_OUTPUT_ARCHIVE ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}_${PROJECT_VERSION}.orig.tar)
-set(ARCHIVE_OUTPUT ${ARCHIVE_OUTPUT_ARCHIVE}.gz)
-set(TMP_ARCHIVE_SUBMODULE ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}-sub)
-set(CMD_ARCHIVE_SUBMODULE \'git archive --verbose --prefix=${NPKG_PROJECT_NAME}-${PROJECT_VERSION}/$$path/ --format tar HEAD --output ${TMP_ARCHIVE_SUBMODULE}-$$sha1.tar\' )
+set(PROJECT_AGL_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/conf.d/autobuild/agl CACHE PATH "Subpath to a directory where are stored autobuild script")
+set(PROJECT_LINUX_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/conf.d/autobuild/linux CACHE PATH "Subpath to a directory where are stored autobuild script")
 
 if(OSRELEASE MATCHES "debian" AND NOT DEFINED ENV{SDKTARGETSYSROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 	# build deb spec file from template

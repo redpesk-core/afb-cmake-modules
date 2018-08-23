@@ -491,7 +491,7 @@ macro(wgt_package_build)
 	elseif(EXISTS "${WIDGET_ICON}")
 		set(ICON_PATH "${WIDGET_ICON}")
 	else()
-		set(ICON_PATH ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/wgt/icon-default.png)
+		set(ICON_PATH ${PROJECT_APP_TEMPLATES_DIR}/wgt/icon-default.png)
 	endif()
 
 	if(NOT WIDGET_ENTRY_POINT)
@@ -525,14 +525,14 @@ macro(wgt_package_build)
 	endif()
 
 	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/config.xml
-		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 		COMMAND cp ${ICON_PATH} ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
 	)
 	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/test-config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher
-		COMMAND ${CMAKE_COMMAND} -DINFILE=${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/test-widget/test-config.xml.in -DOUTFILE=${PROJECT_PKG_TEST_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		COMMAND ${CMAKE_COMMAND} -DINFILE=${PROJECT_APP_TEMPLATES_DIR}/test-wgt/test-config.xml.in -DOUTFILE=${PROJECT_PKG_TEST_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 		COMMAND mkdir -p ${PROJECT_PKG_TEST_DIR}/bin
 		COMMAND cp ${ICON_PATH} ${PROJECT_PKG_TEST_DIR}/${PROJECT_ICON}
-		COMMAND cp ${CMAKE_SOURCE_DIR}/${PROJECT_APP_TEMPLATES_DIR}/test-widget/launcher.sh.in ${PROJECT_PKG_TEST_DIR}/bin/launcher
+		COMMAND cp ${PROJECT_APP_TEMPLATES_DIR}/test-wgt/launcher.sh.in ${PROJECT_PKG_TEST_DIR}/bin/launcher
 	)
 
 	add_custom_command(OUTPUT ${WGT_NAME}.wgt
@@ -632,25 +632,5 @@ macro(project_closing_msg)
 		)
 		add_dependencies(${PROJECT_NAME}_build_done
 			${PROJECT_TARGETS} populate)
-	endif()
-endmacro()
-
-macro(check_version)
-	if(GIT_PROJECT_VERSION)
-		if(${GIT_PROJECT_VERSION} VERSION_GREATER ${APP_TEMPLATES_VERSION})
-			message(STATUS "${Yellow}.. Your app-templates submodule version seems outdated. You should update it with 'git submodule update --remote ${PROJECT_APP_TEMPLATES_DIR}'.
-		- App-templates version: ${APP_TEMPLATES_VERSION}
-		- Project version according AGL Git tag: ${GIT_PROJECT_VERSION}"
-		)
-		endif()
-	elseif(PROJECT_VERSION)
-		if(${PROJECT_VERSION} VERSION_GREATER ${APP_TEMPLATES_VERSION})
-			message(STATUS "${Yellow}.. Your app-templates submodule version seems outdated. You should update it with 'git submodule update --remote ${PROJECT_APP_TEMPLATES_DIR}'.
-		- App-templates version: ${APP_TEMPLATES_VERSION}
-		- Project version according AGL Git tag: ${PROJECT_VERSION}"
-		)
-		endif()
-	else()
-		message(STATUS "${Yellow} Your git project repo doesn't have any version tags nor hosted by AGL gerrit infrastructure. Can't compare version between project and app-templates ${APP_TEMPLATES_VERSION} ${ColourReset}")
 	endif()
 endmacro()
