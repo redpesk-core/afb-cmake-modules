@@ -470,6 +470,10 @@ macro(remote_targets_populate)
 endmacro(remote_targets_populate)
 
 macro(wgt_package_build)
+	if(NOT EXISTS ${TEST_WIDGET_CONFIG_TEMPLATE})
+		MESSAGE(STATUS "${BoldBlue}Notice!:Using default test widget configuration's file.\n-- If you want to use a customized test-config.xml template then specify TEST_WIDGET_CONFIG_TEMPLATE in your config.cmake file.${ColourReset}")
+		set(TEST_WIDGET_CONFIG_TEMPLATE "${PROJECT_APP_TEMPLATES_DIR}/test-wgt/test-config.xml.in" CACHE PATH "Path to the test widget config file template (test-config.xml.in)")
+	endif()
 	if(NOT EXISTS ${WIDGET_CONFIG_TEMPLATE})
 		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build widget file.\nYou need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.${ColourReset}")
 	endif()
@@ -528,8 +532,8 @@ macro(wgt_package_build)
 		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 		COMMAND cp ${ICON_PATH} ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
 	)
-	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/test-config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher
-		COMMAND ${CMAKE_COMMAND} -DINFILE=${PROJECT_APP_TEMPLATES_DIR}/test-wgt/test-config.xml.in -DOUTFILE=${PROJECT_PKG_TEST_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher
+		COMMAND ${CMAKE_COMMAND} -DINFILE=${TEST_WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_TEST_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 		COMMAND mkdir -p ${PROJECT_PKG_TEST_DIR}/bin
 		COMMAND cp ${ICON_PATH} ${PROJECT_PKG_TEST_DIR}/${PROJECT_ICON}
 		COMMAND cp ${PROJECT_APP_TEMPLATES_DIR}/test-wgt/launcher.sh.in ${PROJECT_PKG_TEST_DIR}/bin/launcher
@@ -546,7 +550,7 @@ macro(wgt_package_build)
 	)
 
 	if(${BUILD_TEST_WGT})
-		add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml ${PROJECT_PKG_TEST_DIR}/test-config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher)
+		add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml ${PROJECT_PKG_TEST_DIR}/config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher)
 		add_custom_target(widget DEPENDS ${WGT_NAME}.wgt ${WGT_NAME}-test.wgt)
 		set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/${WGT_NAME}-test.wgt")
 	else()

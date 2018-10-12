@@ -106,10 +106,11 @@ set (PKG_REQUIRED_LIST
 # -g
 # -ggdb
 # CACHE STRING "Compilation flags for DEBUG build type.")
-#set(CCOV_COMPILE_OPTIONS
+#set(COVERAGE_COMPILE_OPTIONS
 # -g
+# -O0
 # --coverage
-# CACHE STRING "Compilation flags for CCOV build type.")
+# CACHE STRING "Compilation flags for COVERAGE build type.")
 #set(RELEASE_COMPILE_OPTIONS
 # -O2
 # -pipe
@@ -133,6 +134,7 @@ set (PKG_REQUIRED_LIST
 # -----------------------------------------
 #set(WIDGET_ICON "conf.d/wgt/${PROJECT_ICON}" CACHE PATH "Path to the widget icon")
 #set(WIDGET_CONFIG_TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/conf.d/wgt/config.xml.in" CACHE PATH "Path to widget config file template (config.xml.in)")
+#set(TEST_WIDGET_CONFIG_TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/conf.d/wgt/test-config.xml.in" CACHE PATH "Path to the test widget config file template (test-config.xml.in)")
 
 # Mandatory widget Mimetype specification of the main unit
 # --------------------------------------------------------------------------
