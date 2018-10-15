@@ -34,27 +34,17 @@ declare -a testVerb
 
 if [[ $(jq '.testVerb|type' $CFGFILE) == "array" ]]
 then
-	testVerbLength=$(jq '.testVerb | length')
-	for (( idx=0; idx<testVerbLength; idx++ )) do
-		testVerb[$idx]=$(jq -r ".testVerb[$idx].uid" ${CFGFILE})
-	done
+        testVerbLength=$(jq '.testVerb | length')
+        for (( idx=0; idx<testVerbLength; idx++ )) do
+                testVerb[$idx]=$(jq -r ".testVerb[$idx].uid" ${CFGFILE})
+        done
 else
-	testVerb[0]=$(jq -r ".testVerb.uid" ${CFGFILE})
+        testVerb[0]=$(jq -r ".testVerb.uid" ${CFGFILE})
 fi
-
-tail -f  $AFBCLIENTIN | afb-client-demo ws://localhost:${PORT}/api?token=${TOKEN} > $AFBCLIENTOUT 2>&1 &
-CLIENTPID=$!
 
 testVerbLength=${#testVerb[@]}
 for (( idx=0; idx<testVerbLength; idx++ )) do
-	echo "$API ${testVerb[$idx]}" > $AFBCLIENTIN
+        afb-client-demo -s ws://localhost:${PORT}/api?token=${TOKEN} "$API" "${testVerb[$idx]}"
 done
 
-while read -r line
-do
-	[ "$(echo "${line}" | grep -E 'Ran [[:digit:]]+ tests in')" ] && break
-done < $AFBCLIENTOUT
-
-rm -f $AFBCLIENTIN
-rm -f $AFBCLIENTOUT
-kill $CLIENTPID
+afb-client-demo ws://localhost:${PORT}/api?token=${TOKEN} "$API" "exit"
