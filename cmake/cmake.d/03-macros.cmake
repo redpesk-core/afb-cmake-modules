@@ -299,16 +299,10 @@ macro(project_targets_populate)
 	set(PACKAGE_TEST_HTTPDIR ${PROJECT_PKG_TEST_DIR}/${HTTPDIR})
 	set(PACKAGE_TEST_DATADIR ${PROJECT_PKG_TEST_DIR}/${DATADIR})
 
-	if(${BUILD_TEST_WGT})
 		add_custom_command(OUTPUT ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR} ${PACKAGE_TEST_BINDIR} ${PACKAGE_TEST_ETCDIR} ${PACKAGE_TEST_LIBDIR} ${PACKAGE_TEST_HTTPDIR} ${PACKAGE_TEST_DATADIR}
 			COMMAND mkdir -p ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR}
 			COMMAND mkdir -p ${PACKAGE_TEST_BINDIR} ${PACKAGE_TEST_ETCDIR} ${PACKAGE_TEST_LIBDIR} ${PACKAGE_TEST_HTTPDIR} ${PACKAGE_TEST_DATADIR})
 		add_custom_target(populate DEPENDS ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR} ${PACKAGE_TEST_BINDIR} ${PACKAGE_TEST_ETCDIR} ${PACKAGE_TEST_LIBDIR} ${PACKAGE_TEST_HTTPDIR} ${PACKAGE_TEST_DATADIR})
-	else()
-		add_custom_command(OUTPUT ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR}
-			COMMAND mkdir -p ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR})
-		add_custom_target(populate DEPENDS ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR})
-	endif()
 
 	# Dirty trick to define a default INSTALL command for app-templates handled
 	# targets
@@ -565,6 +559,8 @@ macro(wgt_package_build)
 	else()
 		add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml)
 		add_custom_target(widget DEPENDS ${WGT_NAME}.wgt)
+		add_custom_target(packaging_test_wgt DEPENDS ${PROJECT_PKG_TEST_DIR}/config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher)
+		add_custom_target(test_widget DEPENDS ${WGT_NAME}-test.wgt)
 	endif()
 
 	add_dependencies(widget populate packaging_wgt)
