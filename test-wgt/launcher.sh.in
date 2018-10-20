@@ -21,6 +21,8 @@
 PORT=$1
 TOKEN=$2
 
+[ ! "${VERBSELECTED}" ] && VERBSELECTED="*"
+
 # Research the Api name used
 CFGFILE=$(find ${AFM_APP_INSTALL_DIR} -name "*json" -print | head -n1)
 API=$(grep '\"api\"' ${CFGFILE} | cut -d'"' -f4)
@@ -32,19 +34,36 @@ mkfifo $AFBCLIENTOUT
 
 declare -a testVerb
 
-if [[ $(jq '.testVerb|type' $CFGFILE) == "array" ]]
+if [[ $(jq -r '.testVerb|type' $CFGFILE) == "array" ]]
 then
-        testVerbLength=$(jq '.testVerb | length')
-        for (( idx=0; idx<testVerbLength; idx++ )) do
-                testVerb[$idx]=$(jq -r ".testVerb[$idx].uid" ${CFGFILE})
-        done
+        testVerbLength=$(jq '.testVerb|length' $CFGFILE)
+	if [ "$VERBSELECTED" = "*" ]
+	then
+		# Get all the verbs of the test api
+		for (( idx=0; idx<testVerbLength; idx++ )) do
+	                testVerb[$idx]=$(jq -r ".testVerb[$idx].uid" ${CFGFILE})
+	        done
+	else
+		# You search for a exact matching verb so there should be only one match
+		for (( idx=0; idx<testVerbLength; idx++ )) do
+			[ "$(jq -r ".testVerb[$idx].uid" ${CFGFILE})" = "$VERBSELECTED" ] && \
+			testVerb[0]=$(jq -r ".testVerb[$idx].uid" ${CFGFILE})
+	        done
+	fi
 else
-        testVerb[0]=$(jq -r ".testVerb.uid" ${CFGFILE})
+	if [ "$VERBSELECTED" = "*" ]
+	then
+		testVerb[0]=$(jq -r ".testVerb.uid" ${CFGFILE})
+	else
+		[ "$(jq -r ".testVerb[0].uid" ${CFGFILE})" = "$VERBSELECTED" ] && \
+		testVerb[0]=$(jq -r ".testVerb[$idx].uid" ${CFGFILE})
+	fi
 fi
 
 testVerbLength=${#testVerb[@]}
 for (( idx=0; idx<testVerbLength; idx++ )) do
-        afb-client-demo -s ws://localhost:${PORT}/api?token=${TOKEN} "$API" "${testVerb[$idx]}"
+	echo "Launching ${testVerb[$idx]}"
+        afb-client-demo -s ws://localhost:${PORT}/api?token=${TOKEN} "$API" "${testVerb[$idx]}" "${VERBARGS}"
 done
 
 afb-client-demo ws://localhost:${PORT}/api?token=${TOKEN} "$API" "exit"
