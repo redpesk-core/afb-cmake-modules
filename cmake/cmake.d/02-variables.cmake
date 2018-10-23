@@ -101,31 +101,38 @@ set(AFB_REMPORT "1234" CACHE PATH "Default AFB_TOKEN")
 
 # Check GCC minimal version
 if (gcc_minimal_version)
-message (STATUS "${Cyan}-- Check gcc_minimal_version (found gcc version ${CMAKE_C_COMPILER_VERSION}) \
-(found g++ version ${CMAKE_CXX_COMPILER_VERSION})${ColourReset}")
-if (("${PROJECT_LANGUAGES}" MATCHES "CXX" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${gcc_minimal_version}) OR CMAKE_C_COMPILER_VERSION VERSION_LESS ${gcc_minimal_version})
-message(FATAL_ERROR "${Red}**** FATAL: Require at least gcc-${gcc_minimal_version} please set CMAKE_C[XX]_COMPILER")
-endif()
+	message ("${Cyan}-- Check gcc_minimal_version (found gcc version ${CMAKE_C_COMPILER_VERSION}) \
+	(found g++ version ${CMAKE_CXX_COMPILER_VERSION})${ColourReset}")
+
+	if (("${PROJECT_LANGUAGES}" MATCHES "CXX"
+	    AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${gcc_minimal_version})
+	    OR CMAKE_C_COMPILER_VERSION VERSION_LESS ${gcc_minimal_version})
+		message(FATAL_ERROR "${Red}**** FATAL: Require at least gcc-${gcc_minimal_version} please set CMAKE_C[XX]_COMPILER")
+	endif()
 endif(gcc_minimal_version)
 
 # Check Kernel mandatory version, will fail the configuration if required version not matched.
 if (kernel_mandatory_version)
-message (STATUS "${Cyan}-- Check kernel_mandatory_version (found kernel version ${KERNEL_VERSION})${ColourReset}")
-if (KERNEL_VERSION VERSION_LESS ${kernel_mandatory_version})
-message(FATAL_ERROR "${Red}**** FATAL: Require at least ${kernel_mandatory_version} please use a recent kernel or source your SDK environment then clean and reconfigure your CMake project.")
-endif (KERNEL_VERSION VERSION_LESS ${kernel_mandatory_version})
+	message("${Cyan}-- Check kernel_mandatory_version (found kernel version ${KERNEL_VERSION})${ColourReset}")
+	if (KERNEL_VERSION VERSION_LESS ${kernel_mandatory_version})
+		message(FATAL_ERROR "${Red}**** \
+		FATAL: Require at least ${kernel_mandatory_version} please use a recent kernel or source your SDK environment then clean and reconfigure your CMake project.")
+	endif (KERNEL_VERSION VERSION_LESS ${kernel_mandatory_version})
 endif(kernel_mandatory_version)
 
 # Check Kernel minimal version just print a Warning about missing features
 # and set a definition to be used as preprocessor condition in code to disable
 # incompatibles features.
 if (kernel_minimal_version)
-message (STATUS "${Cyan}-- Check kernel_minimal_version (found kernel version ${KERNEL_VERSION})${ColourReset}")
-if (KERNEL_VERSION VERSION_LESS ${kernel_minimal_version})
-message(WARNING "${Yellow}**** Warning: Some feature(s) require at least ${kernel_minimal_version}. Please use a recent kernel or source your SDK environment then clean and reconfigure your CMake project.${ColourReset}")
-else (KERNEL_VERSION VERSION_LESS ${kernel_minimal_version})
-add_definitions(-DKERNEL_MINIMAL_VERSION_OK)
-endif (KERNEL_VERSION VERSION_LESS ${kernel_minimal_version})
+	message ( "${Cyan}-- Check kernel_minimal_version (found kernel version ${KERNEL_VERSION})${ColourReset}")
+	if (KERNEL_VERSION VERSION_LESS ${kernel_minimal_version})
+		message(WARNING "${Yellow}**** \
+		Warning: Some feature(s) require at least ${kernel_minimal_version}. \
+		Please use a recent kernel or source your SDK environment then clean and reconfigure your CMake project.\
+		${ColourReset}")
+	else (KERNEL_VERSION VERSION_LESS ${kernel_minimal_version})
+		add_definitions(-DKERNEL_MINIMAL_VERSION_OK)
+	endif (KERNEL_VERSION VERSION_LESS ${kernel_minimal_version})
 endif(kernel_minimal_version)
 
 # Project path variables
@@ -134,26 +141,33 @@ set(PKGOUT_DIR package CACHE PATH "Output directory for packages")
 
 # Define a default package directory
 if(PKG_PREFIX)
-	set(PROJECT_PKG_BUILD_DIR ${PKG_PREFIX}/${PKGOUT_DIR} CACHE PATH "Application contents to be packaged")
+	set(PROJECT_PKG_BUILD_DIR ${PKG_PREFIX}/${PKGOUT_DIR}
+	    CACHE PATH "Application contents to be packaged")
 else()
-	set(PROJECT_PKG_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/${PKGOUT_DIR} CACHE PATH "Application contents to be packaged")
+	set(PROJECT_PKG_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/${PKGOUT_DIR}
+	    CACHE PATH "Application contents to be packaged")
 endif()
 
 set(PROJECT_APP_TEMPLATES_DIR "${CMAKE_CURRENT_LIST_DIR}/../..")
-# Paths to templates files
-set(TEMPLATE_DIR "${PROJECT_APP_TEMPLATES_DIR}/template.d" CACHE PATH "Subpath to a directory where are stored needed files to launch on remote target to debuging purposes")
 
-string(REGEX REPLACE "^(.*)/.*$" "\\1" ENTRY_POINT "${PROJECT_CMAKE_CONF_DIR}")
-set(PROJECT_PKG_ENTRY_POINT ${ENTRY_POINT}/packaging CACHE PATH "Where package build files, like rpm.spec file or config.xml, are write.")
+set(TEMPLATE_DIR "${PROJECT_APP_TEMPLATES_DIR}/template.d"
+    CACHE PATH "Subpath to a directory where are stored needed files to launch on remote target to debuging purposes")
 
-set(WIDGET_ICON "${ENTRY_POINT}/wgt/${PROJECT_ICON}" CACHE PATH "Path to the widget icon")
+set(PROJECT_PKG_ENTRY_POINT ${CMAKE_SOURCE_DIR}/${PROJECT_CMAKE_CONF_DIR}/packaging
+    CACHE PATH "Where package build files, like rpm.spec file or config.xml, are write.")
+set(WIDGET_ICON "${CMAKE_SOURCE_DIR}/${PROJECT_CMAKE_CONF_DIR}/wgt/${PROJECT_ICON}"
+    CACHE PATH "Path to the widget icon")
+
 if(NOT WIDGET_CONFIG_TEMPLATE)
-	set(WIDGET_CONFIG_TEMPLATE ${TEMPLATE_DIR}/config.xml.in CACHE PATH "Path to widget config file template (config.xml.in)")
+	set(WIDGET_CONFIG_TEMPLATE ${TEMPLATE_DIR}/config.xml.in
+		CACHE PATH "Path to widget config file template (config.xml.in)")
 endif()
 
 # Path to autobuild template
-set(PROJECT_AGL_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/conf.d/autobuild/agl CACHE PATH "Subpath to a directory where are stored autobuild script")
-set(PROJECT_LINUX_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/conf.d/autobuild/linux CACHE PATH "Subpath to a directory where are stored autobuild script")
+set(PROJECT_AGL_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/conf.d/autobuild/agl
+    CACHE PATH "Subpath to a directory where are stored autobuild script")
+set(PROJECT_LINUX_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/conf.d/autobuild/linux
+    CACHE PATH "Subpath to a directory where are stored autobuild script")
 
 if(OSRELEASE MATCHES "debian" AND NOT DEFINED ENV{SDKTARGETSYSROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 	# build deb spec file from template

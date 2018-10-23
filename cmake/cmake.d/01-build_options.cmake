@@ -88,10 +88,27 @@ endforeach()
 
 # Compilation option depending on CMAKE_BUILD_TYPE
 ##################################################
-set(PROFILING_COMPILE_OPTIONS -g -O0 -pg -Wp,-U_FORTIFY_SOURCE CACHE STRING "Compilation flags for PROFILING build type.")
-set(DEBUG_COMPILE_OPTIONS -g -ggdb CACHE STRING "Compilation flags for DEBUG build type.")
-set(COVERAGE_COMPILE_OPTIONS -g -O0 --coverage CACHE STRING "Compilation flags for COVERAGE build type.")
-set(RELEASE_COMPILE_OPTIONS -O2 -D_FORTIFY_SOURCE=2 CACHE STRING "Compilation flags for RELEASE build type.")
+set(PROFILING_COMPILE_OPTIONS
+    -g
+    -O0
+    -pg
+    -Wp,-U_FORTIFY_SOURCE
+    CACHE STRING "Compilation flags for PROFILING build type.")
+set(DEBUG_COMPILE_OPTIONS
+    -g
+    -O0
+    -ggdb
+    CACHE STRING "Compilation flags for DEBUG build type.")
+set(COVERAGE_COMPILE_OPTIONS
+    -g
+    -O0
+    --coverage
+    CACHE STRING "Compilation flags for COVERAGE build type.")
+set(RELEASE_COMPILE_OPTIONS
+    -O2
+    -D_FORTIFY_SOURCE=2
+    CACHE STRING "Compilation flags for RELEASE build type.")
+
 foreach(option ${PROFILING_COMPILE_OPTIONS})
 	add_compile_options($<$<CONFIG:PROFILING>:${option}>)
 endforeach()
@@ -119,7 +136,7 @@ endforeach(PKG_CONFIG)
 IF(CMAKE_BUILD_TYPE MATCHES DEBUG AND USE_EFENCE)
 CHECK_LIBRARY_EXISTS(efence malloc "" HAVE_LIBEFENCE)
 IF(HAVE_LIBEFENCE)
-	MESSAGE(STATUS "Linking with ElectricFence for debugging purposes...")
+	MESSAGE("Linking with ElectricFence for debugging purposes...")
 	SET(libefence_LIBRARIES "-lefence")
 	list (APPEND link_libraries ${libefence_LIBRARIES})
 ENDIF(HAVE_LIBEFENCE)

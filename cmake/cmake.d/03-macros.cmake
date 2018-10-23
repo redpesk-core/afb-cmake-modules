@@ -25,7 +25,10 @@
 # CMake 3.6 imported macros to simulate list(FILTER ...) subcommand
 #--------------------------------------------------------------------------
 MACRO(prevent_in_source_build)
-	execute_process(COMMAND rm -rf ${CMAKE_SOURCE_DIR}/CMakeCache.txt ${CMAKE_SOURCE_DIR}/CMakeCacheForScript.cmake ${CMAKE_SOURCE_DIR}/CMakeFiles ${CMAKE_SOURCE_DIR}/cmake_install.cmake)
+	execute_process(COMMAND rm -rf ${CMAKE_SOURCE_DIR}/CMakeCache.txt
+			${CMAKE_SOURCE_DIR}/CMakeCacheForScript.cmake
+			${CMAKE_SOURCE_DIR}/CMakeFiles
+			${CMAKE_SOURCE_DIR}/cmake_install.cmake)
 
 	get_filename_component(srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
 	get_filename_component(bindir "${CMAKE_BINARY_DIR}" REALPATH)
@@ -38,81 +41,86 @@ ENDMACRO(prevent_in_source_build)
 MACRO(PARSE_ARGUMENTS prefix arg_names option_names)
 	SET(DEFAULT_ARGS)
 	FOREACH(arg_name ${arg_names})
-	SET(${prefix}_${arg_name})
+		SET(${prefix}_${arg_name})
 	ENDFOREACH(arg_name)
 	FOREACH(option ${option_names})
-	SET(${prefix}_${option} FALSE)
+		SET(${prefix}_${option} FALSE)
 	ENDFOREACH(option)
 
 	SET(current_arg_name DEFAULT_ARGS)
 	SET(current_arg_list)
 	FOREACH(arg ${ARGN})
-	LIST_CONTAINS(is_arg_name ${arg} ${arg_names})
-	IF (is_arg_name)
-		SET(${prefix}_${current_arg_name} ${current_arg_list})
-		SET(current_arg_name ${arg})
-		SET(current_arg_list)
-	ELSE (is_arg_name)
-		LIST_CONTAINS(is_option ${arg} ${option_names})
-		IF (is_option)
-	SET(${prefix}_${arg} TRUE)
-		ELSE (is_option)
-	SET(current_arg_list ${current_arg_list} ${arg})
-		ENDIF (is_option)
-	ENDIF (is_arg_name)
+		LIST_CONTAINS(is_arg_name ${arg} ${arg_names})
+		IF (is_arg_name)
+			SET(${prefix}_${current_arg_name} ${current_arg_list})
+			SET(current_arg_name ${arg})
+			SET(current_arg_list)
+		ELSE (is_arg_name)
+			LIST_CONTAINS(is_option ${arg} ${option_names})
+			IF (is_option)
+		SET(${prefix}_${arg} TRUE)
+			ELSE (is_option)
+		SET(current_arg_list ${current_arg_list} ${arg})
+			ENDIF (is_option)
+		ENDIF (is_arg_name)
 	ENDFOREACH(arg)
 	SET(${prefix}_${current_arg_name} ${current_arg_list})
 ENDMACRO(PARSE_ARGUMENTS)
 
 MACRO(LIST_CONTAINS var value)
-SET(${var})
-FOREACH (value2 ${ARGN})
-  IF (${value} STREQUAL ${value2})
-	SET(${var} TRUE)
-  ENDIF (${value} STREQUAL ${value2})
-ENDFOREACH (value2)
+	SET(${var})
+	FOREACH (value2 ${ARGN})
+		IF (${value} STREQUAL ${value2})
+			SET(${var} TRUE)
+		ENDIF (${value} STREQUAL ${value2})
+	ENDFOREACH (value2)
 ENDMACRO(LIST_CONTAINS)
 
 MACRO(LIST_FILTER)
-PARSE_ARGUMENTS(LIST_FILTER "OUTPUT_VARIABLE" "" ${ARGV})
-# Check arguments.
-LIST(LENGTH LIST_FILTER_DEFAULT_ARGS LIST_FILTER_default_length)
-IF(${LIST_FILTER_default_length} EQUAL 0)
-  MESSAGE(FATAL_ERROR "LIST_FILTER: missing list variable.")
-ENDIF(${LIST_FILTER_default_length} EQUAL 0)
-IF(${LIST_FILTER_default_length} EQUAL 1)
-  MESSAGE(FATAL_ERROR "LIST_FILTER: missing regular expression variable.")
-ENDIF(${LIST_FILTER_default_length} EQUAL 1)
-# Reset output variable
-IF(NOT LIST_FILTER_OUTPUT_VARIABLE)
-  SET(LIST_FILTER_OUTPUT_VARIABLE "LIST_FILTER_internal_output")
-ENDIF(NOT LIST_FILTER_OUTPUT_VARIABLE)
-SET(${LIST_FILTER_OUTPUT_VARIABLE})
-# Extract input list from arguments
-LIST(GET LIST_FILTER_DEFAULT_ARGS 0 LIST_FILTER_input_list)
-LIST(REMOVE_AT LIST_FILTER_DEFAULT_ARGS 0)
-FOREACH(LIST_FILTER_item ${${LIST_FILTER_input_list}})
-  FOREACH(LIST_FILTER_regexp_var ${LIST_FILTER_DEFAULT_ARGS})
-	FOREACH(LIST_FILTER_regexp ${${LIST_FILTER_regexp_var}})
-	  IF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
-		LIST(APPEND ${LIST_FILTER_OUTPUT_VARIABLE} ${LIST_FILTER_item})
-	  ENDIF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
-	ENDFOREACH(LIST_FILTER_regexp ${${LIST_FILTER_regexp_var}})
-  ENDFOREACH(LIST_FILTER_regexp_var)
-ENDFOREACH(LIST_FILTER_item)
-# If OUTPUT_VARIABLE is not specified, overwrite the input list.
-IF(${LIST_FILTER_OUTPUT_VARIABLE} STREQUAL "LIST_FILTER_internal_output")
-  SET(${LIST_FILTER_input_list} ${${LIST_FILTER_OUTPUT_VARIABLE}})
-ENDIF(${LIST_FILTER_OUTPUT_VARIABLE} STREQUAL "LIST_FILTER_internal_output")
+	PARSE_ARGUMENTS(LIST_FILTER "OUTPUT_VARIABLE" "" ${ARGV})
+	# Check arguments.
+	LIST(LENGTH LIST_FILTER_DEFAULT_ARGS LIST_FILTER_default_length)
+	IF(${LIST_FILTER_default_length} EQUAL 0)
+		MESSAGE(FATAL_ERROR "LIST_FILTER: missing list variable.")
+	ENDIF(${LIST_FILTER_default_length} EQUAL 0)
+
+	IF(${LIST_FILTER_default_length} EQUAL 1)
+		MESSAGE(FATAL_ERROR "LIST_FILTER: missing regular expression variable.")
+	ENDIF(${LIST_FILTER_default_length} EQUAL 1)
+
+	# Reset output variable
+	IF(NOT LIST_FILTER_OUTPUT_VARIABLE)
+		SET(LIST_FILTER_OUTPUT_VARIABLE "LIST_FILTER_internal_output")
+	ENDIF(NOT LIST_FILTER_OUTPUT_VARIABLE)
+	SET(${LIST_FILTER_OUTPUT_VARIABLE})
+
+	# Extract input list from arguments
+	LIST(GET LIST_FILTER_DEFAULT_ARGS 0 LIST_FILTER_input_list)
+	LIST(REMOVE_AT LIST_FILTER_DEFAULT_ARGS 0)
+	FOREACH(LIST_FILTER_item ${${LIST_FILTER_input_list}})
+		FOREACH(LIST_FILTER_regexp_var ${LIST_FILTER_DEFAULT_ARGS})
+			FOREACH(LIST_FILTER_regexp ${${LIST_FILTER_regexp_var}})
+				IF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
+					LIST(APPEND ${LIST_FILTER_OUTPUT_VARIABLE} ${LIST_FILTER_item})
+				ENDIF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
+			ENDFOREACH(LIST_FILTER_regexp ${${LIST_FILTER_regexp_var}})
+		ENDFOREACH(LIST_FILTER_regexp_var)
+	ENDFOREACH(LIST_FILTER_item)
+
+	# If OUTPUT_VARIABLE is not specified, overwrite the input list.
+	IF(${LIST_FILTER_OUTPUT_VARIABLE} STREQUAL "LIST_FILTER_internal_output")
+		SET(${LIST_FILTER_input_list} ${${LIST_FILTER_OUTPUT_VARIABLE}})
+	ENDIF(${LIST_FILTER_OUTPUT_VARIABLE} STREQUAL "LIST_FILTER_internal_output")
 ENDMACRO(LIST_FILTER)
 
 # Generic useful macro
 # -----------------------
 macro(set_install_prefix)
 	if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND INSTALL_PREFIX)
-		message(STATUS "-- Overwrite the CMAKE default install prefix with ${INSTALL_PREFIX}")
+		message("-- Overwrite the CMAKE default install prefix with ${INSTALL_PREFIX}")
 		set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX} CACHE PATH "Install prefix" FORCE)
 	endif()
+
 	# (BUG!!!) as PKG_CONFIG_PATH does not work [should be an env variable]
 	# ---------------------------------------------------------------------
 	set(CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig CACHE PATH 'Prefix Path list used by pkgconfig module')
@@ -239,7 +247,8 @@ endmacro()
 
 # Set the name of the OPENAPI definition JSON file for binding v2
 macro(set_openapi_filename openapi_filename)
-	set(OPENAPI_DEF ${openapi_filename} CACHE STRING "OpenAPI JSON file name used to generate binding header file before building a binding v2 target.")
+	set(OPENAPI_DEF ${openapi_filename}
+	    CACHE STRING "OpenAPI JSON file name used to generate binding header file before building a binding v2 target.")
 endmacro()
 
 # Common command to call inside project_targets_populate macro
@@ -299,10 +308,37 @@ macro(project_targets_populate)
 	set(PACKAGE_TEST_HTTPDIR ${PROJECT_PKG_TEST_DIR}/${HTTPDIR})
 	set(PACKAGE_TEST_DATADIR ${PROJECT_PKG_TEST_DIR}/${DATADIR})
 
-		add_custom_command(OUTPUT ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR} ${PACKAGE_TEST_BINDIR} ${PACKAGE_TEST_ETCDIR} ${PACKAGE_TEST_LIBDIR} ${PACKAGE_TEST_HTTPDIR} ${PACKAGE_TEST_DATADIR}
-			COMMAND mkdir -p ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR}
-			COMMAND mkdir -p ${PACKAGE_TEST_BINDIR} ${PACKAGE_TEST_ETCDIR} ${PACKAGE_TEST_LIBDIR} ${PACKAGE_TEST_HTTPDIR} ${PACKAGE_TEST_DATADIR})
-		add_custom_target(populate DEPENDS ${PACKAGE_BINDIR} ${PACKAGE_ETCDIR} ${PACKAGE_LIBDIR} ${PACKAGE_HTTPDIR} ${PACKAGE_DATADIR} ${PACKAGE_TEST_BINDIR} ${PACKAGE_TEST_ETCDIR} ${PACKAGE_TEST_LIBDIR} ${PACKAGE_TEST_HTTPDIR} ${PACKAGE_TEST_DATADIR})
+		add_custom_command(OUTPUT ${PACKAGE_BINDIR}
+					  ${PACKAGE_ETCDIR}
+					  ${PACKAGE_LIBDIR}
+					  ${PACKAGE_HTTPDIR}
+					  ${PACKAGE_DATADIR}
+					  ${PACKAGE_TEST_BINDIR}
+					  ${PACKAGE_TEST_ETCDIR}
+					  ${PACKAGE_TEST_LIBDIR}
+					  ${PACKAGE_TEST_HTTPDIR}
+					  ${PACKAGE_TEST_DATADIR}
+			COMMAND mkdir -p  ${PACKAGE_BINDIR}
+			COMMAND mkdir -p  ${PACKAGE_ETCDIR}
+			COMMAND mkdir -p  ${PACKAGE_LIBDIR}
+			COMMAND mkdir -p  ${PACKAGE_HTTPDIR}
+			COMMAND mkdir -p  ${PACKAGE_DATADIR}
+			COMMAND mkdir -p  ${PACKAGE_TEST_BINDIR}
+			COMMAND mkdir -p  ${PACKAGE_TEST_ETCDIR}
+			COMMAND mkdir -p  ${PACKAGE_TEST_LIBDIR}
+			COMMAND mkdir -p  ${PACKAGE_TEST_HTTPDIR}
+			COMMAND mkdir -p  ${PACKAGE_TEST_DATADIR}
+		)
+		add_custom_target(populate DEPENDS ${PACKAGE_BINDIR}
+						   ${PACKAGE_ETCDIR}
+						   ${PACKAGE_LIBDIR}
+						   ${PACKAGE_HTTPDIR}
+						   ${PACKAGE_DATADIR}
+						   ${PACKAGE_TEST_BINDIR}
+						   ${PACKAGE_TEST_ETCDIR}
+						   ${PACKAGE_TEST_LIBDIR}
+						   ${PACKAGE_TEST_HTTPDIR}
+						   ${PACKAGE_TEST_DATADIR})
 
 	# Dirty trick to define a default INSTALL command for app-templates handled
 	# targets
@@ -415,8 +451,8 @@ macro(project_targets_populate)
 			elseif(${T} STREQUAL "TEST-CONFIG")
 				generate_one_populate_target(${TARGET} ${PACKAGE_TEST_ETCDIR})
 			endif()
-			elseif("${CMAKE_BUILD_TYPE}" MATCHES "[Dd][Ee][Bb][Uu][Gg]")
-				MESSAGE("${Yellow}.. Warning: ${TARGET} ignored when packaging.${ColourReset}")
+		elseif("${CMAKE_BUILD_TYPE}" MATCHES "[Dd][Ee][Bb][Uu][Gg]")
+			MESSAGE("${BoldBlue}.. Notice: ${TARGET} ignored when packaging.${ColourReset}")
 		endif()
 	endforeach()
 endmacro(project_targets_populate)
@@ -474,11 +510,15 @@ endmacro(remote_targets_populate)
 
 macro(wgt_package_build)
 	if(NOT EXISTS ${TEST_WIDGET_CONFIG_TEMPLATE})
-		MESSAGE(STATUS "${BoldBlue}Notice!:Using default test widget configuration's file.\n-- If you want to use a customized test-config.xml template then specify TEST_WIDGET_CONFIG_TEMPLATE in your config.cmake file.${ColourReset}")
-		set(TEST_WIDGET_CONFIG_TEMPLATE "${PROJECT_APP_TEMPLATES_DIR}/test-wgt/test-config.xml.in" CACHE PATH "Path to the test widget config file template (test-config.xml.in)")
+		MESSAGE("${BoldBlue}-- Notice: Using default test widget configuration's file.
+-- If you want to use a customized test-config.xml template then specify TEST_WIDGET_CONFIG_TEMPLATE in your config.cmake file.${ColourReset}")
+
+		set(TEST_WIDGET_CONFIG_TEMPLATE "${PROJECT_APP_TEMPLATES_DIR}/test-wgt/test-config.xml.in"
+		    CACHE PATH "Path to the test widget config file template (test-config.xml.in)")
 	endif()
 	if(NOT EXISTS ${WIDGET_CONFIG_TEMPLATE})
-		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build widget file.\nYou need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.${ColourReset}")
+		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build widget file.
+You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.${ColourReset}")
 	endif()
 	if(NOT WIDGET_TYPE)
 		MESSAGE(FATAL_ERROR "WIDGET_TYPE must be set in your config.cmake.\neg.: set(WIDGET_TYPE application/vnd.agl.service)")
@@ -532,11 +572,15 @@ macro(wgt_package_build)
 	endif()
 
 	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/config.xml
-		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml
+			-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
+			-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 		COMMAND cp ${ICON_PATH} ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
 	)
 	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher
-		COMMAND ${CMAKE_COMMAND} -DINFILE=${TEST_WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_TEST_DIR}/config.xml -DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		COMMAND ${CMAKE_COMMAND} -DINFILE=${TEST_WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_TEST_DIR}/config.xml
+			-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
+			-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 		COMMAND mkdir -p ${PROJECT_PKG_TEST_DIR}/bin
 		COMMAND cp ${ICON_PATH} ${PROJECT_PKG_TEST_DIR}/${PROJECT_ICON}
 		COMMAND cp ${PROJECT_APP_TEMPLATES_DIR}/test-wgt/launcher.sh.in ${PROJECT_PKG_TEST_DIR}/bin/launcher
@@ -553,8 +597,11 @@ macro(wgt_package_build)
 	)
 
 	if(${BUILD_TEST_WGT})
-		add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml ${PROJECT_PKG_TEST_DIR}/config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher)
+		add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml
+							${PROJECT_PKG_TEST_DIR}/config.xml
+							${PROJECT_PKG_TEST_DIR}/bin/launcher)
 		add_custom_target(widget DEPENDS ${WGT_NAME}.wgt ${WGT_NAME}-test.wgt)
+
 		set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/${WGT_NAME}-test.wgt")
 	else()
 		add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml)
