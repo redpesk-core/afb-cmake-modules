@@ -367,7 +367,8 @@ macro(project_targets_populate)
 			get_target_property(OUT ${TARGET} OUTPUT_NAME)
 
 			if(P MATCHES "NOTFOUND$")
-				if (${T} STREQUAL "LIBRARY")
+				if (${T} STREQUAL "LIBRARY" OR
+				    ${T} MATCHES "^BINDINGV?.?$")
 					set(P "lib")
 				else()
 					set(P "")
