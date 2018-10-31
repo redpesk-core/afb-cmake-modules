@@ -164,9 +164,9 @@ if(NOT WIDGET_CONFIG_TEMPLATE)
 endif()
 
 # Path to autobuild template
-set(PROJECT_AGL_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/conf.d/autobuild/agl
+set(PROJECT_AGL_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/autobuild/agl
     CACHE PATH "Subpath to a directory where are stored autobuild script")
-set(PROJECT_LINUX_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/conf.d/autobuild/linux
+set(PROJECT_LINUX_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/autobuild/linux
     CACHE PATH "Subpath to a directory where are stored autobuild script")
 
 if(OSRELEASE MATCHES "debian" AND NOT DEFINED ENV{SDKTARGETSYSROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
