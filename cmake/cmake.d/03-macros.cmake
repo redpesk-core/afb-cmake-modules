@@ -608,7 +608,9 @@ You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.
 		add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml)
 		add_custom_target(widget DEPENDS ${WGT_NAME}.wgt)
 		add_custom_target(packaging_test_wgt DEPENDS ${PROJECT_PKG_TEST_DIR}/config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher)
-		add_custom_target(test_widget DEPENDS ${WGT_NAME}-test.wgt)
+		add_custom_target(test_widget DEPENDS ${WGT_NAME}-test.wgt
+						      ${PROJECT_PKG_TEST_DIR}/config.xml
+						      ${PROJECT_PKG_TEST_DIR}/bin/launcher)
 	endif()
 
 	add_dependencies(widget populate packaging_wgt)
