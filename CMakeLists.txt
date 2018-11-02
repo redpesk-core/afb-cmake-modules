@@ -20,12 +20,6 @@ cmake_minimum_required(VERSION 3.6)
 
 include(GNUInstallDirs)
 
-if(DEFINED ENV{PKG_CONFIG_SYSROOT_DIR})
-	set(CMAKE_DATADIR "cmake-${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}")
-else()
-	set(CMAKE_DATADIR "cmake")
-endif()
-
-INSTALL(FILES CMakeAfbTemplates.cmake DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_DATADIR}/Modules)
-INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_DATADIR}/Modules/CMakeAfbTemplates
-	REGEX "(CMakeAfbTemplates.cmake|gendocs.sh|book.json|CMakeLists.txt|docs|.*\/\.git.*)" EXCLUDE)
+INSTALL(FILES CMakeAfbTemplates.cmake DESTINATION ${CMAKE_ROOT}/Modules)
+INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/ DESTINATION ${CMAKE_ROOT}/Modules/CMakeAfbTemplates
+	REGEX "(CMakeAfbTemplates.cmake|gendocs.sh|book.json|CMakeLists.txt|docs|build|.*\/\.git.*)" EXCLUDE)
