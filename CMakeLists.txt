@@ -16,10 +16,9 @@
 # limitations under the License.
 ###########################################################################
 
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.5)
 
 include(GNUInstallDirs)
 
 INSTALL(FILES CMakeAfbTemplates.cmake DESTINATION ${CMAKE_ROOT}/Modules)
-INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/ DESTINATION ${CMAKE_ROOT}/Modules/CMakeAfbTemplates
-	REGEX "(CMakeAfbTemplates.cmake|gendocs.sh|book.json|CMakeLists.txt|docs|build|.*\/\.git.*)" EXCLUDE)
+INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/src/ DESTINATION ${CMAKE_ROOT}/Modules/CMakeAfbTemplates)

@@ -1,0 +1,5 @@
+agl-cmake-apps-module (6.90-0) unstable; urgency=low
+
+  * init build
+
+ -- Romain Forlot <romain.forlot@iot.bzh>  Mon, 5 Oct 2018 10:50:38 +0100
