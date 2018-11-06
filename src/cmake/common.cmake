@@ -61,6 +61,7 @@ message("Distribution detected (separated by ';' choose one of them) ${OSRELEASE
 
 # Include CMake modules core files
 file(GLOB project_cmakefiles ${CMAKE_CURRENT_LIST_DIR}/cmake.d/[0-9][0-9]-*.cmake)
+list(SORT project_cmakefiles)
 
 # Include optionnal user defined OS relative CMake files
 foreach(OS IN LISTS OSRELEASE)
@@ -71,15 +72,13 @@ list(APPEND PATTERN "${PROJECT_CMAKE_CONF_DIR}/../cmake/[0-9][0-9]-common*.cmake
 		    "${PROJECT_CMAKE_CONF_DIR}/../cmake.d/[0-9][0-9]-common*.cmake")
 
 file(GLOB distro_cmakefiles ${PATTERN})
-list(SORT distro_cmakefiles)
 
 if(NOT distro_cmakefiles)
 	file(GLOB distro_cmakefiles ${CMAKE_SOURCE_DIR}/${PROJECT_CMAKE_CONF_DIR}/cmake/[0-9][0-9]-default*.cmake
 				    ${CMAKE_SOURCE_DIR}/${PROJECT_CMAKE_CONF_DIR}/cmake.d/[0-9][0-9]-default*.cmake)
 endif()
 
-list(APPEND project_cmakefiles "${distro_cmakefiles}")
-list(SORT project_cmakefiles)
+list(SORT distro_cmakefiles)
 
 file(GLOB home_cmakefiles $ENV{HOME}/.config/app-templates/cmake.d/[0-9][0-9]-common*.cmake
 			  $ENV{HOME}/.config/app-templates/cmake.d/[0-9][0-9]-${PROJECT_NAME}*.cmake
@@ -97,7 +96,7 @@ file(GLOB system_cmakefiles /etc/app-templates/cmake.d/[0-9][0-9]-common*.cmake
 			    /etc/CMakeAfbTemplates/cmake.d/[0-9][0-9]-${PROJECT_NAME}*.cmake)
 list(SORT system_cmakefiles)
 
-foreach(file ${system_cmakefiles} ${home_cmakefiles} ${project_cmakefiles})
+foreach(file ${system_cmakefiles} ${home_cmakefiles} ${distro_cmakefiles} ${project_cmakefiles})
 	message("Include: ${file}")
 	include(${file})
 endforeach()
