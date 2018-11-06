@@ -1,21 +1,38 @@
-# Developper Guide: use AGL CMake Templates
+# Abstract
 
-## Abstract
+Files used to build an application, or a binding project with the AGL
+Application Framework.
 
-Files used to build an application, or binding, project with the
-AGL Application Framework.
+To build your AGL project using these templates, you have to installed them as
+a CMake module. The easy way is to install using your distro package manager
+following [this guide](http://docs.automotivelinux.org/docs/devguides/en/dev/reference/host-configuration/docs/1_Prerequisites.html).
 
-To build your AGL project using these templates, you have to install
-them within your project and adjust compilation option in `config.cmake`.
-For technical reasons, you also have to specify **cmake** target in
-sub CMakeLists.txt installed. Make a globbing search to find source files
-isn't recommended now to handle project build especially in a multiuser
-project because CMake will not be aware of new or removed source files.
+Then install it, depending of your distro:
+
+* **Debian/Ubuntu**
+
+```bash
+sudo apt-get install agl-cmake-apps-module-bin
+```
+
+* **openSUSE**
+
+```bash
+sudo zypper install agl-cmake-apps-module
+```
+
+* **Fedora**
+
+```bash
+sudo dnf install agl-cmake-apps-module
+```
+
+----
 
 You'll find usage samples here:
 
 - [helloworld-service](https://github.com/iotbzh/helloworld-service)
-- [low-level-can-service](https://gerrit.automotivelinux.org/gerrit/apps/low-level-can-service)
-- [high-level-viwi-service](https://github.com/iotbzh/high-level-viwi-service)
-- [audio-binding](https://github.com/iotbzh/audio-binding)
-- [unicens2-binding](https://github.com/iotbzh/unicens2-binding)
+- [agl-service-can-low-level](https://gerrit.automotivelinux.org/gerrit/apps/agl-service-can-low-level)
+- [agl-service-audio-4a](https://gerrit.automotivelinux.org/gerrit/#/admin/projects/apps/agl-service-audio-4a)
+- [agl-service-unicens](https://gerrit.automotivelinux.org/gerrit/#/admin/projects/apps/agl-service-unicens)
+- [4a-hal-unicens](https://gerrit.automotivelinux.org/gerrit/#/admin/projects/src/4a-hal-unicens)

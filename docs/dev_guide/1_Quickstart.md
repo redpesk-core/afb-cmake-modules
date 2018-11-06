@@ -2,33 +2,37 @@
 
 ## Initialization
 
-To use these templates files on your project just install the reference files using
-**git submodule** then use `config.cmake` file to configure your project specificities :
+To use these templates files on your project just install the reference files
+using **cmake module** then use `config.cmake` file to configure your project specificities :
 
 ```bash
-git submodule add https://gerrit.automotivelinux.org/gerrit/p/apps/app-templates.git conf.d/app-templates
-mkdir conf.d/cmake
-cp conf.d/app-templates/samples.d/config.cmake.sample conf.d/cmake/config.cmake
+mkdir -p conf.d/cmake
+# RPM based distribution
+cp /usr/share/cmake/Modules/CMakeAfbTemplates/samples.d/config.cmake.sample conf.d/cmake/config.cmake
+# DEB based distribution with X.Y as cmake version
+cp /usr/share/cmake-X.Y/Modules/CMakeAfbTemplates/samples.d/config.cmake.sample conf.d/cmake/config.cmake
 ```
 
 Edit the copied config.cmake file to fit your needs.
 
 Now, create your top CMakeLists.txt file which include `config.cmake` file.
 
-An example is available in **app-templates** submodule that you can copy and
-use:
+An example is available in the **cmake module** that you can copy and use:
 
 ```bash
-cp conf.d/app-templates/samples.d/CMakeLists.txt.sample CMakeLists.txt
+# RPM based distribution
+cp /usr/share/cmake/Modules/CMakeAfbTemplates/samples.d/CMakeLists.txt.sample CMakeLists.txt
+# DEB based distribution with X.Y as cmake version
+cp /usr/share/cmake-X.Y/Modules/CMakeAfbTemplates/samples.d/CMakeLists.txt.sample CMakeLists.txt
 ```
 
 ## Create your CMake targets
 
-For each target part of your project, you need to use ***PROJECT_TARGET_ADD***
-to include this target to your project.
+For each target that is part of your project, you need to use
+***PROJECT_TARGET_ADD*** to include this target to your project.
 
-Using it, make available the cmake variable ***TARGET_NAME*** until the next
-***PROJECT_TARGET_ADD*** is invoked with a new target name.
+> **NOTE**: Using it, make available the cmake variable ***TARGET_NAME*** until
+> the next ***PROJECT_TARGET_ADD*** is invoked with a new target name.
 
 So, typical usage defining a target is:
 
@@ -45,8 +49,8 @@ INSTALL(TARGETS ${TARGET_NAME}....
 
 ## Targets PROPERTIES
 
-You should set properties on your targets that will be used to package your
-apps in a widget file that could be installed on an AGL system.
+Targets properties is used to determine nature of targets and where they will be
+stored in the package that will be build.
 
 Specify what is the type of your targets that you want to be included in the
 widget package with the property **LABELS**:
@@ -92,6 +96,6 @@ SET_TARGET_PROPERTIES(${TARGET_NAME}
 	OUTPUT_NAME "file_output_name")
 ```
 
-> **NOTE**: You doesn't need to specify an **INSTALL** command for these
+> **CAUTION**: You doesn't need to specify an **INSTALL** command for these
 > targets. This is already handle by template and will be installed in the
 > following path : **${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}**
