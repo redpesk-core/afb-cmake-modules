@@ -32,6 +32,10 @@ set(PROJECT_LANGUAGES "C")
 # Which directories inspect to find CMakeLists.txt target files
 # set(PROJECT_SRC_DIR_PATTERN "*")
 
+# Where are stored the project configuration files
+# relative to the root project directory
+set(PROJECT_CMAKE_CONF_DIR "conf.d")
+
 # Compilation Mode (DEBUG, RELEASE, COVERAGE or PROFILING)
 # ----------------------------------
 #set(BUILD_TYPE "DEBUG")
