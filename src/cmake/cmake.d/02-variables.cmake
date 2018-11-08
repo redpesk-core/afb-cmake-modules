@@ -81,10 +81,12 @@ execute_process(COMMAND git status --short
 
 # Include project configuration
 # ------------------------------
-if(NOT PROJECT_VERSION AND NOT GIT_PROJECT_VERSION)
-	message(FATAL_ERROR "${Red}No version tag found from your project's source directory and no PROJECT_VERSION set in your config.cmake file. Please set a version tag or cmake variable in your config.cmake. Abort!")
+if(NOT PROJECT_VERSION AND NOT GIT_PROJECT_VERSION AND NOT VERSION)
+	message(FATAL_ERROR "${Red}No version found. Please set a version tag or PROJECT_VERSION cmake variable in your config.cmake. Abort!")
 elseif(NOT PROJECT_VERSION AND GIT_PROJECT_VERSION)
 	set(PROJECT_VERSION ${GIT_PROJECT_VERSION})
+elseif(NOT PROJECT_VERSION AND VERSION)
+	set(PROJECT_VERSION ${VERSION})
 endif()
 
 # Release additionnals informations isn't supported so setting project
