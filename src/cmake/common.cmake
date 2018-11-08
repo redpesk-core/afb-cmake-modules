@@ -68,8 +68,8 @@ foreach(OS IN LISTS OSRELEASE)
 	list(APPEND PATTERN "${CMAKE_SOURCE_DIR}/${PROJECT_CMAKE_CONF_DIR}/cmake/[0-9][0-9]-${OS}*.cmake"
 			    "${CMAKE_SOURCE_DIR}/${PROJECT_CMAKE_CONF_DIR}/cmake.d/[0-9][0-9]-${OS}*.cmake")
 endforeach()
-list(APPEND PATTERN "${PROJECT_CMAKE_CONF_DIR}/../cmake/[0-9][0-9]-common*.cmake"
-		    "${PROJECT_CMAKE_CONF_DIR}/../cmake.d/[0-9][0-9]-common*.cmake")
+list(APPEND PATTERN "${PROJECT_CMAKE_CONF_DIR}/cmake/[0-9][0-9]-common*.cmake"
+		    "${PROJECT_CMAKE_CONF_DIR}/cmake.d/[0-9][0-9]-common*.cmake")
 
 file(GLOB distro_cmakefiles ${PATTERN})
 
