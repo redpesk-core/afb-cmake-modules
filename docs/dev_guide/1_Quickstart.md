@@ -90,7 +90,7 @@ Choose between:
 > stand for **Application Framework Binding**.
 
 ```cmake
-SET_TARGET_PROPERTIES(${TARGET_NAME}
+SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
 	PREFIX "afb-"
 	LABELS "BINDINGV3"
 	OUTPUT_NAME "file_output_name")
