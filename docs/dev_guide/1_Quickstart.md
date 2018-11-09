@@ -26,6 +26,17 @@ cp /usr/share/cmake/Modules/CMakeAfbTemplates/samples.d/CMakeLists.txt.sample CM
 cp /usr/share/cmake-X.Y/Modules/CMakeAfbTemplates/samples.d/CMakeLists.txt.sample CMakeLists.txt
 ```
 
+## Auto-detection of CMakeLists.txt and *.cmake files
+
+The directories matching the pattern ***PROJECT_SRC_DIR_PATTERN*** (defaults to "*")
+will be automatically scanned.
+
+When a files ***CMakeLists.txt*** is found, its directory is automatically added to
+the cmake project.
+
+Similarily, when a file named with the extension ***.cmake*** is found, it is automatically
+added to the cmake project.
+
 ## Create your CMake targets
 
 For each target that is part of your project, you need to use
