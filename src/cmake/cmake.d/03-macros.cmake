@@ -668,7 +668,7 @@ macro(project_subdirs_add)
 	if(${ARGSNUM} GREATER 0)
 		file(GLOB filelist "${ARGV0}")
 	else()
-	file(GLOB filelist "*")
+		file(GLOB filelist "*")
 	endif()
 
 	foreach(filename ${filelist})
