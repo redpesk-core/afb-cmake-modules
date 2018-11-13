@@ -20,5 +20,7 @@ cmake_minimum_required(VERSION 3.5)
 
 include(GNUInstallDirs)
 
-INSTALL(FILES CMakeAfbTemplates.cmake DESTINATION ${CMAKE_ROOT}/Modules)
-INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/src/ DESTINATION ${CMAKE_ROOT}/Modules/CMakeAfbTemplates)
+get_filename_component(CMAKE_DIR ${CMAKE_ROOT} NAME)
+
+INSTALL(FILES CMakeAfbTemplates.cmake DESTINATION ${CMAKE_INSTALL_DATADIR}/${CMAKE_DIR}/Modules)
+INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/src/ DESTINATION ${CMAKE_INSTALL_DATADIR}/${CMAKE_DIR}/Modules/CMakeAfbTemplates)
