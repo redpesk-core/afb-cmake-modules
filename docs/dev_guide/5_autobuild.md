@@ -19,14 +19,18 @@ This script could be written in one of the following languages:
 * Bash
 * Python
 
-The script will be executed directly after a chmod() on it (this implies that the caller should make the script executable before calling it: caller could be aglwgt.bbclass, a jenkins job, a 'real' developer ...)
+The script will be executed directly after a chmod() on it (this implies that the
+caller should make the script executable before calling it: caller could be
+aglwgt.bbclass, a jenkins job, a 'real' developer ...)
 An appropriate shebang is required to make the script callable directly:
 
 * '#!/usr/bin/make -f' for Makefile format,
 * '#/usr/bin/bash' for Bash
 * etc.
 
-The calling convention is close to the one from make, in particular to pass arguments through env variables. This is also easy for bash, as a simple eval on arguments will set environment variables correctly.
+The calling convention is close to the one from make, in particular to pass
+arguments through env variables. This is also easy for bash, as a simple eval
+on arguments will set environment variables correctly.
 The generic call has the following format:
 
 ```bash
