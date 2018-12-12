@@ -18,14 +18,14 @@
 
 cmake_minimum_required(VERSION 3.5)
 
+project(CMakeAfbTemplates)
+
 # compute the default install directory
 include(GNUInstallDirs)
 get_filename_component(CMAKE_DIR ${CMAKE_ROOT} NAME)
-set(DEFAULT_INSTALL_DIR ${CMAKE_INSTALL_DATADIR}/${CMAKE_DIR}/Modules)
-
-# set the install directory, allowing its overwriting
-set(INSTALL_DIR ${DEFAULT_INSTALL_DIR} CACHE PATH "Installation directory")
+set(INSTALL_DIR ${CMAKE_INSTALL_DATADIR}/${CMAKE_DIR}/Modules)
 
 # install the module
 INSTALL(FILES CMakeAfbTemplates.cmake DESTINATION ${INSTALL_DIR})
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/src/ DESTINATION ${INSTALL_DIR}/CMakeAfbTemplates)
+INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/docs/ DESTINATION ${CMAKE_INSTALL_DOCDIR})

@@ -33,7 +33,7 @@ framework binder apps.
 %build
 [ ! -d build ] && mkdir build
 cd build
-cmake ..
+cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 
 %install
 [ -d build ] && cd build
@@ -42,8 +42,14 @@ cmake ..
 %files
 %defattr(-,root,root)
 %dir %{_datadir}/cmake/Modules/
+%dir %{_defaultdocdir}/CMakeAfbTemplates/
 %{_datadir}/cmake/Modules/*
+%{_defaultdocdir}/CMakeAfbTemplates/*
 
 %changelog
+* Wed Dec 12 2018 Romain
+- Separation of docs files at installation
+- Fix the install prefix at build time
+
 * Thu Nov 5 2018 Romain
 - initial creation

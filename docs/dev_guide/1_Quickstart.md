@@ -7,10 +7,7 @@ using **cmake module** then use `config.cmake` file to configure your project sp
 
 ```bash
 mkdir -p conf.d/cmake
-# RPM based distribution
-cp /usr/share/cmake/Modules/CMakeAfbTemplates/samples.d/config.cmake.sample conf.d/cmake/config.cmake
-# DEB based distribution with X.Y as cmake version
-cp /usr/share/cmake-X.Y/Modules/CMakeAfbTemplates/samples.d/config.cmake.sample conf.d/cmake/config.cmake
+cp /usr/share/doc/CMakeAfbTemplates/samples.d/config.cmake.sample conf.d/cmake/config.cmake
 ```
 
 Edit the copied config.cmake file to fit your needs.
@@ -20,10 +17,7 @@ Now, create your top CMakeLists.txt file which include `config.cmake` file.
 An example is available in the **cmake module** that you can copy and use:
 
 ```bash
-# RPM based distribution
-cp /usr/share/cmake/Modules/CMakeAfbTemplates/samples.d/CMakeLists.txt.sample CMakeLists.txt
-# DEB based distribution with X.Y as cmake version
-cp /usr/share/cmake-X.Y/Modules/CMakeAfbTemplates/samples.d/CMakeLists.txt.sample CMakeLists.txt
+cp /usr/share/doc/CMakeAfbTemplates/samples.d/CMakeLists.txt.sample CMakeLists.txt
 ```
 
 ## Auto-detection of CMakeLists.txt and *.cmake files
