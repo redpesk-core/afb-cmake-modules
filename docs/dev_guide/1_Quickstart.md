@@ -7,6 +7,11 @@ using **cmake module** then use `config.cmake` file to configure your project sp
 
 ```bash
 mkdir -p conf.d/cmake
+# From the SDK sysroot >= 6.99.2 b992
+cp ${OECORE_NATIVE_SYSROOT}/usr/share/doc/CMakeAfbTemplates/samples.d/config.cmake.sample conf.d/cmake/config.cmake
+# From the SDK sysroot < 6.99.2 b992
+cp ${OECORE_NATIVE_SYSROOT}/usr/share/cmake-3.8/Modules/CMakeAfbTemplates/samples.d/config.cmake.sample conf.d/cmake/config.cmake
+# From a native installation
 cp /usr/share/doc/CMakeAfbTemplates/samples.d/config.cmake.sample conf.d/cmake/config.cmake
 ```
 
@@ -17,6 +22,11 @@ Now, create your top CMakeLists.txt file which include `config.cmake` file.
 An example is available in the **cmake module** that you can copy and use:
 
 ```bash
+# From the SDK sysroot >= 6.99.2 b992
+cp ${OECORE_NATIVE_SYSROOT}/usr/share/doc/CMakeAfbTemplates/samples.d/CMakeLists.txt.sample CMakeLists.txt
+# From the SDK sysroot < 6.99.2 b992
+cp ${OECORE_NATIVE_SYSROOT}/usr/share/cmake-3.8/Modules/CMakeAfbTemplates/samples.d/CMakeLists.txt.sample CMakeLists.txt
+# From a native installation
 cp /usr/share/doc/CMakeAfbTemplates/samples.d/CMakeLists.txt.sample CMakeLists.txt
 ```
 
