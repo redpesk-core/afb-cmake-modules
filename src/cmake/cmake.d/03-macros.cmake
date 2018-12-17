@@ -365,9 +365,12 @@ macro(project_targets_populate)
 		   ${TYPE} STREQUAL "INTERFACE_LIBRARY" OR
 		   ${TYPE} STREQUAL "EXECUTABLE"
 		)
-			set_property(TARGET ${TARGET} APPEND PROPERTY LINK_LIBRARIES ${link_libraries})
+			foreach(linked_lib ${link_libraries})
+				if(NOT ${linked_lib} STREQUAL ${TARGET})
+					set_property(TARGET ${TARGET} APPEND PROPERTY LINK_LIBRARIES ${linked_lib})
+				endif()
+			endforeach(linked_lib ${${link_libraries}})
 		endif()
-
 		get_target_property(SUBTYPE ${TARGET} LABELS)
 		if(SUBTYPE)
 			get_target_property(P ${TARGET} PREFIX)
