@@ -42,9 +42,9 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 %files
 %defattr(-,root,root)
 %dir %{_datadir}/cmake/Modules/
-%dir %{_defaultdocdir}/CMakeAfbTemplates/
+%dir %{_datadir}/doc/CMakeAfbTemplates/
 %{_datadir}/cmake/Modules/*
-%{_defaultdocdir}/CMakeAfbTemplates/*
+%{_datadir}/doc/CMakeAfbTemplates/*
 
 %changelog
 * Wed Dec 12 2018 Romain
