@@ -1,0 +1,22 @@
+type: books
+books:
+-
+    id: cmake-apps-module
+    title: CMAKE Apps Module
+    description: CMAKE Apps Module documentation
+    keywords:
+    author: "IotBzh"
+    version: master
+    chapters:
+    - url: dev_guide/0_Abstract.md
+      name: Abstract
+    - url: dev_guide/1_Quickstart.md
+      name: Quickstart
+    - url: dev_guide/2_project_architecture.md
+      name: Project Architecture
+    - url: dev_guide/3_advanced_usage.md
+      name: Advance Usage
+    - url: dev_guide/4_advanced_customization.md
+      name: Advanced customization
+    - url: dev_guide/5_autobuild.md
+      name: Autobuild
