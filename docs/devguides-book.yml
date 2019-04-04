@@ -6,19 +6,21 @@ books:
     description: CMAKE Apps Module documentation
     keywords:
     author: "IotBzh"
-    version: sandbox/scottrif29/scottdocs
+    version: master
     chapters:
-    - url: dev_guide/0-cmake-overview.md
+    - url: dev_guide/cmake-overview.md
       name: Overview
-    - url: dev_guide/1-installing-cmake.md
-      name: Installing the CMAKE Module
-    - url: dev_guide/2-configuring-cmake.md
+    - url: dev_guide/installing-cmake.md
+      name: Installing the CMAKE Templates
+    - url: dev_guide/using-cmake.md
+      name: Using CMake Templates
+    - url: dev_guide/configuring-cmake.md
       name: Configuring CMAKE
-    - url: dev_guide/3-project-architecture.md
+    - url: dev_guide/project-architecture.md
       name: Project Architecture
-    - url: dev_guide/4-advanced-usage.md
+    - url: dev_guide/advanced-usage.md
       name: Advanced Usage
-    - url: dev_guide/5-advanced-customization.md
+    - url: dev_guide/advanced-customization.md
       name: Advanced Customization
-    - url: dev_guide/6-autobuild.md
+    - url: dev_guide/autobuild.md
       name: Autobuild

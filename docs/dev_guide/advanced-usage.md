@@ -107,7 +107,7 @@ SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
 
 You can add an external third-party library that is built, linked,
 and shipped with the project.
-Or, you can link and ship the library only with the project. 
+Or, you can link and ship the library only with the project.
 
 ### Building, Linking, and Shipping an External Library with the Project
 
