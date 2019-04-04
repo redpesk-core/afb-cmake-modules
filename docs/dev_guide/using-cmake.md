@@ -1,53 +1,9 @@
-# Installing CMake Templates
+# Using CMake Templates
 
-You can install CMake templates on your native Linux system.
+You can use CMake templates in a cross-compilation environment
+or from BitBake recipes.
 
-In order to use the templates, you need to install them as
-a CMake module.
-On your native Linux system, use your distribution's package manager.
-See the
-"[Prerequisites](../host-configuration/docs/2-download-packages.html)"
-section for how to install packages using your distribution's package
-manager.
-Be sure to use the following with you install the packages:
-
-```bash
-export DISTRO="xUbuntu_16.10"
-export REVISION=Master
-```
-
-**NOTE:** In order to use the CMake templates, you must be using the
-AGL Guppy release.
-You cannot use prior releases.
-
-## Installing on Debian or Ubuntu
-
-Use the following command to install AGL's CMake Application Module
-on a native Debian or Ubuntu system:
-
-```bash
-sudo apt-get install agl-cmake-apps-module-bin
-```
-
-## Installing on OpenSUSE
-
-Use the following command to install AGL's CMake Application Module
-on a native OpenSUSE system:
-
-```bash
-sudo zypper install agl-cmake-apps-module
-```
-
-## Installing on Fedora
-
-Use the following command to install AGL's CMake Application Module
-on a native Fedora system:
-
-```bash
-sudo dnf install agl-cmake-apps-module
-```
-
-# Using CMake Templates in a Cross-Compilation Environment
+## Using CMake Templates in a Cross-Compilation Environment
 
 Beginning with the `Grumpy Guppy`, version 7, the CMakeAfbTemplates CMake module
 is installed by default in the SDKs supplied by AGL.
@@ -62,7 +18,7 @@ Following are links to the latest SDKs on the AGL master branch:
 * [qemux86-64](https://download.automotivelinux.org/AGL/snapshots/master/latest/qemux86-64/deploy/sdk/)
 * [raspberrypi3](https://download.automotivelinux.org/AGL/snapshots/master/latest/raspberrypi3/deploy/sdk/)
 
-# Using CMake Templates from BitBake Recipes
+## Using CMake Templates from BitBake Recipes
 
 If you have developed an application and you want to include it in an AGL image,
 you must add a BitBake recipe in one of the following layers:
@@ -109,11 +65,7 @@ RDEPENDS_${PN} += "agl-service-identity-agent"
 inherit cmake aglwgt pkgconfig
 ```
 
-----
-
-# Additional Examples
-
-The following links provide further examples of recipes that use the
+The following links provide more examples of recipes that use the
 CMake templates:
 
 * [helloworld-service](https://github.com/iotbzh/helloworld-service)

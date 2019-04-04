@@ -1,6 +1,5 @@
 # Project architecture
 
-CMake projects follow a typical file hierarchy.
 The following tree structure represents a typical CMake project
 directory structure:
 
