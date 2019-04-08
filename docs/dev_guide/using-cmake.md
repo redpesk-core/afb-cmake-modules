@@ -1,43 +1,15 @@
-# Abstract
+# Using CMake Templates
 
-This CMake module is used to build an application or a binding project for the
-AGL Application Framework. It allows to easily build a widget and its related
-test widget for running on top the application framework.
+You can use CMake templates in a cross-compilation environment
+or from BitBake recipes.
 
-## Installation for a native environment
-
-To build your AGL project using the templates, you have to install them as
-a CMake module. The easy way is to install using your distro package manager
-following [this guide](http://docs.automotivelinux.org/docs/devguides/en/dev/reference/host-configuration/docs/1_Prerequisites.html).
-
-To install it, depending on your distro:
-
-* **Debian/Ubuntu**
-
-```bash
-sudo apt-get install agl-cmake-apps-module-bin
-```
-
-* **openSUSE**
-
-```bash
-sudo zypper install agl-cmake-apps-module
-```
-
-* **Fedora**
-
-```bash
-sudo dnf install agl-cmake-apps-module
-```
-
-## Installing in a cross compilation environment
-
-### Using AGL SDK
+## Using CMake Templates in a Cross-Compilation Environment
 
 Beginning with the `Grumpy Guppy`, version 7, the CMakeAfbTemplates CMake module
-is installed by default in the SDKs. So, you don't need anything to use it.
+is installed by default in the SDKs supplied by AGL.
+Consequently, you do not need to take steps to install the modules.
 
-Here are some links to the latest SDKs on the master branch:
+Following are links to the latest SDKs on the AGL master branch:
 
 * [dra7xx-evm](https://download.automotivelinux.org/AGL/snapshots/master/latest/dra7xx-evm/deploy/sdk/)
 * [dragonboard-410c](https://download.automotivelinux.org/AGL/snapshots/master/latest/dragonboard-410c/deploy/sdk/)
@@ -46,10 +18,10 @@ Here are some links to the latest SDKs on the master branch:
 * [qemux86-64](https://download.automotivelinux.org/AGL/snapshots/master/latest/qemux86-64/deploy/sdk/)
 * [raspberrypi3](https://download.automotivelinux.org/AGL/snapshots/master/latest/raspberrypi3/deploy/sdk/)
 
-### Using bitbake recipes
+## Using CMake Templates from BitBake Recipes
 
-If you have developed an application and you want to include it in the AGL image,
-you have to add a `bitbake` recipe in one of the **AGL Yocto layer**:
+If you have developed an application and you want to include it in an AGL image,
+you must add a BitBake recipe in one of the following layers:
 
 * [meta-agl](https://gerrit.automotivelinux.org/gerrit/#/admin/projects/AGL/meta-agl):
  meta-agl layer (core AGL)
@@ -62,14 +34,15 @@ you have to add a `bitbake` recipe in one of the **AGL Yocto layer**:
 * [meta-agl-extra](https://gerrit.automotivelinux.org/gerrit/#/admin/projects/AGL/meta-agl-extra):
  meta-agl-extra (additional/optional components for AGL)
 
-Then in your recipe, you simply have to add the class `aglwgt` to the *inherit*
-line:
+Once you have the recipe in place, edit it to include the following
+line to cause the `aglwgt` class to be inherited:
 
 ```bb
 inherit aglwgt
 ```
 
-i.e with the **HVAC** app recipe:
+Following is an example that uses the HVAC application recipe (i.e. `hvac.bb`), which
+builds the HVAC application:
 
 ```bb
 SUMMARY     = "HVAC Service Binding"
@@ -92,12 +65,10 @@ RDEPENDS_${PN} += "agl-service-identity-agent"
 inherit cmake aglwgt pkgconfig
 ```
 
-----
-
-You'll find usage samples here:
+The following links provide more examples of recipes that use the
+CMake templates:
 
 * [helloworld-service](https://github.com/iotbzh/helloworld-service)
-* [agl-service-can-low-level](https://gerrit.automotivelinux.org/gerrit/apps/agl-service-can-low-level)
 * [agl-service-audio-4a](https://gerrit.automotivelinux.org/gerrit/#/admin/projects/apps/agl-service-audio-4a)
 * [agl-service-unicens](https://gerrit.automotivelinux.org/gerrit/#/admin/projects/apps/agl-service-unicens)
 * [4a-hal-unicens](https://gerrit.automotivelinux.org/gerrit/#/admin/projects/src/4a-hal-unicens)
