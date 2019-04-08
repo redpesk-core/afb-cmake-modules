@@ -6,7 +6,7 @@ books:
     description: CMAKE Apps Module documentation
     keywords:
     author: "IotBzh"
-    version: master
+    version: guppy
     chapters:
     - url: dev_guide/cmake-overview.md
       name: Overview
