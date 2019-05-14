@@ -48,9 +48,9 @@ directory structure:
 | CMakeLists.txt | The master CMakeLists.txt file.
 | autobuild/ | *root_path* | Scripts generated from app-templates to build packages the same way for differents platforms.
 | conf.d/ | *root_path* | Holds needed files to build, install, debug, and package an AGL application project.
-| packaging/ | confd/ | Contains output files used to build packages.
-| cmake/ | confd/ | Minimally contains the config.cmake file, which is modified from the sample provided in the app-templates submodule.
-| wgt/ | confd/ | Contains config.xml.in and optionaly the test-config.xml.in template files that are modified from the sample provided with the CMake module for the needs of the project.  For more details, see the config.xml.in.sample and test-config.xml.in.sample files.
+| packaging/ | conf.d/ | Contains output files used to build packages.
+| cmake/ | conf.d/ | Minimally contains the config.cmake file, which is modified from the sample provided in the app-templates submodule.
+| wgt/ | conf.d/ | Contains config.xml.in and optionaly the test-config.xml.in template files that are modified from the sample provided with the CMake module for the needs of the project.  For more details, see the config.xml.in.sample and test-config.xml.in.sample files.
 | *target* | *root_path* | A target to build, which is typically a library or executable.
 
 When building projects using CMake, the build process automatically detects
