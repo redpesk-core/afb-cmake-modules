@@ -89,9 +89,22 @@ elseif(NOT PROJECT_VERSION AND VERSION)
 	set(PROJECT_VERSION ${VERSION})
 endif()
 
+if(NOT PROJECT_DESCRIPTION)
+    message(WARNING "${Red}No description found. Please set a PROJECT_DESCRIPTION cmake variable in your config.cmake.")
+    set(PROJECT_DESCRIPTION "-")
+endif()
+
+if(NOT HOMEPAGE_URL)
+    message(WARNING "${Red}No homepage url found. Please set a PROJECT_URL cmake variable in your config.cmake.")
+endif()
+
 # Release additionnals informations isn't supported so setting project
 # attributes then add the dirty flag if git repo not sync'ed
-project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES ${PROJECT_LANGUAGES} DESCRIPTION ${PROJECT_DESCRIPTION} HOMEPAGE_URL ${PROJECT_URL})
+if(HOMEPAGE_URL)
+    project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES ${PROJECT_LANGUAGES} DESCRIPTION ${PROJECT_DESCRIPTION} HOMEPAGE_URL ${PROJECT_URL})
+else()
+    project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES ${PROJECT_LANGUAGES} DESCRIPTION ${PROJECT_DESCRIPTION})
+endif()
 if(NOT ${DIRTY_FLAG})
 	set(PROJECT_VERSION "${PROJECT_VERSION}-${COMMIT_HASH}-dirty")
 else()
