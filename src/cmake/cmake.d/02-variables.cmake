@@ -100,7 +100,7 @@ endif()
 
 # Release additionnals informations isn't supported so setting project
 # attributes then add the dirty flag if git repo not sync'ed
-if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.12.0)
+if(CMAKE_VERSION VERSION_GREATER 3.11)
     if(HOMEPAGE_URL)
         project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES ${PROJECT_LANGUAGES} DESCRIPTION ${PROJECT_DESCRIPTION} HOMEPAGE_URL ${PROJECT_URL})
     else()
