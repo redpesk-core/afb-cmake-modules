@@ -1,4 +1,4 @@
-# Configuring CMake Templates
+# Configuring AGL CMake Templates
 
 Configuration consists of editing the `config.cmake` file for your
 specific project.
