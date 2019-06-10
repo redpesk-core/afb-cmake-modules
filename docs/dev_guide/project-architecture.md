@@ -1,4 +1,4 @@
-# Project architecture
+# Project Architecture
 
 The following tree structure represents a typical CMake project
 directory structure:
