@@ -6,16 +6,16 @@ books:
     description: CMAKE Apps Module documentation
     keywords:
     author: "IotBzh"
-    version: guppy
+    version: master
     chapters:
     - url: dev_guide/cmake-overview.md
       name: Overview
     - url: dev_guide/installing-cmake.md
-      name: Installing the CMAKE Templates
+      name: Installing CMake Templates
     - url: dev_guide/using-cmake.md
       name: Using CMake Templates
     - url: dev_guide/configuring-cmake.md
-      name: Configuring CMAKE
+      name: Configuring CMake
     - url: dev_guide/project-architecture.md
       name: Project Architecture
     - url: dev_guide/advanced-usage.md
