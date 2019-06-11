@@ -15,7 +15,7 @@ books:
     - url: dev_guide/using-cmake.md
       name: Using CMake Templates
     - url: dev_guide/configuring-cmake.md
-      name: Configuring CMake
+      name: Configuring AGL CMake Templates
     - url: dev_guide/project-architecture.md
       name: Project Architecture
     - url: dev_guide/advanced-usage.md
