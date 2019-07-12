@@ -188,6 +188,10 @@ set(PROJECT_AGL_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/autobuild/agl
 set(PROJECT_LINUX_AUTOBUILD_DIR ${CMAKE_SOURCE_DIR}/autobuild/linux
     CACHE PATH "Subpath to a directory where are stored autobuild script")
 
+# Path to test template
+set(PROJECT_TEST_DIR ${CMAKE_SOURCE_DIR}/test
+    CACHE PATH "Subpath to a directory where are stored test tree")
+
 if(OSRELEASE MATCHES "debian" AND NOT DEFINED ENV{SDKTARGETSYSROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 	# build deb spec file from template
 	set(PACKAGING_DEB_OUTPUT_DSC       ${PROJECT_PKG_ENTRY_POINT}/${NPKG_PROJECT_NAME}.dsc)

@@ -1,0 +1,53 @@
+{
+    "id": "http://iot.bzh/download/public/schema/json/ctl-schema.json#",
+    "$schema": "http://iot.bzh/download/public/schema/json/ctl-schema.json#",
+    "metadata": {
+        "uid": "Test",
+        "version": "1.0",
+        "api": "aft-@PROJECT_NAME@",
+        "info": "@PROJECT_NAME@ binding",
+        "require": [
+            "@PROJECT_NAME@"
+        ]
+    },
+    "testVerb": [{
+        "uid": "short",
+        "info": "Launch the short session of tests",
+        "action": "lua://AFT#_launch_test",
+        "args": {
+            "trace": "@PROJECT_NAME@",
+            "files": "@PROJECT_NAME@.lua"
+        }
+    },
+    {
+        "uid": "long",
+        "info": "Launch the long session of tests",
+        "action": "lua://AFT#_launch_test",
+        "args": {
+            "trace": "@PROJECT_NAME@",
+            "files": [ "@PROJECT_NAME@.lua", "mapi_tests.lua" ]
+        }
+    }],
+    "mapis": [{
+        "uid": "mapi-@PROJECT_NAME@",
+        "info": "Faked @PROJECT_NAME@ API",
+        "libs": "mapi_@PROJECT_NAME@.lua",
+        "verbs": [
+            {
+                "uid": "subscribe",
+                "info": "Subscribe to events",
+                "action": "lua://mapi-@PROJECT_NAME@#_subscribe"
+            },
+            {
+                "uid": "unsubscribe",
+                "info": "Unsubscribe previously suscribed events.",
+                "action": "lua://mapi-@PROJECT_NAME@#_unsubscribe"
+            },
+            {
+                "uid": "list",
+                "info": "get message list",
+                "action": "lua://mapi-@PROJECT_NAME@#_list"
+            }
+        ]
+    }]
+}
