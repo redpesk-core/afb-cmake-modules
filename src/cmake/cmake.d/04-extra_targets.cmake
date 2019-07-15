@@ -88,47 +88,47 @@ add_custom_command(OUTPUT ${PROJECT_TEST_DIR}
 		${CMAKE_COMMAND} -DINFILE=${TEMPLATE_DIR}/test/CMakeLists.txt.in
 		-DOUTFILE=${PROJECT_TEST_DIR}/CMakeLists.txt
 		-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake || true
 	COMMAND [ ! -f "${PROJECT_TEST_DIR}/afb-test/CMakeLists.txt" ] &&
 		${CMAKE_COMMAND} -DINFILE=${TEMPLATE_DIR}/test/afb-test/CMakeLists.txt.in
 		-DOUTFILE=${PROJECT_TEST_DIR}/afb-test/CMakeLists.txt
 		-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake || true
 	COMMAND [ ! -f "${PROJECT_TEST_DIR}/afb-test/etc/CMakeLists.txt" ] &&
 		${CMAKE_COMMAND} -DINFILE=${TEMPLATE_DIR}/test/afb-test/etc/CMakeLists.txt.in
 		-DOUTFILE=${PROJECT_TEST_DIR}/afb-test/etc/CMakeLists.txt
 		-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake || true
 	COMMAND [ ! -f "${PROJECT_TEST_DIR}/afb-test/etc/aft-agl-${PROJECT_NAME}.json" ] &&
 		${CMAKE_COMMAND} -DINFILE=${TEMPLATE_DIR}/test/afb-test/etc/aft-agl-helloworld.json.in
 		-DOUTFILE=${PROJECT_TEST_DIR}/afb-test/etc/aft-agl-${PROJECT_NAME}.json
 		-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake || true
 	COMMAND [ ! -f "${PROJECT_TEST_DIR}/afb-test/fixtures/CMakeLists.txt" ] &&
 		${CMAKE_COMMAND} -DINFILE=${TEMPLATE_DIR}/test/afb-test/fixtures/CMakeLists.txt.in
 		-DOUTFILE=${PROJECT_TEST_DIR}/afb-test/fixtures/CMakeLists.txt
 		-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake  || true
 	COMMAND [ ! -f "${PROJECT_TEST_DIR}/afb-test/fixtures/mapi_${PROJECT_NAME}.lua" ] &&
 		${CMAKE_COMMAND} -DINFILE=${TEMPLATE_DIR}/test/afb-test/fixtures/mapi_helloworld.lua.in
 		-DOUTFILE=${PROJECT_TEST_DIR}/afb-test/fixtures/mapi_${PROJECT_NAME}.lua
 		-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake || true
 	COMMAND [ ! -f "${PROJECT_TEST_DIR}/afb-test/tests/CMakeLists.txt" ] &&
 		${CMAKE_COMMAND} -DINFILE=${TEMPLATE_DIR}/test/afb-test/tests/CMakeLists.txt.in
 		-DOUTFILE=${PROJECT_TEST_DIR}/afb-test/tests/CMakeLists.txt
 		-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake  || true
 	COMMAND [ ! -f "${PROJECT_TEST_DIR}/afb-test/tests/${PROJECT_NAME}.lua" ] &&
 		${CMAKE_COMMAND} -DINFILE=${TEMPLATE_DIR}/test/afb-test/tests/helloworld.lua.in
 		-DOUTFILE=${PROJECT_TEST_DIR}/afb-test/tests/${PROJECT_NAME}.lua
 		-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake  || true
 	COMMAND [ ! -f "${PROJECT_TEST_DIR}/afb-test/tests/mapi_tests.lua" ] &&
 		${CMAKE_COMMAND} -DINFILE=${TEMPLATE_DIR}/test/afb-test/tests/mapi_tests.lua.in
 		-DOUTFILE=${PROJECT_TEST_DIR}/afb-test/tests/mapi_tests.lua
 		-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake || true
 )
 
-add_custom_target(test-tree ALL DEPENDS ${PROJECT_TEST_DIR})
+add_custom_target(test-tree DEPENDS ${PROJECT_TEST_DIR})
