@@ -128,5 +128,5 @@ BUILD_ARGS="-DC_FLAGS='-g -O2'").
 Following is an example:
 
 ```bash
-./autobuild/wgt/autobuild package DEST=/tmp
+./autobuild/agl/autobuild package DEST=/tmp
 ```
