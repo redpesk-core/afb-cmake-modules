@@ -58,7 +58,6 @@ set(COMPILE_OPTIONS -Wall
  -Werror=implicit-function-declaration
  -ffunction-sections
  -fdata-sections
- -ffile-prefix-map=${CMAKE_SOURCE_DIR}=.
  -fPIC CACHE STRING "Compilation flags")
 
 set(COMPILE_OPTIONS_GNU -Werror=maybe-uninitialized CACHE STRING "GNU Compile specific options")
