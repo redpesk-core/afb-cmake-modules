@@ -527,13 +527,7 @@ macro(remote_targets_populate)
 endmacro(remote_targets_populate)
 
 macro(wgt_package_build)
-	if(NOT EXISTS ${TEST_WIDGET_CONFIG_TEMPLATE})
-		MESSAGE("${BoldBlue}-- Notice: Using default test widget configuration's file.
--- If you want to use a customized test-config.xml template then specify TEST_WIDGET_CONFIG_TEMPLATE in your config.cmake file.${ColourReset}")
-
-		set(TEST_WIDGET_CONFIG_TEMPLATE "${PROJECT_APP_TEMPLATES_DIR}/test-wgt/test-config.xml.in"
-		    CACHE PATH "Path to the test widget config file template (test-config.xml.in)")
-	endif()
+	# checks
 	if(NOT EXISTS ${WIDGET_CONFIG_TEMPLATE})
 		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build widget file.
 You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.${ColourReset}")
@@ -541,7 +535,35 @@ You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.
 	if(NOT WIDGET_TYPE)
 		MESSAGE(FATAL_ERROR "WIDGET_TYPE must be set in your config.cmake.\neg.: set(WIDGET_TYPE application/vnd.agl.service)")
 	endif()
+
+	# default test template
+	if(NOT EXISTS ${TEST_WIDGET_CONFIG_TEMPLATE})
+		MESSAGE("${BoldBlue}-- Notice: Using default test widget configuration's file.
+-- If you want to use a customized test-config.xml template then specify TEST_WIDGET_CONFIG_TEMPLATE in your config.cmake file.${ColourReset}")
+
+		set(TEST_WIDGET_CONFIG_TEMPLATE "${PROJECT_APP_TEMPLATES_DIR}/test-wgt/test-config.xml.in"
+		    CACHE PATH "Path to the test widget config file template (test-config.xml.in)")
+	endif()
+
+	# the targets
+	set(widget_files_items)
+	set(test_widget_files_items)
+
+	# widget entry point
+	if(NOT WIDGET_ENTRY_POINT)
+		set(WIDGET_ENTRY_POINT lib)
+	endif()
+
+	# widget name
+	if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
+		string(TOLOWER "${PROJECT_NAME}-${CMAKE_BUILD_TYPE}" WGT_NAME)
+	else()
+		string(TOLOWER "${PROJECT_NAME}" WGT_NAME)
+	endif()
+
+	# icon of widget
 	if(NOT DEFINED PROJECT_ICON)
+		set(PROJECT_ICON icon.png)
 		if( ${WIDGET_TYPE} MATCHES "agl.native")
 			set(ICON_PATH ${PKG_APP_TEMPLATE_DIR}/wgt/icon-native.png)
 		elseif( ${WIDGET_TYPE} MATCHES "agl.service")
@@ -559,22 +581,53 @@ You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.
 		set(ICON_PATH ${PROJECT_APP_TEMPLATES_DIR}/wgt/icon-default.png)
 	endif()
 
-	if(NOT WIDGET_ENTRY_POINT)
-		set(WIDGET_ENTRY_POINT lib)
-	endif()
+	# populate icon
+	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
+		COMMAND cp -d ${ICON_PATH} ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
+	)
+	list(APPEND widget_files_items ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON})
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/${PROJECT_ICON}
+		COMMAND cp -d ${ICON_PATH} ${PROJECT_PKG_TEST_DIR}/${PROJECT_ICON}
+	)
+	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_DIR}/${PROJECT_ICON})
 
-	if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
-		string(TOLOWER "${PROJECT_NAME}-${CMAKE_BUILD_TYPE}" WGT_NAME)
-	else()
-		string(TOLOWER "${PROJECT_NAME}" WGT_NAME)
-	endif()
-
-	# Fulup ??? copy any extra file in wgt/etc into populate package before building the widget
+	# populate wgt/etc
+	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/etc
+		COMMAND mkdir -p ${PROJECT_PKG_BUILD_DIR}/etc)
 	file(GLOB PROJECT_CONF_FILES "${TEMPLATE_DIR}/etc/*")
 	if(${PROJECT_CONF_FILES})
-		file(COPY "${TEMPLATE_DIR}/etc/*" DESTINATION ${PROJECT_PKG_BUILD_DIR}/etc/)
+		add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/etc
+			COMMAND cp -dr ${TEMPLATE_DIR}/etc/* ${PROJECT_PKG_BUILD_DIR}/etc
+			APPEND
+		)
+		list(APPEND widget_files_items ${PROJECT_PKG_BUILD_DIR}/etc)
 	endif(${PROJECT_CONF_FILES})
 
+	# instanciate config.xml
+	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/config.xml
+		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml
+			-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
+			-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+	)
+	list(APPEND widget_files_items ${PROJECT_PKG_BUILD_DIR}/config.xml)
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/config.xml
+		COMMAND ${CMAKE_COMMAND} -DINFILE=${TEST_WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_TEST_DIR}/config.xml
+			-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
+			-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+	)
+	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_DIR}/config.xml)
+
+	# add test launcher
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/bin
+		COMMAND mkdir -p ${PROJECT_PKG_TEST_DIR}/bin
+	)
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/bin/launcher
+		COMMAND cp -d ${PROJECT_APP_TEMPLATES_DIR}/test-wgt/launcher.sh.in ${PROJECT_PKG_TEST_DIR}/bin/launcher
+		DEPENDS ${PROJECT_PKG_TEST_DIR}/bin
+	)
+	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_DIR}/bin/launcher)
+
+	# create package
 	find_program(wgtpkgCMD "wgtpkg-pack")
 	if(wgtpkgCMD)
 		set(packCMD ${wgtpkgCMD} "-f" "-o" "${WGT_NAME}.wgt" ${PROJECT_PKG_BUILD_DIR})
@@ -585,24 +638,9 @@ You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.
 			set(packCMD ${CMAKE_COMMAND} -E cmake_echo_color --yellow "Warning: Widget will be built using Zip, NOT using the Application Framework widget pack command." && cd ${PROJECT_PKG_BUILD_DIR} && ${wgtpkgCMD} -r "../${WGT_NAME}.wgt" "*")
 			set(packCMDTest ${CMAKE_COMMAND} -E cmake_echo_color --yellow "Warning: Test widget will be built using Zip, NOT using the Application Framework widget pack command." && cd ${PROJECT_PKG_TEST_DIR} && ${wgtpkgCMD} -r "../${WGT_NAME}-test.wgt" "*")
 		else()
-			set(packCMD ${CMAKE_COMMAND} -E cmake_echo_color --red "Error: No utility found to build a widget. Either install wgtpkg-pack from App Framework or zip command")
+			set(packCMD ${CMAKE_COMMAND} -E cmake_echo_color --red "Error: No utility found to build a widget. Either install wgtpkg-pack from App Framework or zip command" && false)
 		endif()
 	endif()
-
-	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/config.xml
-		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml
-			-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-			-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
-		COMMAND cp -d ${ICON_PATH} ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
-	)
-	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher
-		COMMAND ${CMAKE_COMMAND} -DINFILE=${TEST_WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_TEST_DIR}/config.xml
-			-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-			-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
-		COMMAND mkdir -p ${PROJECT_PKG_TEST_DIR}/bin
-		COMMAND cp -d ${ICON_PATH} ${PROJECT_PKG_TEST_DIR}/${PROJECT_ICON}
-		COMMAND cp -d ${PROJECT_APP_TEMPLATES_DIR}/test-wgt/launcher.sh.in ${PROJECT_PKG_TEST_DIR}/bin/launcher
-	)
 
 	add_custom_command(OUTPUT ${WGT_NAME}.wgt
 		DEPENDS ${PROJECT_TARGETS}
@@ -614,24 +652,16 @@ You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.
 		COMMAND ${packCMDTest}
 	)
 
+	add_custom_target(widget_files           DEPENDS populate ${PROJECT_TARGETS} ${widget_files_items})
+	add_custom_target(widget                 DEPENDS widget_files ${WGT_NAME}.wgt)
+	add_custom_target(test_widget_files      DEPENDS populate ${PROJECT_TARGETS} ${test_widget_files_items})
+	add_custom_target(test_widget            DEPENDS test_widget_files ${WGT_NAME}-test.wgt)
 	if(${BUILD_TEST_WGT})
-		add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml
-							${PROJECT_PKG_TEST_DIR}/config.xml
-							${PROJECT_PKG_TEST_DIR}/bin/launcher)
-		add_custom_target(widget DEPENDS ${WGT_NAME}.wgt ${WGT_NAME}-test.wgt)
-
-		set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/${WGT_NAME}-test.wgt")
-	else()
-		add_custom_target(packaging_wgt DEPENDS ${PROJECT_PKG_BUILD_DIR}/config.xml)
-		add_custom_target(widget DEPENDS ${WGT_NAME}.wgt)
-		add_custom_target(packaging_test_wgt DEPENDS ${PROJECT_PKG_TEST_DIR}/config.xml ${PROJECT_PKG_TEST_DIR}/bin/launcher)
-		add_custom_target(test_widget DEPENDS ${WGT_NAME}-test.wgt
-						      ${PROJECT_PKG_TEST_DIR}/config.xml
-						      ${PROJECT_PKG_TEST_DIR}/bin/launcher)
+		add_dependencies(widget test_widget)
 	endif()
 
-	add_dependencies(widget populate packaging_wgt)
 	set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/${WGT_NAME}.wgt")
+	set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/${WGT_NAME}-test.wgt")
 
 	if(NOT RSYNC_TARGET)
 		message ("${Yellow}.. Warning: RSYNC_TARGET not defined 'make widget-target-install' not instanciated${ColourReset}")
@@ -649,9 +679,9 @@ You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.
 	endif()
 
 	if(PACKAGE_MESSAGE)
-	add_custom_command(TARGET widget
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${PACKAGE_MESSAGE}")
+		add_custom_command(TARGET widget
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${PACKAGE_MESSAGE}")
 	endif()
 endmacro(wgt_package_build)
 
