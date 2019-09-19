@@ -90,12 +90,12 @@ elseif(NOT PROJECT_VERSION AND VERSION)
 endif()
 
 if(NOT PROJECT_DESCRIPTION)
-    message(WARNING "${Red}No description found. Please set a PROJECT_DESCRIPTION cmake variable in your config.cmake.")
+    message(WARNING "${Yellow}No description found. Please set a PROJECT_DESCRIPTION cmake variable in your config.cmake.")
     set(PROJECT_DESCRIPTION "-")
 endif()
 
 if(NOT PROJECT_URL)
-    message(WARNING "${Red}No homepage url found. Please set a PROJECT_URL cmake variable in your config.cmake.")
+    message(WARNING "${Yellow}No homepage url found. Please set a PROJECT_URL cmake variable in your config.cmake.")
 endif()
 
 # Release additionnals informations isn't supported so setting project
