@@ -12,7 +12,6 @@ Consequently, you do not need to take steps to install the modules.
 Following are links to the latest SDKs on the AGL master branch:
 
 * [dra7xx-evm](https://download.automotivelinux.org/AGL/snapshots/master/latest/dra7xx-evm/deploy/sdk/)
-* [dragonboard-410c](https://download.automotivelinux.org/AGL/snapshots/master/latest/dragonboard-410c/deploy/sdk/)
 * [intel-corei7-64](https://download.automotivelinux.org/AGL/snapshots/master/latest/intel-corei7-64/deploy/sdk/)
 * [m3ulcb-nogfx](https://download.automotivelinux.org/AGL/snapshots/master/latest/m3ulcb-nogfx/deploy/sdk/)
 * [qemux86-64](https://download.automotivelinux.org/AGL/snapshots/master/latest/qemux86-64/deploy/sdk/)
@@ -68,7 +67,7 @@ inherit cmake aglwgt pkgconfig
 The following links provide more examples of recipes that use the
 CMake templates:
 
-* [helloworld-service](https://github.com/iotbzh/helloworld-service)
+* [agl-service-helloworld](https://gerrit.automotivelinux.org/gerrit/admin/repos/apps/agl-service-helloworld)
 * [agl-service-audio-4a](https://gerrit.automotivelinux.org/gerrit/#/admin/projects/apps/agl-service-audio-4a)
 * [agl-service-unicens](https://gerrit.automotivelinux.org/gerrit/#/admin/projects/apps/agl-service-unicens)
 * [4a-hal-unicens](https://gerrit.automotivelinux.org/gerrit/#/admin/projects/src/4a-hal-unicens)
