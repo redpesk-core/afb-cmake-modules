@@ -25,7 +25,7 @@
 #--------------------------------------------------------------------------
 
 # (BUG!!!) as PKG_CONFIG_PATH does not work [should be en env variable]
-set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON CACHE BOOLEAN "Flag for using prefix path")
+set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON CACHE STRING "Flag for using prefix path")
 
 INCLUDE(FindPkgConfig)
 INCLUDE(CheckIncludeFiles)
