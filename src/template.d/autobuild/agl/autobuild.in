@@ -47,7 +47,11 @@ distclean:
 
 configure:
 	@[ -d ${BUILD_DIR} ] || mkdir -p ${BUILD_DIR}
-	@[ -f ${BUILD_DIR}/Makefile ] || (cd ${BUILD_DIR} && cmake ${CONFIGURE_ARGS} ..)
+	@[ -f ${BUILD_DIR}/Makefile ] || (cd ${BUILD_DIR} && cmake -DCMAKE_BUILD_TYPE=RELEASE ${CONFIGURE_ARGS} ..)
+
+configure-test:
+	@[ -d ${BUILD_DIR} ] || mkdir -p ${BUILD_DIR}
+	@[ -f ${BUILD_DIR}/Makefile ] || (cd ${BUILD_DIR} && cmake -DCMAKE_BUILD_TYPE=RELEASE ${CONFIGURE_ARGS} ..)
 
 configure-debug:
 	@[ -d ${BUILD_DIR} ] || mkdir -p ${BUILD_DIR}
@@ -58,6 +62,9 @@ configure-coverage:
 	@[ -f ${BUILD_DIR}/Makefile ] || (cd ${BUILD_DIR} && cmake -DCMAKE_BUILD_TYPE=COVERAGE ${CONFIGURE_ARGS} ..)
 
 build: configure
+	@cmake --build ${BUILD_DIR} ${BUILD_ARGS} --target all
+
+build-test: configure-test
 	@cmake --build ${BUILD_DIR} ${BUILD_ARGS} --target all
 
 build-debug: configure-debug
@@ -76,8 +83,10 @@ package: build
 	@if [ "${DEST}" != "${BUILD_DIR}" ]; then \
 		mkdir -p ${DEST} && cp ${BUILD_DIR}/*.wgt ${DEST}; \
 	fi
+	@rm ${BUILD_DIR}/Makefile
+	@rm ${BUILD_DIR}/CMakeCache.txt
 
-package-test: build
+package-test: build-test
 	@mkdir -p ${BUILD_DIR}/$@/bin
 	@mkdir -p ${BUILD_DIR}/$@/etc
 	@mkdir -p ${BUILD_DIR}/$@/lib
@@ -88,6 +97,8 @@ package-test: build
 	@if [ "${DEST}" != "${BUILD_DIR}" ]; then \
 		mkdir -p ${DEST} && cp ${BUILD_DIR}/*.wgt ${DEST}; \
 	fi
+	@rm ${BUILD_DIR}/Makefile
+	@rm ${BUILD_DIR}/CMakeCache.txt
 
 package-debug: build-debug
 	@mkdir -p ${BUILD_DIR}/$@/bin
@@ -99,6 +110,8 @@ package-debug: build-debug
 	@if [ "${DEST}" != "${BUILD_DIR}" ]; then \
 		mkdir -p ${DEST} && cp ${BUILD_DIR}/*.wgt ${DEST}; \
 	fi
+	@rm ${BUILD_DIR}/Makefile
+	@rm ${BUILD_DIR}/CMakeCache.txt
 
 package-coverage: build-coverage
 	@mkdir -p ${BUILD_DIR}/$@/bin
@@ -110,6 +123,8 @@ package-coverage: build-coverage
 	@if [ "${DEST}" != "${BUILD_DIR}" ]; then \
 		mkdir -p ${DEST} && cp ${BUILD_DIR}/*.wgt ${DEST}; \
 	fi
+	@rm ${BUILD_DIR}/Makefile
+	@rm ${BUILD_DIR}/CMakeCache.txt
 
 package-coverage-test: build-coverage
 	@mkdir -p ${BUILD_DIR}/$@/bin
@@ -122,6 +137,8 @@ package-coverage-test: build-coverage
 	@if [ "${DEST}" != "${BUILD_DIR}" ]; then \
 		mkdir -p ${DEST} && cp ${BUILD_DIR}/*.wgt ${DEST}; \
 	fi
+	@rm ${BUILD_DIR}/Makefile
+	@rm ${BUILD_DIR}/CMakeCache.txt
 
 
 package-debug-test: build-debug
@@ -135,16 +152,10 @@ package-debug-test: build-debug
 	@if [ "${DEST}" != "${BUILD_DIR}" ]; then \
 		mkdir -p ${DEST} && cp ${BUILD_DIR}/*.wgt ${DEST}; \
 	fi
-
-package-all-1: package package-test
 	@rm ${BUILD_DIR}/Makefile
 	@rm ${BUILD_DIR}/CMakeCache.txt
 
-package-all-2: package-all-1 package-coverage
-	@rm ${BUILD_DIR}/Makefile
-	@rm ${BUILD_DIR}/CMakeCache.txt
-
-package-all: package-all-2 package-debug
+package-all: package package-test package-coverage package-debug
 
 install: build
 	@cmake --build ${BUILD_DIR} ${INSTALL_ARGS} --target install
