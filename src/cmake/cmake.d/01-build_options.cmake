@@ -104,6 +104,12 @@ set(COVERAGE_COMPILE_OPTIONS
     -O0
     --coverage
     CACHE STRING "Compilation flags for COVERAGE build type.")
+set(SANITIZERS_COMPILE_OPTIONS
+    -g
+    -O0
+    -fsanitize=address
+    -fno-omit-frame-pointer
+    CACHE STRING "Compilation flags for SANITIZERS build type.")
 set(RELEASE_COMPILE_OPTIONS
     -O2
     -D_FORTIFY_SOURCE=2
@@ -117,6 +123,9 @@ foreach(option ${DEBUG_COMPILE_OPTIONS})
 endforeach()
 foreach(option ${COVERAGE_COMPILE_OPTIONS})
 	add_compile_options($<$<CONFIG:COVERAGE>:${option}>)
+endforeach()
+foreach(option ${SANITIZERS_COMPILE_OPTIONS})
+	add_compile_options($<$<CONFIG:SANITIZERS>:${option}>)
 endforeach()
 foreach(option ${RELEASE_COMPILE_OPTIONS})
 	add_compile_options($<$<CONFIG:RELEASE>:${option}>)
@@ -144,6 +153,9 @@ ENDIF(CMAKE_BUILD_TYPE MATCHES DEBUG AND USE_EFENCE)
 IF(${CMAKE_BUILD_TYPE} MATCHES COVERAGE)
 	list (APPEND link_libraries -coverage)
 ENDIF(${CMAKE_BUILD_TYPE} MATCHES COVERAGE)
+IF(${CMAKE_BUILD_TYPE} MATCHES SANITIZERS)
+	list (APPEND link_libraries -fsanitize=address)
+ENDIF(${CMAKE_BUILD_TYPE} MATCHES SANITIZERS)
 
 # set default include directories
 INCLUDE_DIRECTORIES(${EXTRA_INCLUDE_DIRS})
