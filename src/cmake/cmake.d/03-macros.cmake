@@ -308,37 +308,60 @@ macro(project_targets_populate)
 	set(PACKAGE_TEST_HTTPDIR ${PROJECT_PKG_TEST_DIR}/${HTTPDIR})
 	set(PACKAGE_TEST_DATADIR ${PROJECT_PKG_TEST_DIR}/${DATADIR})
 
-		add_custom_command(OUTPUT ${PACKAGE_BINDIR}
-					  ${PACKAGE_ETCDIR}
-					  ${PACKAGE_LIBDIR}
-					  ${PACKAGE_HTTPDIR}
-					  ${PACKAGE_DATADIR}
-					  ${PACKAGE_TEST_BINDIR}
-					  ${PACKAGE_TEST_ETCDIR}
-					  ${PACKAGE_TEST_LIBDIR}
-					  ${PACKAGE_TEST_HTTPDIR}
-					  ${PACKAGE_TEST_DATADIR}
-			COMMAND mkdir -p  ${PACKAGE_BINDIR}
-			COMMAND mkdir -p  ${PACKAGE_ETCDIR}
-			COMMAND mkdir -p  ${PACKAGE_LIBDIR}
-			COMMAND mkdir -p  ${PACKAGE_HTTPDIR}
-			COMMAND mkdir -p  ${PACKAGE_DATADIR}
-			COMMAND mkdir -p  ${PACKAGE_TEST_BINDIR}
-			COMMAND mkdir -p  ${PACKAGE_TEST_ETCDIR}
-			COMMAND mkdir -p  ${PACKAGE_TEST_LIBDIR}
-			COMMAND mkdir -p  ${PACKAGE_TEST_HTTPDIR}
-			COMMAND mkdir -p  ${PACKAGE_TEST_DATADIR}
-		)
-		add_custom_target(populate DEPENDS ${PACKAGE_BINDIR}
-						   ${PACKAGE_ETCDIR}
-						   ${PACKAGE_LIBDIR}
-						   ${PACKAGE_HTTPDIR}
-						   ${PACKAGE_DATADIR}
-						   ${PACKAGE_TEST_BINDIR}
-						   ${PACKAGE_TEST_ETCDIR}
-						   ${PACKAGE_TEST_LIBDIR}
-						   ${PACKAGE_TEST_HTTPDIR}
-						   ${PACKAGE_TEST_DATADIR})
+	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}
+			   COMMAND mkdir -p ${PROJECT_PKG_BUILD_DIR})
+	add_custom_command(OUTPUT ${PACKAGE_BINDIR}
+			   COMMAND mkdir -p ${PACKAGE_BINDIR}
+			   DEPENDS ${PROJECT_PKG_BUILD_DIR})
+	add_custom_command(OUTPUT ${PACKAGE_ETCDIR}
+			   COMMAND mkdir -p ${PACKAGE_ETCDIR}
+			   DEPENDS ${PROJECT_PKG_BUILD_DIR})
+	add_custom_command(OUTPUT ${PACKAGE_LIBDIR}
+			   COMMAND mkdir -p ${PACKAGE_LIBDIR}
+			   DEPENDS ${PROJECT_PKG_BUILD_DIR})
+	add_custom_command(OUTPUT ${PACKAGE_HTTPDIR}
+			   COMMAND mkdir -p ${PACKAGE_HTTPDIR}
+			   DEPENDS ${PROJECT_PKG_BUILD_DIR})
+	add_custom_command(OUTPUT ${PACKAGE_DATADIR}
+			   COMMAND mkdir -p ${PACKAGE_DATADIR}
+			   DEPENDS ${PROJECT_PKG_BUILD_DIR})
+
+	add_custom_target(prepare_package
+				DEPENDS ${PROJECT_PKG_BUILD_DIR}
+					${PACKAGE_BINDIR}
+					${PACKAGE_ETCDIR}
+					${PACKAGE_LIBDIR}
+					${PACKAGE_HTTPDIR}
+					${PACKAGE_DATADIR})
+
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}
+			   COMMAND mkdir -p ${PROJECT_PKG_TEST_DIR})
+	add_custom_command(OUTPUT ${PACKAGE_TEST_BINDIR}
+			   COMMAND mkdir -p ${PACKAGE_TEST_BINDIR}
+			   DEPENDS ${PROJECT_PKG_TEST_DIR})
+	add_custom_command(OUTPUT ${PACKAGE_TEST_ETCDIR}
+			   COMMAND mkdir -p ${PACKAGE_TEST_ETCDIR}
+			   DEPENDS ${PROJECT_PKG_TEST_DIR})
+	add_custom_command(OUTPUT ${PACKAGE_TEST_LIBDIR}
+			   COMMAND mkdir -p ${PACKAGE_TEST_LIBDIR}
+			   DEPENDS ${PROJECT_PKG_TEST_DIR})
+	add_custom_command(OUTPUT ${PACKAGE_TEST_HTTPDIR}
+			   COMMAND mkdir -p ${PACKAGE_TEST_HTTPDIR}
+			   DEPENDS ${PROJECT_PKG_TEST_TEST_DIR})
+	add_custom_command(OUTPUT ${PACKAGE_TEST_DATADIR}
+			   COMMAND mkdir -p ${PACKAGE_TEST_DATADIR}
+			   DEPENDS ${PROJECT_PKG_TEST_DIR})
+
+	add_custom_target(prepare_package_test
+				DEPENDS ${PROJECT_PKG_TEST_DIR}
+					${PACKAGE_TEST_BINDIR}
+					${PACKAGE_TEST_ETCDIR}
+					${PACKAGE_TEST_LIBDIR}
+					${PACKAGE_TEST_HTTPDIR}
+					${PACKAGE_TEST_DATADIR})
+
+	add_custom_target(populate)
+	add_dependencies(populate prepare_package prepare_package_test)
 
 	# Dirty trick to define a default INSTALL command for app-templates handled
 	# targets
@@ -584,10 +607,12 @@ You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.
 	# populate icon
 	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
 		COMMAND cp -d ${ICON_PATH} ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
+		DEPENDS ${PROJECT_PKG_BUILD_DIR}
 	)
 	list(APPEND widget_files_items ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON})
 	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/${PROJECT_ICON}
 		COMMAND cp -d ${ICON_PATH} ${PROJECT_PKG_TEST_DIR}/${PROJECT_ICON}
+		DEPENDS ${PROJECT_PKG_TEST_DIR}
 	)
 	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_DIR}/${PROJECT_ICON})
 
