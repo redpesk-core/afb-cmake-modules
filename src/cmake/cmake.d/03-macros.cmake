@@ -560,13 +560,12 @@ macro(remote_targets_populate)
 endmacro(remote_targets_populate)
 
 macro(wgt_package_build)
+# check if widget is required
+if(WIDGET_TYPE)
 	# checks
 	if(NOT EXISTS ${WIDGET_CONFIG_TEMPLATE})
 		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build widget file.
 You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.${ColourReset}")
-	endif()
-	if(NOT WIDGET_TYPE)
-		MESSAGE(FATAL_ERROR "WIDGET_TYPE must be set in your config.cmake.\neg.: set(WIDGET_TYPE application/vnd.agl.service)")
 	endif()
 
 	# default test template
@@ -718,6 +717,9 @@ You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.
 			POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${PACKAGE_MESSAGE}")
 	endif()
+else()
+	#MESSAGE(FATAL_ERROR "WIDGET_TYPE must be set in your config.cmake.\neg.: set(WIDGET_TYPE application/vnd.agl.service)")
+endif()
 endmacro(wgt_package_build)
 
 macro(rpm_package_build)
