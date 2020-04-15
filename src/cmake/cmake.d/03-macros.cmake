@@ -17,13 +17,14 @@
 # limitations under the License.
 ###########################################################################
 
-#--------------------------------------------------------------------------
+###########################################################################
+#
 #  WARNING:
 #     Do not change this cmake template
 #     Customise your preferences in "./conf.d/cmake/config.cmake"
-#--------------------------------------------------------------------------
-# CMake 3.6 imported macros to simulate list(FILTER ...) subcommand
-#--------------------------------------------------------------------------
+#
+###########################################################################
+
 MACRO(prevent_in_source_build)
 	execute_process(COMMAND rm -rf ${CMAKE_SOURCE_DIR}/CMakeCache.txt
 			${CMAKE_SOURCE_DIR}/CMakeCacheForScript.cmake
@@ -38,6 +39,9 @@ MACRO(prevent_in_source_build)
 	endif()
 ENDMACRO(prevent_in_source_build)
 
+#--------------------------------------------------------------------------
+# CMake 3.6 imported macros to simulate list(FILTER ...) subcommand
+#--------------------------------------------------------------------------
 MACRO(PARSE_ARGUMENTS prefix arg_names option_names)
 	SET(DEFAULT_ARGS)
 	FOREACH(arg_name ${arg_names})
