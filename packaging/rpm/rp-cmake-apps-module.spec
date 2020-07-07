@@ -8,7 +8,7 @@
 %global debug_package %{nil}
 %endif
 
-Name:           agl-cmake-apps-module
+Name:           rp-cmake-apps-module
 # WARNING {name} is not used for tar file name in source nor for setup
 #         Check hard coded values required to match git directory naming
 BuildArchitectures: noarch
