@@ -1,14 +1,14 @@
 Priority: optional
 Maintainer: Romain Forlot <romain.forlot@iot.bzh>
-Source: agl-cmake-apps-module
+Source: rp-cmake-apps-module
 Build-Depends:
  debhelper (>= 5),
  cmake,
 Standards-Version: 3.8.2
 Homepage: https://gerrit.automotivelinux.org/gerrit/#/admin/projects/src/cmake-apps-module
 
-Package: agl-cmake-apps-module-bin
+Package: rp-cmake-apps-module-bin
 Section: devel
 Architecture: any
-Description: agl-cmake-apps-module is a CMake module made to ease application
+Description: rp-cmake-apps-module is a CMake module made to ease application
  framework binding.

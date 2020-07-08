@@ -30,7 +30,7 @@ build: build-stamp
 build-stamp: configure-stamp
 	dh_testdir
 	mkdir -p build
-	cd build;cmake ../ -DCMAKE_INSTALL_PREFIX:PATH=/opt/AGL/@PROJECT_NAME@ -DCMAKE_INSTALL_LIBDIR:PATH=lib/$(DEB_HOST_MULTIARCH);$(MAKE)
+	cd build;cmake ../ -DCMAKE_INSTALL_PREFIX:PATH=/opt/RP/@PROJECT_NAME@ -DCMAKE_INSTALL_LIBDIR:PATH=lib/$(DEB_HOST_MULTIARCH);$(MAKE)
 	#
 	touch build-stamp
 
@@ -47,7 +47,7 @@ install: build
 	dh_prep
 	dh_installdirs
 	# Add here commands to install the package into debian/tmp
-	mkdir -p debian/tmp/opt/AGL/@PROJECT_NAME@;cd build;make populate;cp -r package/* ../debian/tmp/opt/AGL/@PROJECT_NAME@/
+	mkdir -p debian/tmp/opt/RP/@PROJECT_NAME@;cd build;make populate;cp -r package/* ../debian/tmp/opt/RP/@PROJECT_NAME@/
 	mkdir -p debian/tmp/etc/profile.d
 	echo '#----------  AGL @PROJECT_NAME@ options Start ---------" '  > debian/tmp/etc/profile.d/AGL_@PROJECT_NAME@.sh
 	echo '# Object: AGL cmake option for  binder/bindings'  >> debian/tmp/etc/profile.d/AGL_@PROJECT_NAME@.sh

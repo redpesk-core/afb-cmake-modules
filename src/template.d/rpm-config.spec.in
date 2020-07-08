@@ -32,7 +32,7 @@ BuildRequires: gcc gcc-c++
 
 BuildRoot:     %{_tmppath}/%{name}-%{version}-build
 
-%define _prefix /opt/AGL/@PROJECT_NAME@
+%define _prefix /opt/RP/@PROJECT_NAME@
 %define __cmake cmake
 
 %description

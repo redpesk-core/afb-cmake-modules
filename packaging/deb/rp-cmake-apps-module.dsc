@@ -1,6 +1,6 @@
 Format: 3.0 (native)
-Source: agl-cmake-apps-module
-Binary: agl-cmake-apps-module-bin, agl-cmake-apps-module-dev
+Source: rp-cmake-apps-module
+Binary: rp-cmake-apps-module-bin, rp-cmake-apps-module-dev
 Architecture: any
 Version: 6.90-0
 Maintainer: Romain Forlot <romain.forlot@iot.bzh>
