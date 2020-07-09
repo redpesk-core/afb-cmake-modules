@@ -46,18 +46,18 @@ endforeach()
 # ----------------------------------------------------------------------------
 
 add_custom_command(OUTPUT ${PROJECT_AGL_AUTOBUILD_DIR}/autobuild ${PROJECT_LINUX_AUTOBUILD_DIR}/autobuild
-	DEPENDS ${TEMPLATE_DIR}/autobuild/agl/autobuild.in
+	DEPENDS ${TEMPLATE_DIR}/autobuild/rp/autobuild.in
 		${TEMPLATE_DIR}/autobuild/linux/autobuild.in
 
 	COMMAND [ ! -f "${PROJECT_AGL_AUTOBUILD_DIR}/autobuild" ] &&
-		${CMAKE_COMMAND} -DINFILE=${TEMPLATE_DIR}/autobuild/agl/autobuild.in
+		${CMAKE_COMMAND} -DINFILE=${TEMPLATE_DIR}/autobuild/rp/autobuild.in
 		-DOUTFILE=${PROJECT_AGL_AUTOBUILD_DIR}/autobuild
 		-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
 		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake &&
 		chmod a+x ${PROJECT_AGL_AUTOBUILD_DIR}/autobuild ||
 		true
 	COMMAND [ ! -f "${PROJECT_LINUX_AUTOBUILD_DIR}/autobuild" ] &&
-		${CMAKE_COMMAND} -DINFILE=${TEMPLATE_DIR}/autobuild/agl/autobuild.in
+		${CMAKE_COMMAND} -DINFILE=${TEMPLATE_DIR}/autobuild/rp/autobuild.in
 		-DOUTFILE=${PROJECT_LINUX_AUTOBUILD_DIR}/autobuild
 		-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
 		-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake &&
