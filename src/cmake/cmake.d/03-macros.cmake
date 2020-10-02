@@ -17,13 +17,14 @@
 # limitations under the License.
 ###########################################################################
 
-#--------------------------------------------------------------------------
+###########################################################################
+#
 #  WARNING:
 #     Do not change this cmake template
 #     Customise your preferences in "./conf.d/cmake/config.cmake"
-#--------------------------------------------------------------------------
-# CMake 3.6 imported macros to simulate list(FILTER ...) subcommand
-#--------------------------------------------------------------------------
+#
+###########################################################################
+
 MACRO(prevent_in_source_build)
 	execute_process(COMMAND rm -rf ${CMAKE_SOURCE_DIR}/CMakeCache.txt
 			${CMAKE_SOURCE_DIR}/CMakeCacheForScript.cmake
@@ -38,8 +39,10 @@ MACRO(prevent_in_source_build)
 	endif()
 ENDMACRO(prevent_in_source_build)
 
+#--------------------------------------------------------------------------
+# CMake 3.6 imported macros to simulate list(FILTER ...) subcommand
+#--------------------------------------------------------------------------
 MACRO(PARSE_ARGUMENTS prefix arg_names option_names)
-	SET(DEFAULT_ARGS)
 	FOREACH(arg_name ${arg_names})
 		SET(${prefix}_${arg_name})
 	ENDFOREACH(arg_name)
@@ -58,9 +61,9 @@ MACRO(PARSE_ARGUMENTS prefix arg_names option_names)
 		ELSE (is_arg_name)
 			LIST_CONTAINS(is_option ${arg} ${option_names})
 			IF (is_option)
-		SET(${prefix}_${arg} TRUE)
+				SET(${prefix}_${arg} TRUE)
 			ELSE (is_option)
-		SET(current_arg_list ${current_arg_list} ${arg})
+				SET(current_arg_list ${current_arg_list} ${arg})
 			ENDIF (is_option)
 		ENDIF (is_arg_name)
 	ENDFOREACH(arg)
@@ -560,13 +563,12 @@ macro(remote_targets_populate)
 endmacro(remote_targets_populate)
 
 macro(wgt_package_build)
+# check if widget is required
+if(WIDGET_TYPE)
 	# checks
 	if(NOT EXISTS ${WIDGET_CONFIG_TEMPLATE})
 		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build widget file.
 You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.${ColourReset}")
-	endif()
-	if(NOT WIDGET_TYPE)
-		MESSAGE(FATAL_ERROR "WIDGET_TYPE must be set in your config.cmake.\neg.: set(WIDGET_TYPE application/vnd.agl.service)")
 	endif()
 
 	# default test template
@@ -718,6 +720,9 @@ You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.
 			POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "++ ${PACKAGE_MESSAGE}")
 	endif()
+else()
+	#MESSAGE(FATAL_ERROR "WIDGET_TYPE must be set in your config.cmake.\neg.: set(WIDGET_TYPE application/vnd.agl.service)")
+endif()
 endmacro(wgt_package_build)
 
 macro(rpm_package_build)

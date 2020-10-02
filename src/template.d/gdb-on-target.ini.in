@@ -5,11 +5,11 @@
 # Reference: https://blog.flameeyes.eu/2010/02/remote-debugging-with-gdb-part-2-gdb/
 #
 # Warning:
-#  - on target start with $GDB ./target/gdb-cross-root@$TARGET.ini  
+#  - on target start with $GDB ./target/gdb-cross-root@$TARGET.ini
 #  - Netbeans impose debug-command to point on a local instance of afb-daemon binary
 #  - --ldpath should be absolute as solib-search-path refuse to work as documented
 
-# xds-gdb annotation to point where it should 
+# xds-gdb annotation to point where it should
 # :XDS-ENV: XDS_PROJECT_ID=@XDS_PROJECT_ID@
 # :XDS-ENV: XDS_SDK_ID=@XDS_SDK_ID@
 # :XDS-ENV: XDS_SERVER_URL=@XDS_SERVER_URL@
