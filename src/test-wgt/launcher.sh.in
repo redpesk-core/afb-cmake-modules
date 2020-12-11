@@ -63,7 +63,7 @@ fi
 testVerbLength=${#testVerb[@]}
 for (( idx=0; idx<testVerbLength; idx++ )) do
 	echo "Launching ${testVerb[$idx]}"
-        afb-client-demo -s ws://localhost:${PORT}/api?token=${TOKEN} "$API" "${testVerb[$idx]}" "${VERBARGS}"
+        afb-client -s ws://localhost:${PORT}/api?token=${TOKEN} "$API" "${testVerb[$idx]}" "${VERBARGS}"
 done
 
-afb-client-demo ws://localhost:${PORT}/api?token=${TOKEN} "$API" "exit"
+afb-client ws://localhost:${PORT}/api?token=${TOKEN} "$API" "exit"
