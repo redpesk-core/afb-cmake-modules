@@ -1,10 +1,10 @@
 # Overview
 
-The CMake AGL Framework Template Module
+The CMake Framework Template Module
 helps to build applications or bindings for the
-AGL Application Framework.
-You can use the template module to easily build a widget and its related
-test widget for running on top of the AGL Application Framework.
+Application Framework.
+You can use the template module to easily build a service and its associated
+tests to run on top of the Application Framework.
 
 This topic consists of the following:
 

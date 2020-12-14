@@ -2,7 +2,7 @@
 
 This topic describes some advanced ways of using the CMake templates.
 
-## Building a Widget
+## Advanced AGL Widget
 
 To build a widget, you need a `config.xml` file that describes
 your application (widget) and how the Application Framework launches it.
@@ -57,7 +57,7 @@ These values define the resource types that make up your test materials:
 - **TEST-HTDOCS**: The root directory of a web application.
  This target has to build its directory and put its files in
  the `${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}` directory.
-- **TEST-EXECUTABLE**: The entry point of your application executed by the AGL
+- **TEST-EXECUTABLE**: The entry point of your application executed by the
  Application Framework.
 - **TEST-LIBRARY**: An external third-party library bundled with the binding
  for its own purpose.
@@ -126,11 +126,11 @@ The project does not need to be a CMake project.
 Additionally, you can provide custom steps to account for special
 needs using ExternalProject step.
 See the CMake
-[ExternalProject documentation site](https://cmake.org/cmake/help/v3.5/module/ExternalProject.html?highlight=externalproject)
+[ExternalProject documentation site](https://cmake.org/cmake/help/v3.19/module/ExternalProject.html?highlight=externalproject)
 for more information.
 
 Following is an example that includes the `mxml` library for the
-[unicens2-binding](https://github.com/iotbzh/unicens2-binding)
+[unicens2-binding](https://gerrit.automotivelinux.org/gerrit/gitweb?p=apps/agl-service-unicens.git)
 project:
 
 ```cmake
@@ -281,7 +281,7 @@ Following is an example:
 set_openapi_filename('binding/mybinding_definition')
 ```
 
-[target property]: https://cmake.org/cmake/help/v3.6/prop_tgt/OUTPUT_NAME.html "OUTPUT_NAME property documentation"
+[target property]: https://cmake.org/cmake/help/v3.19/prop_tgt/OUTPUT_NAME.html "OUTPUT_NAME property documentation"
 
 ### add_input_files
 

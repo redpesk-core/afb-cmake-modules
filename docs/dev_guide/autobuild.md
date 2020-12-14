@@ -1,14 +1,11 @@
 ﻿# Autobuild
 
-Applications based on the AGL framework should have a
+Applications based on the Redpesk framework should have a
 full build and packaging solution that is independent of the
 [Yocto Project](https://www.yoctoproject.org) workflow.
 
 You can create a script named **autobuild** to control applications
 build operations.
-AGL provides a BitBake class file (`aglwgt.bbclass`) that calls the
-**autobuild** script for all operations.
-The class file is located at the top level of the application repository.
 
 You can write the **autobuild** script using any of the following languages:
 
@@ -17,7 +14,7 @@ You can write the **autobuild** script using any of the following languages:
 * Python
 
 The script executes directly after applying a `chmod()` command.
-The caller, which can be the `aglwgt.bbclass`, a Jenkins job, or an actual person,
+The caller, which can be a Jenkins job, or an actual person,
 must make the **autobuild** executable before calling it.
 To facilitate direct execution, you need to start the script with a
 [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) sequence:
@@ -34,7 +31,7 @@ sets the environment variables correctly.
 The following format shows the generic call:
 
 ```bash
-autobuild/agl/autobuild <command> [ARG1="value1" [ARG2="value2" ... ]]
+autobuild/redpesk/autobuild <command> [ARG1="value1" [ARG2="value2" ... ]]
 ```
 
 The **autobuild** script can be invoked from any directory
@@ -50,41 +47,41 @@ At build time, the following calls must be made in the following order:
    `cmake` the configure step runs CMake).
 
    ```bash
-   autobuild/agl/autobuild configure CONFIGURE_ARGS="..."
+   autobuild/redpesk/autobuild configure CONFIGURE_ARGS="..."
    ```
 
 2. Build the application (i.e. compile, link binaries, assembles javascript,
    and so forth).
 
    ```bash
-   autobuild/agl/autobuild build BUILD_ARGS="...."
+   autobuild/redpesk/autobuild build BUILD_ARGS="...."
    ```
 
 3. Create the widget package(s) in the specified destination path
    prepared by the caller.
 
    ```bash
-   autobuild/agl/autobuild package PACKAGE_ARGS="..." DEST=<path-for-resulting-wgt-files>
+   autobuild/redpesk/autobuild package PACKAGE_ARGS="..." DEST=<path-for-resulting-wgt-files>
    ```
 
 4. Create the test widget package(s) in the specified destination path
    prepared by the caller.
 
    ```bash
-   autobuild/agl/autobuild package-test PACKAGE_ARGS="..." DEST=<path-for-resulting-wgt-files>
+   autobuild/redpesk/autobuild package-test PACKAGE_ARGS="..." DEST=<path-for-resulting-wgt-files>
    ```
 
 5. Clean the built files by removing the result of the **autobuild** build.
 
    ```bash
-   autobuild/agl/autobuild clean CLEAN_ARGS="..."
+   autobuild/redpesk/autobuild clean CLEAN_ARGS="..."
    ```
 
 6. Clean everything by removing the result of the **autobuild** build
    and the **autobuild** configure.
 
    ```bash
-   autobuild/agl/autobuild distclean DISTCLEAN_ARGS="..."
+   autobuild/redpesk/autobuild distclean DISTCLEAN_ARGS="..."
    ```
 
 ## Integrating **autobuild** into the Yocto Project Workflow
@@ -94,7 +91,7 @@ workflow, you need to generate the script.
 To generate the script, use the `autobuild` target.
 
 The following commands create the **autobuild** script in the
-`autobuild/agl` directory:
+`autobuild/redpesk` directory:
 
 ```bash
 mkdir -p build
@@ -121,8 +118,6 @@ Following are the targets available from the **autobuild** script:
 - **package-all**: Builds the widget (**wgt**) packages for all build types.
 - **install**: Installs the project into your filesystem.
 
-Note that `aglwgt.bbclass` only will use the **package-{coverage,test}** targets (and thus the **build-{coverage,test}**, etc. targets) for service bindings by default, so **autobuild** scripts for  applications may omit support for those.
-
 Specifying the following variables lets you modify compilation behavior:
 
 - **CLEAN_ARGS**: Variable used at **clean** time.
@@ -146,5 +141,5 @@ BUILD_ARGS="-DC_FLAGS='-g -O2'").
 Following is an example:
 
 ```bash
-./autobuild/agl/autobuild package DEST=/tmp
+./autobuild/redpesk/autobuild package DEST=/tmp
 ```
