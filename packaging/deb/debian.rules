@@ -1,9 +1,0 @@
-#!/usr/bin/make -f
-# -*- makefile -*-
-# Uncomment this to turn on verbose mode.
-
-%:
-	dh $@
-
-override_dh_auto_install:
-	dh_auto_install --destdir=/usr/src/packages/BUILD/debian/tmp
