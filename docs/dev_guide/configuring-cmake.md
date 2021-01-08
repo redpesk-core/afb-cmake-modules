@@ -1,11 +1,11 @@
-# Configuring AGL CMake Templates
+# Configuring CMake Templates
 
 Configuration consists of editing the `config.cmake` file for your
 specific project.
 
 ## Creating Your `config.cmake` File
 
-First, you need to create a `confd/cmake` file in your CMake project
+First, you need to create a `conf.d/cmake` file in your CMake project
 directory.
 
 ```bash
@@ -14,17 +14,9 @@ mkdir -p conf.d/cmake
 
 Next, use one of the following commands to copy a `cmake.sample` file to
 your `config.cmake` file.
-The first command applies if you have the SDK installed, while the
-second command applies if you installed the modules on your native Linux system.
-
-**NOTE:** The `OECORE_NATIVE_SYSROOT` variable is defined once you have
-a project folder, the AGL SDK source files, and the CMake modules installed.
 
 ```bash
 mkdir -p conf.d/cmake
-# From the SDK sysroot >= RC2 of the 7.0.0 Guppy release
-cp ${OECORE_NATIVE_SYSROOT}/usr/share/doc/CMakeAfbTemplates/samples.d/config.cmake.sample conf.d/cmake/config.cmake
-# From a native installation
 cp /usr/share/doc/CMakeAfbTemplates/samples.d/config.cmake.sample conf.d/cmake/config.cmake
 ```
 
@@ -35,16 +27,8 @@ specific to your project.
 
 To create this file, use the example in the **cmake module**.
 Use one of the following two commands to create your file.
-The first command applies if you have the SDK installed, while the
-second command applies if you installed the modules on your native Linux system.
-
-**NOTE:** The `OECORE_NATIVE_SYSROOT` variable is defined once you have
-a project folder, the AGL SDK source files, and the CMake modules installed.
 
 ```bash
-# From the SDK sysroot >= RC2 of the 7.0.0 Guppy release
-cp ${OECORE_NATIVE_SYSROOT}/usr/share/doc/CMakeAfbTemplates/samples.d/CMakeLists.txt.sample CMakeLists.txt
-# From a native installation
 cp /usr/share/doc/CMakeAfbTemplates/samples.d/CMakeLists.txt.sample CMakeLists.txt
 ```
 
@@ -85,15 +69,15 @@ You can choose the following target types:
 
 Choose between:
 
-- **BINDING**: A shared library loaded by the AGL Application Framework.
-- **BINDINGV2**: A shared library loaded by the AGL Application Framework.
+- **BINDING**: A shared library loaded by the Application Framework.
+- **BINDINGV2**: A shared library loaded by the Application Framework.
   This library must be accompanied by a JSON file named similar to the
   *${OUTPUT_NAME}-apidef* of the target, which describes the API with OpenAPI
   syntax (e.g: *mybinding-apidef*).
   Alternatively, you can choose the name without the extension using the
   **set_openapi_filename** macro.
   If you use C++, you must set **PROJECT_LANGUAGES** through *CXX*.
-- **BINDINGV3**: A shared library loaded by the AGL Application Framework.
+- **BINDINGV3**: A shared library loaded by the Application Framework.
   This library must be accompanied by a JSON file named similar to the
   *${OUTPUT_NAME}-apidef* of the target, which describes the API with OpenAPI
   syntax (e.g: *mybinding-apidef*).
@@ -112,7 +96,7 @@ Choose between:
 - **DATA**: Resources used by your application.
   This target has to build its directory and puts its files in the
   **${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}**.
-- **EXECUTABLE**: The entry point of your application executed by the AGL
+- **EXECUTABLE**: The entry point of your application executed by the
   Application Framework.
 - **LIBRARY**: An external third-party library bundled with the binding.
   The library is bundled in this manner because the platform does not

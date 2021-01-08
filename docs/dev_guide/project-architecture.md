@@ -9,7 +9,7 @@ directory structure:
 ├── CMakeLists.txt
 │
 ├── autobuild/
-│   ├── agl
+│   ├── redpesk
 │   │   └── autobuild
 │   ├── linux
 │   │   └── autobuild
@@ -47,7 +47,7 @@ directory structure:
 | *root_path* | n/a | CMake project root path. Holds the master CMakeLists.txt file and all general project files.
 | CMakeLists.txt | The master CMakeLists.txt file.
 | autobuild/ | *root_path* | Scripts generated from app-templates to build packages the same way for differents platforms.
-| conf.d/ | *root_path* | Holds needed files to build, install, debug, and package an AGL application project.
+| conf.d/ | *root_path* | Holds needed files to build, install, debug, and package a Redpesk application project.
 | packaging/ | conf.d/ | Contains output files used to build packages.
 | cmake/ | conf.d/ | Minimally contains the config.cmake file, which is modified from the sample provided in the app-templates submodule.
 | wgt/ | conf.d/ | Contains config.xml.in and optionaly the test-config.xml.in template files that are modified from the sample provided with the CMake module for the needs of the project.  For more details, see the config.xml.in.sample and test-config.xml.in.sample files.
@@ -71,5 +71,4 @@ is automatically added to the CMake project.
 Similarly, when a file whose extension is `.cmake` is found, the directory in
 which that file resides is also added to the CMake project.
 
-
-
+**NOTE** In case you have a `.cmake` file located in a folder that you do not want to include in the CMake project. You can add a `_` in front of the folder name to exclude it from the CMake project.
