@@ -6,7 +6,7 @@ In order to use the templates, you need to install them as
 a CMake module.
 On your native Linux system, use your distribution's package manager.
 See the
-"[Prerequisites](../../host-configuration/docs/1-Setup-your-build-host.html)"
+"[Prerequisites]({% chapter_link host-configuration-doc.setup-your-build-host %})"
 section for how to install packages using your distribution's package
 manager.
 
