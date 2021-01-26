@@ -47,7 +47,7 @@ directory structure:
 | *root_path* | n/a | CMake project root path. Holds the master CMakeLists.txt file and all general project files.
 | CMakeLists.txt | The master CMakeLists.txt file.
 | autobuild/ | *root_path* | Scripts generated from app-templates to build packages the same way for differents platforms.
-| conf.d/ | *root_path* | Holds needed files to build, install, debug, and package a Redpesk application project.
+| conf.d/ | *root_path* | Holds needed files to build, install, debug, and package a redpesk application project.
 | packaging/ | conf.d/ | Contains output files used to build packages.
 | cmake/ | conf.d/ | Minimally contains the config.cmake file, which is modified from the sample provided in the app-templates submodule.
 | wgt/ | conf.d/ | Contains config.xml.in and optionaly the test-config.xml.in template files that are modified from the sample provided with the CMake module for the needs of the project.  For more details, see the config.xml.in.sample and test-config.xml.in.sample files.

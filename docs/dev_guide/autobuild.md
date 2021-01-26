@@ -1,6 +1,6 @@
 ﻿# Autobuild
 
-Applications based on the Redpesk framework should have a
+Applications based on the redpesk framework should have a
 full build and packaging solution that is independent of the
 [Yocto Project](https://www.yoctoproject.org) workflow.
 
