@@ -118,8 +118,7 @@ else()
 endif()
 
 
-set(AFB_TOKEN   ""      CACHE PATH "Default AFB_TOKEN")
-set(AFB_REMPORT "1234" CACHE PATH "Default AFB_TOKEN")
+set(AFB_REMPORT "1234" CACHE PATH "Default AFB port")
 
 # Check GCC minimal version
 if (gcc_minimal_version)

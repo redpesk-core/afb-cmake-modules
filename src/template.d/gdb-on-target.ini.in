@@ -6,7 +6,7 @@
 #
 # Warning:
 #  - on target start with $GDB ./target/gdb-cross-root@$TARGET.ini
-#  - Netbeans impose debug-command to point on a local instance of afb-daemon binary
+#  - Netbeans impose debug-command to point on a local instance of afb-binder binary
 #  - --ldpath should be absolute as solib-search-path refuse to work as documented
 
 # xds-gdb annotation to point where it should
@@ -16,7 +16,7 @@
 
 # Start gdbserver on target and connect through SSH link WARNING:
 target remote | ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null @RSYNC_TARGET@ gdbserver - \
-       /usr/bin/afb-daemon --port=@AFB_REMPORT@ --workdir=@RSYNC_PREFIX@/@PROJECT_NAME@ --roothttp=htdocs --ldpaths=@RSYNC_PREFIX@/@PROJECT_NAME@/lib --verbose --token=@AFB_TOKEN@
+       /usr/bin/afb-binder --port=@AFB_REMPORT@ --workdir=@RSYNC_PREFIX@/@PROJECT_NAME@ --roothttp=htdocs --ldpaths=@RSYNC_PREFIX@/@PROJECT_NAME@/lib --verbose
 
 # Disable auto answer no on questions and to set breakpoint
 set confirm off
@@ -29,7 +29,7 @@ set solib-search-path ${PROJECT_PKG_BUILD_DIR}
 
 # Replace run by continue done by xds-gdb
 
-# Manually load project libraries when loaded by afb-daemon
+# Manually load project libraries when loaded by afb-binder
 tbreak @GDB_INITIAL_BREAK@
 commands
 sharedlibrary @RSYNC_PREFIX@/@PROJECT_NAME@

@@ -63,7 +63,7 @@ set (gcc_minimal_version 4.9)
 # -----------------------------
 set (PKG_REQUIRED_LIST
 	json-c
-	afb-daemon
+	afb-binding
 )
 
 # You can also consider to include libsystemd
@@ -184,15 +184,14 @@ set(WIDGET_ENTRY_POINT EntryPoint_Path_Not_Set)
 # -----------------------------------------------------
 # set(PKG_PREFIX DestinationPath)
 
-# Optional Application Framework security token
-# and port use for remote debugging.
+# Optional Application Framework
+# port use for remote debugging.
 #------------------------------------------------------------
-set(AFB_TOKEN   ""     CACHE PATH "Default binder security token")
 set(AFB_REMPORT "1234" CACHE PATH "Default binder listening port")
 
 # Print a helper message when every thing is finished
 # ----------------------------------------------------
-set(CLOSING_MESSAGE "Typical binding launch: cd ${CMAKE_BINARY_DIR}/package \\&\\& afb-daemon --port=${AFB_REMPORT} --workdir=. --ldpaths=lib --roothttp=htdocs  --token=\"${AFB_TOKEN}\" --tracereq=common --verbose")
+set(CLOSING_MESSAGE "Typical binding launch: cd ${CMAKE_BINARY_DIR}/package \\&\\& afb-binder --port=${AFB_REMPORT} --workdir=. --ldpaths=lib --roothttp=htdocs --tracereq=common --verbose")
 set(PACKAGE_MESSAGE "Install widget file using in the target : afm-util install ${PROJECT_NAME}.wgt")
 
 # Optional schema validator about now only XML, LUA and JSON
