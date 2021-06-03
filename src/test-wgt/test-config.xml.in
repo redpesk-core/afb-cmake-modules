@@ -16,7 +16,8 @@
 	</feature>
 
 	<feature name="urn:AGL:widget:required-permission">
-		<param name="urn:AGL:permission:test" value="required" />
+		<param name="urn:AGL:permission::partner:read-afbtest" value="required" />
+		<param name="urn:AGL:permission::partner:execute-shell" value="required" />
 	</feature>
 
 	<feature name="urn:AGL:widget:file-properties">
