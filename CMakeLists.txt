@@ -18,7 +18,7 @@
 
 cmake_minimum_required(VERSION 3.5)
 
-project(CMakeAfbTemplates)
+project(CMakeAfbTemplates VERSION 10.0.4)
 
 # compute the default install directory
 include(GNUInstallDirs)
@@ -29,3 +29,8 @@ set(INSTALL_DIR ${CMAKE_INSTALL_DATADIR}/${CMAKE_DIR}/Modules)
 INSTALL(FILES CMakeAfbTemplates.cmake DESTINATION ${INSTALL_DIR})
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/src/ DESTINATION ${INSTALL_DIR}/CMakeAfbTemplates)
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/docs/ DESTINATION ${CMAKE_INSTALL_DOCDIR})
+
+set (PKG_NAME cmake_afb_templates)
+
+configure_file(${PKG_NAME}.pc.in ${PKG_NAME}.pc @ONLY)
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PKG_NAME}.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pkgconfig)
