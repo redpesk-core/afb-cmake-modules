@@ -5,31 +5,37 @@ specific project.
 
 ## Creating Your `config.cmake` File
 
-First, you need to create a `conf.d/cmake` file in your CMake project
+First, you need to create the directory `conf.d/cmake` in your main project
 directory.
 
 ```bash
 mkdir -p conf.d/cmake
 ```
 
-Next, use one of the following commands to copy a `cmake.sample` file to
-your `config.cmake` file.
+Next, use one the following command to copy the file `cmake.config.sample`
+as the `config.cmake` file of your project.
 
 ```bash
-mkdir -p conf.d/cmake
-cp /usr/share/doc/CMakeAfbTemplates/samples.d/config.cmake.sample conf.d/cmake/config.cmake
+TEMPL=/usr/share/doc/CMakeAfbTemplates
+cp ${TEMPL}/samples.d/config.cmake.sample conf.d/cmake/config.cmake
 ```
 
 Once you have created your `config.cmake` file, you need to make the changes
 specific to your project.
 
+If the directory `/usr/share/doc/CMakeAfbTemplates` does not exist,
+try the locations below:
+
+- `/usr/local/share/doc/CMakeAfbTemplates`
+- `/opt/AGL/share/doc/CMakeAfbTemplates`
+
 ## Creating Your `CMakeLists.txt` File
 
-To create this file, use the example in the **cmake module**.
-Use one of the following two commands to create your file.
+To create this file, use the example template in the **cmake module**.
+Use one of the following command to create your file.
 
 ```bash
-cp /usr/share/doc/CMakeAfbTemplates/samples.d/CMakeLists.txt.sample CMakeLists.txt
+cp ${TEMPL}/samples.d/CMakeLists.txt.sample CMakeLists.txt
 ```
 
 ## Creating Your CMake Targets
