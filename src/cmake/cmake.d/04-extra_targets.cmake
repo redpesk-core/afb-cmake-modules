@@ -65,7 +65,7 @@ add_custom_command(OUTPUT ${PROJECT_AGL_AUTOBUILD_DIR}/autobuild ${PROJECT_LINUX
 		true
 )
 
-add_custom_target(autobuild ALL DEPENDS ${PROJECT_AGL_AUTOBUILD_DIR}/autobuild
+add_custom_target(autobuild DEPENDS ${PROJECT_AGL_AUTOBUILD_DIR}/autobuild
 					${PROJECT_LINUX_AUTOBUILD_DIR}/autobuild)
 
 # ----------------------------------------------------------------------------
