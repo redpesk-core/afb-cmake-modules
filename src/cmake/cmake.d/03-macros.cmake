@@ -456,7 +456,7 @@ macro(project_targets_populate)
 				endif()
 				list(APPEND BINDINGS_LIST "${P}${OUT}${S}")
 				generate_one_populate_target(${P}${OUT}${S} ${PACKAGE_LIBDIR})
-				SET_TARGET_PROPERTIES(${TARGET} PROPERTIES
+				SET_PROPERTY(TARGET ${TARGET} APPEND PROPERTY
 					LINK_FLAGS  ${BINDINGS_LINK_FLAG}
 				)
 			elseif(${SUBTYPE} STREQUAL "BINDINGV2")
@@ -465,7 +465,7 @@ macro(project_targets_populate)
 				endif()
 				afb_genskel("-2")
 				generate_one_populate_target(${P}${OUT}${S} ${PACKAGE_LIBDIR})
-				SET_TARGET_PROPERTIES(${TARGET} PROPERTIES
+				SET_PROPERTY(TARGET ${TARGET} APPEND PROPERTY
 					LINK_FLAGS  ${BINDINGS_LINK_FLAG}
 				)
 			elseif(${SUBTYPE} STREQUAL "BINDINGV3")
@@ -474,7 +474,7 @@ macro(project_targets_populate)
 				endif()
 				afb_genskel("-3")
 				generate_one_populate_target(${P}${OUT}${S} ${PACKAGE_LIBDIR})
-				SET_TARGET_PROPERTIES(${TARGET} PROPERTIES
+				SET_PROPERTY(TARGET ${TARGET} APPEND PROPERTY
 					LINK_FLAGS  ${BINDINGS_LINK_FLAG}
 				)
 			elseif(${SUBTYPE} STREQUAL "EXECUTABLE")
