@@ -371,29 +371,7 @@ macro(project_targets_populate)
 	add_custom_target(populate)
 	add_dependencies(populate prepare_package prepare_package_test)
 
-	# Dirty trick to define a default INSTALL command for app-templates handled
-	# targets
-	INSTALL(CODE "execute_process(COMMAND make populate)")
-	if(NO_DEDICATED_INSTALL_DIR)
-		INSTALL(DIRECTORY ${PROJECT_PKG_BUILD_DIR}/
-			DESTINATION ${CMAKE_INSTALL_PREFIX}
-			USE_SOURCE_PERMISSIONS
-		)
-		INSTALL(DIRECTORY ${PROJECT_PKG_TEST_DIR}/
-			DESTINATION ${CMAKE_INSTALL_PREFIX}/test
-			USE_SOURCE_PERMISSIONS
-		)
-	else()
-		INSTALL(DIRECTORY ${PROJECT_PKG_BUILD_DIR}/
-			DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}
-			USE_SOURCE_PERMISSIONS
-		)
-		INSTALL(DIRECTORY ${PROJECT_PKG_TEST_DIR}/
-			DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}-test
-			USE_SOURCE_PERMISSIONS
-		)
-	endif()
-
+	set(HASPKG NO)
 	get_property(PROJECT_TARGETS GLOBAL PROPERTY PROJECT_TARGETS)
 	foreach(TARGET ${PROJECT_TARGETS})
 		# Declaration of a custom command that will populate widget tree with the target
@@ -413,7 +391,8 @@ macro(project_targets_populate)
 			endforeach(linked_lib ${${link_libraries}})
 		endif()
 		get_target_property(SUBTYPE ${TARGET} LABELS)
-		if(SUBTYPE)
+		if(NOT SUBTYPE MATCHES NOTFOUND)
+			set(HASPKG YES)
 			get_target_property(P ${TARGET} PREFIX)
 			get_target_property(S ${TARGET} SUFFIX)
 			get_target_property(BD ${TARGET} BINARY_DIR)
@@ -514,6 +493,32 @@ macro(project_targets_populate)
 			MESSAGE("${BoldBlue}.. Notice: ${TARGET} ignored when packaging.${ColourReset}")
 		endif()
 	endforeach()
+
+	# Dirty trick to define a default INSTALL command for app-templates handled
+	# targets
+	INSTALL(CODE "execute_process(COMMAND make populate)")
+	if(HASPKG)
+		if(NO_DEDICATED_INSTALL_DIR)
+			INSTALL(DIRECTORY ${PROJECT_PKG_BUILD_DIR}/
+				DESTINATION ${CMAKE_INSTALL_PREFIX}
+				USE_SOURCE_PERMISSIONS
+			)
+			INSTALL(DIRECTORY ${PROJECT_PKG_TEST_DIR}/
+				DESTINATION ${CMAKE_INSTALL_PREFIX}/test
+				USE_SOURCE_PERMISSIONS
+			)
+		else()
+			INSTALL(DIRECTORY ${PROJECT_PKG_BUILD_DIR}/
+				DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}
+				USE_SOURCE_PERMISSIONS
+			)
+			INSTALL(DIRECTORY ${PROJECT_PKG_TEST_DIR}/
+				DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}-test
+				USE_SOURCE_PERMISSIONS
+			)
+		endif()
+	endif(HASPKG)
+
 endmacro(project_targets_populate)
 
 macro(remote_targets_populate)

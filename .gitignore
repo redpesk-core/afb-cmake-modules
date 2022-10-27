@@ -10,3 +10,4 @@ nbproject
 *.tar.gz
 .*.sw*
 _book
+/CMakeAfbTemplates
