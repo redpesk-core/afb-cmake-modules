@@ -799,9 +799,9 @@ macro(info_verb_generate TARGET_NAME)
 	target_sources(${TARGET_NAME} PUBLIC ${JSON_INFO_C})
 	add_custom_command(
 		OUTPUT json_info.c
-		COMMAND echo 'const char * info_verbS=\"\\' > ${JSON_INFO_C}
-		COMMAND cat ${CMAKE_CURRENT_SOURCE_DIR}/info_verb.json | sed -e 's/$$/\\\\/' -e 's/\"/\\\\\"/g' >> ${JSON_INFO_C}
-		COMMAND echo '\\n\"\;' >> ${JSON_INFO_C}
+		COMMAND echo 'const char info_verbS[]=' > ${JSON_INFO_C}
+		COMMAND cat ${CMAKE_CURRENT_SOURCE_DIR}/info_verb.json | sed 's/\"/\\\\\"/g\;s/^[ \t]*/&\"/\;s/[ \t]*$$/\"&/' >> ${JSON_INFO_C}
+		COMMAND echo '\;' >> ${JSON_INFO_C}
 		DEPENDS info_verb.json
 	)
 
