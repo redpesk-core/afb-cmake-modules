@@ -794,15 +794,27 @@ macro(project_closing_msg)
 	endif()
 endmacro()
 
-macro(info_verb_generate TARGET_NAME)
-	set( JSON_INFO_C ${CMAKE_CURRENT_BINARY_DIR}/json_info.c)
-	target_sources(${TARGET_NAME} PUBLIC ${JSON_INFO_C})
+macro(generate_json TARGET_NAME FIRSTLINE INFILE OUTFILE)
+	target_sources(${TARGET_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/${OUTFILE})
 	add_custom_command(
-		OUTPUT json_info.c
-		COMMAND echo 'const char info_verbS[]=' > ${JSON_INFO_C}
-		COMMAND cat ${CMAKE_CURRENT_SOURCE_DIR}/info_verb.json | sed 's/\"/\\\\\"/g\;s/^[ \t]*/&\"/\;s/[ \t]*$$/\"&/' >> ${JSON_INFO_C}
-		COMMAND echo '\;' >> ${JSON_INFO_C}
-		DEPENDS info_verb.json
+		OUTPUT ${OUTFILE}
+		COMMAND echo "${FIRSTLINE}" > ${CMAKE_CURRENT_BINARY_DIR}/${OUTFILE}
+		COMMAND sed 's/\"/\\\\\"/g\;s/^[ \t]*/&\"/\;s/[ \t]*$$/\"&/' ${CMAKE_CURRENT_SOURCE_DIR}/${INFILE} >> ${CMAKE_CURRENT_BINARY_DIR}/${OUTFILE}
+		COMMAND echo '\;' >> ${CMAKE_CURRENT_BINARY_DIR}/${OUTFILE}
+		DEPENDS ${INFILE}
 	)
 
 endmacro()
+
+macro(generate_info_json_array TARGET_NAME VARNAME INFILE OUTFILE)
+	generate_json("${TARGET_NAME}" "const char ${VARNAME}[] =" "${INFILE}" "${OUTFILE}")
+endmacro()
+
+macro(generate_info_json_pointer TARGET_NAME VARNAME INFILE OUTFILE)
+	generate_json("${TARGET_NAME}" "const char *${VARNAME} =" "${INFILE}" "${OUTFILE}")
+endmacro()
+
+macro(info_verb_generate TARGET_NAME)
+	generate_info_json_pointer("${TARGET_NAME}" info_verbS info_verb.json json_info.c)
+endmacro()
+
