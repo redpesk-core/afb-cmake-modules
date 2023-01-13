@@ -170,6 +170,20 @@ else()
 endif()
 string(REGEX REPLACE "/([^/]*)$" "/\\1-test" PROJECT_PKG_TEST_BUILD_DIR "${PROJECT_PKG_BUILD_DIR}")
 
+# Define a default package install root directory
+if(NO_DEDICATED_INSTALL_DIR)
+	set(PKG_INSTALL_SUBDIR        ""      CACHE STRING "subdir pkg name" FORCE)
+	set(PKG_TEST_INSTALL_SUBDIR   "test"  CACHE STRING "subdir test's pkg name" FORCE)
+else()
+	set(PKG_INSTALL_SUBDIR        ${PROJECT_NAME}                       CACHE STRING "subdir pkg name")
+	set(PKG_TEST_INSTALL_SUBDIR   ${PKG_INSTALL_SUBDIR}-test            CACHE STRING "subdir test's pkg name")
+endif()
+set(AFM_APP_DIR               ${CMAKE_INSTALL_PREFIX}/redpesk               CACHE PATH   "Root dir for afm app install")
+set(PKG_INSTALL_ROOT_DIR      ${AFM_APP_DIR}                                CACHE PATH   "Root dir for pkg install")
+set(PKG_INSTALL_DIR           ${PKG_INSTALL_ROOT_DIR}/${PKG_INSTALL_SUBDIR} CACHE PATH   "pkg install path")
+set(PKG_TEST_INSTALL_ROOT_DIR ${PKG_INSTALL_ROOT_DIR}                       CACHE PATH   "Root dir for test's pkg install")
+set(PKG_TEST_INSTALL_DIR      ${PKG_TEST_INSTALL_ROOT_DIR}/${PKG_TEST_INSTALL_SUBDIR} CACHE PATH   "test's pkg install path")
+
 set(PROJECT_APP_TEMPLATES_DIR "${CMAKE_CURRENT_LIST_DIR}/../..")
 
 set(TEMPLATE_DIR "${PROJECT_APP_TEMPLATES_DIR}/template.d"
