@@ -309,12 +309,11 @@ macro(project_targets_populate)
 	set(PACKAGE_HTTPDIR ${PROJECT_PKG_BUILD_DIR}/${HTTPDIR})
 	set(PACKAGE_DATADIR ${PROJECT_PKG_BUILD_DIR}/${DATADIR})
 	# Default test Widget default directory
-	string(REGEX REPLACE "/([^/]*)$" "/\\1-test" PROJECT_PKG_TEST_DIR "${PROJECT_PKG_BUILD_DIR}")
-	set(PACKAGE_TEST_BINDIR  ${PROJECT_PKG_TEST_DIR}/${BINDIR})
-	set(PACKAGE_TEST_ETCDIR  ${PROJECT_PKG_TEST_DIR}/${ETCDIR})
-	set(PACKAGE_TEST_LIBDIR  ${PROJECT_PKG_TEST_DIR}/${LIBDIR})
-	set(PACKAGE_TEST_HTTPDIR ${PROJECT_PKG_TEST_DIR}/${HTTPDIR})
-	set(PACKAGE_TEST_DATADIR ${PROJECT_PKG_TEST_DIR}/${DATADIR})
+	set(PACKAGE_TEST_BINDIR  ${PROJECT_PKG_TEST_BUILD_DIR}/${BINDIR})
+	set(PACKAGE_TEST_ETCDIR  ${PROJECT_PKG_TEST_BUILD_DIR}/${ETCDIR})
+	set(PACKAGE_TEST_LIBDIR  ${PROJECT_PKG_TEST_BUILD_DIR}/${LIBDIR})
+	set(PACKAGE_TEST_HTTPDIR ${PROJECT_PKG_TEST_BUILD_DIR}/${HTTPDIR})
+	set(PACKAGE_TEST_DATADIR ${PROJECT_PKG_TEST_BUILD_DIR}/${DATADIR})
 
 	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}
 			   COMMAND mkdir -p ${PROJECT_PKG_BUILD_DIR})
@@ -342,26 +341,26 @@ macro(project_targets_populate)
 					${PACKAGE_HTTPDIR}
 					${PACKAGE_DATADIR})
 
-	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}
-			   COMMAND mkdir -p ${PROJECT_PKG_TEST_DIR})
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}
+			   COMMAND mkdir -p ${PROJECT_PKG_TEST_BUILD_DIR})
 	add_custom_command(OUTPUT ${PACKAGE_TEST_BINDIR}
 			   COMMAND mkdir -p ${PACKAGE_TEST_BINDIR}
-			   DEPENDS ${PROJECT_PKG_TEST_DIR})
+			   DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR})
 	add_custom_command(OUTPUT ${PACKAGE_TEST_ETCDIR}
 			   COMMAND mkdir -p ${PACKAGE_TEST_ETCDIR}
-			   DEPENDS ${PROJECT_PKG_TEST_DIR})
+			   DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR})
 	add_custom_command(OUTPUT ${PACKAGE_TEST_LIBDIR}
 			   COMMAND mkdir -p ${PACKAGE_TEST_LIBDIR}
-			   DEPENDS ${PROJECT_PKG_TEST_DIR})
+			   DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR})
 	add_custom_command(OUTPUT ${PACKAGE_TEST_HTTPDIR}
 			   COMMAND mkdir -p ${PACKAGE_TEST_HTTPDIR}
 			   DEPENDS ${PROJECT_PKG_TEST_TEST_DIR})
 	add_custom_command(OUTPUT ${PACKAGE_TEST_DATADIR}
 			   COMMAND mkdir -p ${PACKAGE_TEST_DATADIR}
-			   DEPENDS ${PROJECT_PKG_TEST_DIR})
+			   DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR})
 
 	add_custom_target(prepare_package_test
-				DEPENDS ${PROJECT_PKG_TEST_DIR}
+				DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR}
 					${PACKAGE_TEST_BINDIR}
 					${PACKAGE_TEST_ETCDIR}
 					${PACKAGE_TEST_LIBDIR}
@@ -503,7 +502,7 @@ macro(project_targets_populate)
 				DESTINATION ${CMAKE_INSTALL_PREFIX}
 				USE_SOURCE_PERMISSIONS
 			)
-			INSTALL(DIRECTORY ${PROJECT_PKG_TEST_DIR}/
+			INSTALL(DIRECTORY ${PROJECT_PKG_TEST_BUILD_DIR}/
 				DESTINATION ${CMAKE_INSTALL_PREFIX}/test
 				USE_SOURCE_PERMISSIONS
 			)
@@ -512,7 +511,7 @@ macro(project_targets_populate)
 				DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}
 				USE_SOURCE_PERMISSIONS
 			)
-			INSTALL(DIRECTORY ${PROJECT_PKG_TEST_DIR}/
+			INSTALL(DIRECTORY ${PROJECT_PKG_TEST_BUILD_DIR}/
 				DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}-test
 				USE_SOURCE_PERMISSIONS
 			)
@@ -632,11 +631,11 @@ You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.
 		DEPENDS ${PROJECT_PKG_BUILD_DIR}
 	)
 	list(APPEND widget_files_items ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON})
-	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/${PROJECT_ICON}
-		COMMAND cp -d ${ICON_PATH} ${PROJECT_PKG_TEST_DIR}/${PROJECT_ICON}
-		DEPENDS ${PROJECT_PKG_TEST_DIR}
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/${PROJECT_ICON}
+		COMMAND cp -d ${ICON_PATH} ${PROJECT_PKG_TEST_BUILD_DIR}/${PROJECT_ICON}
+		DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR}
 	)
-	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_DIR}/${PROJECT_ICON})
+	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_BUILD_DIR}/${PROJECT_ICON})
 
 	# populate wgt/etc
 	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/etc
@@ -657,33 +656,33 @@ You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.
 			-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 	)
 	list(APPEND widget_files_items ${PROJECT_PKG_BUILD_DIR}/config.xml)
-	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/config.xml
-		COMMAND ${CMAKE_COMMAND} -DINFILE=${TEST_WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_TEST_DIR}/config.xml
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/config.xml
+		COMMAND ${CMAKE_COMMAND} -DINFILE=${TEST_WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_TEST_BUILD_DIR}/config.xml
 			-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
 			-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 	)
-	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_DIR}/config.xml)
+	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_BUILD_DIR}/config.xml)
 
 	# add test launcher
-	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/bin
-		COMMAND mkdir -p ${PROJECT_PKG_TEST_DIR}/bin
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/bin
+		COMMAND mkdir -p ${PROJECT_PKG_TEST_BUILD_DIR}/bin
 	)
-	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_DIR}/bin/launcher
-		COMMAND cp -d ${PROJECT_APP_TEMPLATES_DIR}/test-wgt/launcher.sh.in ${PROJECT_PKG_TEST_DIR}/bin/launcher
-		DEPENDS ${PROJECT_PKG_TEST_DIR}/bin
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/bin/launcher
+		COMMAND cp -d ${PROJECT_APP_TEMPLATES_DIR}/test-wgt/launcher.sh.in ${PROJECT_PKG_TEST_BUILD_DIR}/bin/launcher
+		DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR}/bin
 	)
-	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_DIR}/bin/launcher)
+	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_BUILD_DIR}/bin/launcher)
 
 	# create package
 	find_program(wgtpkgCMD "wgtpkg-pack")
 	if(wgtpkgCMD)
 		set(packCMD ${wgtpkgCMD} "-f" "-o" "${WGT_NAME}.wgt" ${PROJECT_PKG_BUILD_DIR})
-		set(packCMDTest ${wgtpkgCMD} "-f" "-o" "${WGT_NAME}-test.wgt" ${PROJECT_PKG_TEST_DIR})
+		set(packCMDTest ${wgtpkgCMD} "-f" "-o" "${WGT_NAME}-test.wgt" ${PROJECT_PKG_TEST_BUILD_DIR})
 	else()
 		find_program(wgtpkgCMD "zip")
 		if(wgtpkgCMD)
 			set(packCMD ${CMAKE_COMMAND} -E cmake_echo_color --yellow "Warning: Widget will be built using Zip, NOT using the Application Framework widget pack command." && cd ${PROJECT_PKG_BUILD_DIR} && ${wgtpkgCMD} -r "../${WGT_NAME}.wgt" "*")
-			set(packCMDTest ${CMAKE_COMMAND} -E cmake_echo_color --yellow "Warning: Test widget will be built using Zip, NOT using the Application Framework widget pack command." && cd ${PROJECT_PKG_TEST_DIR} && ${wgtpkgCMD} -r "../${WGT_NAME}-test.wgt" "*")
+			set(packCMDTest ${CMAKE_COMMAND} -E cmake_echo_color --yellow "Warning: Test widget will be built using Zip, NOT using the Application Framework widget pack command." && cd ${PROJECT_PKG_TEST_BUILD_DIR} && ${wgtpkgCMD} -r "../${WGT_NAME}-test.wgt" "*")
 		else()
 			set(packCMD ${CMAKE_COMMAND} -E cmake_echo_color --red "Error: No utility found to build a widget. Either install wgtpkg-pack from App Framework or zip command" && false)
 		endif()

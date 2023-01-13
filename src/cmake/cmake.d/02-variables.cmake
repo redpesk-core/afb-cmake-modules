@@ -168,6 +168,7 @@ else()
 	set(PROJECT_PKG_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/${PKGOUT_DIR}
 	    CACHE PATH "Application contents to be packaged")
 endif()
+string(REGEX REPLACE "/([^/]*)$" "/\\1-test" PROJECT_PKG_TEST_BUILD_DIR "${PROJECT_PKG_BUILD_DIR}")
 
 set(PROJECT_APP_TEMPLATES_DIR "${CMAKE_CURRENT_LIST_DIR}/../..")
 
