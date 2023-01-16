@@ -24,19 +24,14 @@
 #     Customise your preferences in "./conf.d/cmake/config.cmake"
 #--------------------------------------------------------------------------
 
-# (BUG!!!) as PKG_CONFIG_PATH does not work [should be en env variable]
-set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON CACHE STRING "Flag for using prefix path")
+# Loop on required package and add options
+foreach (PKG_CONFIG ${PKG_REQUIRED_LIST})
+	string(REGEX REPLACE "[<>]?=.*$" "" XPREFIX ${PKG_CONFIG})
+	PKG_CHECK_MODULES(${XPREFIX} REQUIRED ${PKG_CONFIG})
 
-# set default include directories
-INCLUDE_DIRECTORIES(${EXTRA_INCLUDE_DIRS})
+	INCLUDE_DIRECTORIES(${${XPREFIX}_INCLUDE_DIRS})
+	list(APPEND link_libraries ${${XPREFIX}_LDFLAGS})
+	add_compile_options (${${XPREFIX}_CFLAGS})
+endforeach(PKG_CONFIG)
 
-# Default Linkflag
-get_filename_component(PKG_TEMPLATE_PREFIX "${CMAKE_CURRENT_LIST_DIR}/../.." REALPATH CACHE)
-
-if(NOT BINDINGS_LINK_FLAG)
-	set(BINDINGS_LINK_FLAG "-Wl,--version-script=${PKG_TEMPLATE_PREFIX}/cmake/export.map")
-endif()
-if(NOT DEFINED BUILD_TEST_WGT)
-	set(BUILD_TEST_WGT FALSE)
-endif()
 
