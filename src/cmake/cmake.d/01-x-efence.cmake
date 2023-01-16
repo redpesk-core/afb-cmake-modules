@@ -1,6 +1,5 @@
 # Optional LibEfence Malloc debug library
 IF(CMAKE_BUILD_TYPE MATCHES DEBUG AND USE_EFENCE)
-	INCLUDE(CheckLibraryExists)
 	CHECK_LIBRARY_EXISTS(efence malloc "" HAVE_LIBEFENCE)
 	IF(HAVE_LIBEFENCE)
 		MESSAGE("Linking with ElectricFence for debugging purposes...")
