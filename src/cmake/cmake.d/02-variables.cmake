@@ -48,13 +48,6 @@ endif()
 # Native packaging name
 set(NPKG_PROJECT_NAME agl-${PROJECT_NAME})
 
-string(REGEX MATCH "[0-9]+" LINUX_VERSION_CODE ${LINUX_VERSION_CODE_LINE})
-math(EXPR a "${LINUX_VERSION_CODE} >> 16")
-math(EXPR b "(${LINUX_VERSION_CODE} >> 8) & 255")
-math(EXPR c "(${LINUX_VERSION_CODE} & 255)")
-
-set(KERNEL_VERSION "${a}.${b}.${c}")
-
 # Setup project and app-templates version variables
 execute_process(COMMAND git describe --abbrev=0
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -132,30 +125,6 @@ if (gcc_minimal_version)
 	endif()
 endif(gcc_minimal_version)
 
-# Check Kernel mandatory version, will fail the configuration if required version not matched.
-if (kernel_mandatory_version)
-	message("${Cyan}-- Check kernel_mandatory_version (found kernel version ${KERNEL_VERSION})${ColourReset}")
-	if (KERNEL_VERSION VERSION_LESS ${kernel_mandatory_version})
-		message(FATAL_ERROR "${Red}**** \
-		FATAL: Require at least ${kernel_mandatory_version} please use a recent kernel or source your SDK environment then clean and reconfigure your CMake project.")
-	endif (KERNEL_VERSION VERSION_LESS ${kernel_mandatory_version})
-endif(kernel_mandatory_version)
-
-# Check Kernel minimal version just print a Warning about missing features
-# and set a definition to be used as preprocessor condition in code to disable
-# incompatibles features.
-if (kernel_minimal_version)
-	message ( "${Cyan}-- Check kernel_minimal_version (found kernel version ${KERNEL_VERSION})${ColourReset}")
-	if (KERNEL_VERSION VERSION_LESS ${kernel_minimal_version})
-		message(WARNING "${Yellow}**** \
-		Warning: Some feature(s) require at least ${kernel_minimal_version}. \
-		Please use a recent kernel or source your SDK environment then clean and reconfigure your CMake project.\
-		${ColourReset}")
-	else (KERNEL_VERSION VERSION_LESS ${kernel_minimal_version})
-		add_definitions(-DKERNEL_MINIMAL_VERSION_OK)
-	endif (KERNEL_VERSION VERSION_LESS ${kernel_minimal_version})
-endif(kernel_minimal_version)
-
 # Project path variables
 # ----------------------
 set(PKGOUT_DIR package CACHE PATH "Output directory for packages")
@@ -191,6 +160,7 @@ set(TEMPLATE_DIR "${PROJECT_APP_TEMPLATES_DIR}/template.d"
 
 set(PROJECT_PKG_ENTRY_POINT ${CMAKE_SOURCE_DIR}/${PROJECT_CMAKE_CONF_DIR}/packaging
     CACHE PATH "Where package build files, like rpm.spec file or config.xml, are write.")
+
 set(WIDGET_ICON "${CMAKE_SOURCE_DIR}/${PROJECT_CMAKE_CONF_DIR}/wgt/${PROJECT_ICON}"
     CACHE PATH "Path to the widget icon")
 
@@ -236,3 +206,4 @@ set(DATADIR var CACHE PATH "External data resources files")
 # and does not need to be relinked when installed.
 # Rpath could be set and controlled by target property INSTALL_RPATH
 set(CMAKE_BUILD_WITH_INSTALL_RPATH true)
+
