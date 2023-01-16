@@ -222,13 +222,6 @@ endif()
 # Break After Binding are loaded but before they get initialised
 set(GDB_INITIAL_BREAK "personality" CACHE STRING "Initial Break Point for GDB remote")
 
-# Define some checker binaries to verify input DATA files
-# to be included in package. Schema aren't checked for now.
-# Dummy checker about JSON.
-set(LUA_CHECKER "luac" "-p" CACHE STRING "LUA compiler")
-set(XML_CHECKER "xmllint" CACHE STRING "XML linter")
-set(JSON_CHECKER "" CACHE STRING "JSON linter")
-
 # Default GNU directories path variables
 set(BINDIR bin CACHE PATH "User executables")
 set(ETCDIR etc CACHE PATH "Read only system configuration data")
