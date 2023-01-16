@@ -16,4 +16,6 @@
 # limitations under the License.
 ###########################################################################
 
+include_guard(GLOBAL)
+
 include("${CMAKE_CURRENT_LIST_DIR}/CMakeAfbTemplates/cmake/common.cmake")
