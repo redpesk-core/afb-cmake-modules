@@ -59,12 +59,6 @@ macro(configure_files_in_dir dir)
 	endforeach()
 endmacro(configure_files_in_dir)
 
-# Set the name of the OPENAPI definition JSON file for binding v2
-macro(set_openapi_filename openapi_filename)
-	set(OPENAPI_DEF ${openapi_filename}
-	    CACHE STRING "OpenAPI JSON file name used to generate binding header file before building a binding v2 target.")
-endmacro()
-
 # Common command to call inside project_targets_populate macro
 macro(generate_one_populate_target OUTPUTFILES PKG_DESTDIR)
 	add_custom_command(OUTPUT ${PKG_DESTDIR}/${OUTPUTFILES}
