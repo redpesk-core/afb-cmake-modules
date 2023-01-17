@@ -1,4 +1,5 @@
 # Get colorized message output non Windows OS. You know bash ? :)
+# this is a gadget file
 if(NOT WIN32)
 	string(ASCII 27 Esc)
 	set(ColourReset "${Esc}[m")

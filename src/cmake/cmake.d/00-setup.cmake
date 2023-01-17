@@ -29,6 +29,8 @@ INCLUDE(CheckIncludeFiles)
 INCLUDE(CheckLibraryExists)
 INCLUDE(GNUInstallDirs)
 
+# that setting is for project. I propose to drop that and to make
+# standard use of PROJECT
 set(CMP0048 1)
 
 
