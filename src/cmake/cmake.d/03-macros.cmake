@@ -47,20 +47,6 @@ macro(configure_files_in_dir dir)
 	endforeach()
 endmacro(configure_files_in_dir)
 
-# Common command to call inside project_targets_populate macro
-macro(generate_one_populate_target OUTPUTFILES PKG_DESTDIR)
-	add_custom_command(OUTPUT ${PKG_DESTDIR}/${OUTPUTFILES}
-		DEPENDS ${BD}/${OUTPUTFILES}
-		COMMAND mkdir -p ${PKG_DESTDIR}
-		COMMAND touch ${PKG_DESTDIR}
-		COMMAND cp -dr ${BD}/${OUTPUTFILES}/* ${PKG_DESTDIR} 2> /dev/null || cp -d ${BD}/${OUTPUTFILES} ${PKG_DESTDIR}
-	)
-
-	add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PKG_DESTDIR}/${OUTPUTFILES})
-	add_dependencies(populate ${POPULE_PACKAGE_TARGET})
-	add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
-endmacro()
-
 # To be call inside project_targets_populate macro
 macro(afb_genskel)
 	set (ARGSLIST ${ARGN})
@@ -88,75 +74,105 @@ macro(afb_genskel)
 	endif()
 endmacro()
 
+# Common command to call inside project_targets_populate macro
+macro(generate_one_populate_target OUTPUTFILES PKG_DESTDIR)
+	add_custom_command(
+		OUTPUT ${PKG_DESTDIR}/${OUTPUTFILES}
+		DEPENDS ${BD}/${OUTPUTFILES}
+		COMMAND mkdir -p ${PKG_DESTDIR}
+		COMMAND touch ${PKG_DESTDIR}
+		COMMAND cp -dr ${BD}/${OUTPUTFILES}/* ${PKG_DESTDIR} 2> /dev/null || cp -d ${BD}/${OUTPUTFILES} ${PKG_DESTDIR}
+	)
+
+	add_custom_target(${POPULE_PACKAGE_TARGET} DEPENDS ${PKG_DESTDIR}/${OUTPUTFILES})
+	add_dependencies(populate ${POPULE_PACKAGE_TARGET})
+	add_dependencies(${POPULE_PACKAGE_TARGET} ${TARGET})
+endmacro()
+
+macro(make_prepare_package)
+	if(NOT PACKAGE_BINDIR)
+		# Default Widget default directory
+		set(PACKAGE_BINDIR  ${PROJECT_PKG_BUILD_DIR}/${BINDIR})
+		set(PACKAGE_ETCDIR  ${PROJECT_PKG_BUILD_DIR}/${ETCDIR})
+		set(PACKAGE_LIBDIR  ${PROJECT_PKG_BUILD_DIR}/${LIBDIR})
+		set(PACKAGE_HTTPDIR ${PROJECT_PKG_BUILD_DIR}/${HTTPDIR})
+		set(PACKAGE_DATADIR ${PROJECT_PKG_BUILD_DIR}/${DATADIR})
+
+		add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}
+				   COMMAND mkdir -p ${PROJECT_PKG_BUILD_DIR})
+		add_custom_command(OUTPUT ${PACKAGE_BINDIR}
+				   COMMAND mkdir -p ${PACKAGE_BINDIR}
+				   DEPENDS ${PROJECT_PKG_BUILD_DIR})
+		add_custom_command(OUTPUT ${PACKAGE_ETCDIR}
+				   COMMAND mkdir -p ${PACKAGE_ETCDIR}
+				   DEPENDS ${PROJECT_PKG_BUILD_DIR})
+		add_custom_command(OUTPUT ${PACKAGE_LIBDIR}
+				   COMMAND mkdir -p ${PACKAGE_LIBDIR}
+				   DEPENDS ${PROJECT_PKG_BUILD_DIR})
+		add_custom_command(OUTPUT ${PACKAGE_HTTPDIR}
+				   COMMAND mkdir -p ${PACKAGE_HTTPDIR}
+				   DEPENDS ${PROJECT_PKG_BUILD_DIR})
+		add_custom_command(OUTPUT ${PACKAGE_DATADIR}
+				   COMMAND mkdir -p ${PACKAGE_DATADIR}
+				   DEPENDS ${PROJECT_PKG_BUILD_DIR})
+
+		add_custom_target(prepare_package
+					DEPENDS ${PROJECT_PKG_BUILD_DIR}
+						${PACKAGE_BINDIR}
+						${PACKAGE_ETCDIR}
+						${PACKAGE_LIBDIR}
+						${PACKAGE_HTTPDIR}
+						${PACKAGE_DATADIR})
+
+		add_dependencies(populate prepare_package)
+	endif()
+endmacro(make_prepare_package)
+
+macro(make_prepare_package_test)
+	if(NOT PACKAGE_TEST_BINDIR)
+		# Default test Widget default directory
+		set(PACKAGE_TEST_BINDIR  ${PROJECT_PKG_TEST_BUILD_DIR}/${BINDIR})
+		set(PACKAGE_TEST_ETCDIR  ${PROJECT_PKG_TEST_BUILD_DIR}/${ETCDIR})
+		set(PACKAGE_TEST_LIBDIR  ${PROJECT_PKG_TEST_BUILD_DIR}/${LIBDIR})
+		set(PACKAGE_TEST_HTTPDIR ${PROJECT_PKG_TEST_BUILD_DIR}/${HTTPDIR})
+		set(PACKAGE_TEST_DATADIR ${PROJECT_PKG_TEST_BUILD_DIR}/${DATADIR})
+
+		add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}
+				   COMMAND mkdir -p ${PROJECT_PKG_TEST_BUILD_DIR})
+		add_custom_command(OUTPUT ${PACKAGE_TEST_BINDIR}
+				   COMMAND mkdir -p ${PACKAGE_TEST_BINDIR}
+				   DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR})
+		add_custom_command(OUTPUT ${PACKAGE_TEST_ETCDIR}
+				   COMMAND mkdir -p ${PACKAGE_TEST_ETCDIR}
+				   DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR})
+		add_custom_command(OUTPUT ${PACKAGE_TEST_LIBDIR}
+				   COMMAND mkdir -p ${PACKAGE_TEST_LIBDIR}
+				   DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR})
+		add_custom_command(OUTPUT ${PACKAGE_TEST_HTTPDIR}
+				   COMMAND mkdir -p ${PACKAGE_TEST_HTTPDIR}
+				   DEPENDS ${PROJECT_PKG_TEST_TEST_DIR})
+		add_custom_command(OUTPUT ${PACKAGE_TEST_DATADIR}
+				   COMMAND mkdir -p ${PACKAGE_TEST_DATADIR}
+				   DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR})
+
+		add_custom_target(prepare_package_test
+					DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR}
+						${PACKAGE_TEST_BINDIR}
+						${PACKAGE_TEST_ETCDIR}
+						${PACKAGE_TEST_LIBDIR}
+						${PACKAGE_TEST_HTTPDIR}
+						${PACKAGE_TEST_DATADIR})
+
+		add_dependencies(populate prepare_package_test)
+	endif()
+endmacro(make_prepare_package_test)
+
 # Pre-packaging
 macro(project_targets_populate)
-	# Default Widget default directory
-	set(PACKAGE_BINDIR  ${PROJECT_PKG_BUILD_DIR}/${BINDIR})
-	set(PACKAGE_ETCDIR  ${PROJECT_PKG_BUILD_DIR}/${ETCDIR})
-	set(PACKAGE_LIBDIR  ${PROJECT_PKG_BUILD_DIR}/${LIBDIR})
-	set(PACKAGE_HTTPDIR ${PROJECT_PKG_BUILD_DIR}/${HTTPDIR})
-	set(PACKAGE_DATADIR ${PROJECT_PKG_BUILD_DIR}/${DATADIR})
-	# Default test Widget default directory
-	set(PACKAGE_TEST_BINDIR  ${PROJECT_PKG_TEST_BUILD_DIR}/${BINDIR})
-	set(PACKAGE_TEST_ETCDIR  ${PROJECT_PKG_TEST_BUILD_DIR}/${ETCDIR})
-	set(PACKAGE_TEST_LIBDIR  ${PROJECT_PKG_TEST_BUILD_DIR}/${LIBDIR})
-	set(PACKAGE_TEST_HTTPDIR ${PROJECT_PKG_TEST_BUILD_DIR}/${HTTPDIR})
-	set(PACKAGE_TEST_DATADIR ${PROJECT_PKG_TEST_BUILD_DIR}/${DATADIR})
-
-	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}
-			   COMMAND mkdir -p ${PROJECT_PKG_BUILD_DIR})
-	add_custom_command(OUTPUT ${PACKAGE_BINDIR}
-			   COMMAND mkdir -p ${PACKAGE_BINDIR}
-			   DEPENDS ${PROJECT_PKG_BUILD_DIR})
-	add_custom_command(OUTPUT ${PACKAGE_ETCDIR}
-			   COMMAND mkdir -p ${PACKAGE_ETCDIR}
-			   DEPENDS ${PROJECT_PKG_BUILD_DIR})
-	add_custom_command(OUTPUT ${PACKAGE_LIBDIR}
-			   COMMAND mkdir -p ${PACKAGE_LIBDIR}
-			   DEPENDS ${PROJECT_PKG_BUILD_DIR})
-	add_custom_command(OUTPUT ${PACKAGE_HTTPDIR}
-			   COMMAND mkdir -p ${PACKAGE_HTTPDIR}
-			   DEPENDS ${PROJECT_PKG_BUILD_DIR})
-	add_custom_command(OUTPUT ${PACKAGE_DATADIR}
-			   COMMAND mkdir -p ${PACKAGE_DATADIR}
-			   DEPENDS ${PROJECT_PKG_BUILD_DIR})
-
-	add_custom_target(prepare_package
-				DEPENDS ${PROJECT_PKG_BUILD_DIR}
-					${PACKAGE_BINDIR}
-					${PACKAGE_ETCDIR}
-					${PACKAGE_LIBDIR}
-					${PACKAGE_HTTPDIR}
-					${PACKAGE_DATADIR})
-
-	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}
-			   COMMAND mkdir -p ${PROJECT_PKG_TEST_BUILD_DIR})
-	add_custom_command(OUTPUT ${PACKAGE_TEST_BINDIR}
-			   COMMAND mkdir -p ${PACKAGE_TEST_BINDIR}
-			   DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR})
-	add_custom_command(OUTPUT ${PACKAGE_TEST_ETCDIR}
-			   COMMAND mkdir -p ${PACKAGE_TEST_ETCDIR}
-			   DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR})
-	add_custom_command(OUTPUT ${PACKAGE_TEST_LIBDIR}
-			   COMMAND mkdir -p ${PACKAGE_TEST_LIBDIR}
-			   DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR})
-	add_custom_command(OUTPUT ${PACKAGE_TEST_HTTPDIR}
-			   COMMAND mkdir -p ${PACKAGE_TEST_HTTPDIR}
-			   DEPENDS ${PROJECT_PKG_TEST_TEST_DIR})
-	add_custom_command(OUTPUT ${PACKAGE_TEST_DATADIR}
-			   COMMAND mkdir -p ${PACKAGE_TEST_DATADIR}
-			   DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR})
-
-	add_custom_target(prepare_package_test
-				DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR}
-					${PACKAGE_TEST_BINDIR}
-					${PACKAGE_TEST_ETCDIR}
-					${PACKAGE_TEST_LIBDIR}
-					${PACKAGE_TEST_HTTPDIR}
-					${PACKAGE_TEST_DATADIR})
 
 	add_custom_target(populate)
-	add_dependencies(populate prepare_package prepare_package_test)
+	make_prepare_package()
+	make_prepare_package_test()
 
 	set(HASPKG NO)
 	set(HASPKGTST NO)
@@ -204,22 +220,12 @@ macro(project_targets_populate)
 				set(HASPKG YES)
 				unset(BD)
 				generate_one_populate_target(${IMPPATH} ${PACKAGE_LIBDIR})
-			elseif(${SUBTYPE} STREQUAL "TEST-LIBRARY")
-				set(HASPKGTST YES)
-				unset(BD)
-				generate_one_populate_target(${IMPPATH} ${PACKAGE_TEST_LIBDIR})
 			elseif(${SUBTYPE} STREQUAL "PLUGIN")
 				set(HASPKG YES)
 				if(NOT S)
 					set(S ".ctlso")
 				endif()
 				generate_one_populate_target(${P}${OUT}${S} "${PACKAGE_LIBDIR}/plugins")
-			elseif(${SUBTYPE} STREQUAL "TEST-PLUGIN")
-				set(HASPKGTST YES)
-				if(NOT S)
-					set(S ".ctlso")
-				endif()
-				generate_one_populate_target(${P}${OUT}${S} "${PACKAGE_TEST_LIBDIR}/plugins")
 			elseif(${SUBTYPE} STREQUAL "BINDING")
 				set(HASPKG YES)
 				if(NOT S)
@@ -261,6 +267,26 @@ macro(project_targets_populate)
 				else()
 					generate_one_populate_target(${P}${OUT}${S} ${PACKAGE_BINDIR})
 				endif()
+			elseif(${SUBTYPE} STREQUAL "HTDOCS")
+				set(HASPKG YES)
+				generate_one_populate_target(${P}${OUT} ${PACKAGE_HTTPDIR})
+			elseif(${SUBTYPE} STREQUAL "DATA" )
+				set(HASPKG YES)
+				generate_one_populate_target(${TARGET} ${PACKAGE_DATADIR})
+			elseif(${SUBTYPE} STREQUAL "BINDING-CONFIG" )
+				set(HASPKG YES)
+				generate_one_populate_target(${TARGET} ${PACKAGE_ETCDIR})
+			#
+			elseif(${SUBTYPE} STREQUAL "TEST-LIBRARY")
+				set(HASPKGTST YES)
+				unset(BD)
+				generate_one_populate_target(${IMPPATH} ${PACKAGE_TEST_LIBDIR})
+			elseif(${SUBTYPE} STREQUAL "TEST-PLUGIN")
+				set(HASPKGTST YES)
+				if(NOT S)
+					set(S ".ctlso")
+				endif()
+				generate_one_populate_target(${P}${OUT}${S} "${PACKAGE_TEST_LIBDIR}/plugins")
 			elseif(${SUBTYPE} STREQUAL "TEST-EXECUTABLE")
 				set(HASPKGTST YES)
 				if(NOT S)
@@ -272,21 +298,12 @@ macro(project_targets_populate)
 				else()
 					generate_one_populate_target(${P}${OUT}${S} ${PACKAGE_TEST_BINDIR})
 				endif()
-			elseif(${SUBTYPE} STREQUAL "HTDOCS")
-				set(HASPKG YES)
-				generate_one_populate_target(${P}${OUT} ${PACKAGE_HTTPDIR})
 			elseif(${SUBTYPE} STREQUAL "TEST-HTDOCS")
 				set(HASPKGTST YES)
 				generate_one_populate_target(${P}${OUT} ${PACKAGE_HTTPDIR})
-			elseif(${SUBTYPE} STREQUAL "DATA" )
-				set(HASPKG YES)
-				generate_one_populate_target(${TARGET} ${PACKAGE_DATADIR})
 			elseif(${SUBTYPE} STREQUAL "TEST-DATA")
 				set(HASPKGTST YES)
 				generate_one_populate_target(${TARGET} ${PACKAGE_TEST_DATADIR})
-			elseif(${SUBTYPE} STREQUAL "BINDING-CONFIG" )
-				set(HASPKG YES)
-				generate_one_populate_target(${TARGET} ${PACKAGE_ETCDIR})
 			elseif(${SUBTYPE} STREQUAL "TEST-CONFIG")
 				set(HASPKGTST YES)
 				generate_one_populate_target(${TARGET} ${PACKAGE_TEST_ETCDIR})
