@@ -25,83 +25,6 @@
 #
 ###########################################################################
 
-#--------------------------------------------------------------------------
-# CMake 3.6 imported macros to simulate list(FILTER ...) subcommand
-#--------------------------------------------------------------------------
-MACRO(PARSE_ARGUMENTS prefix arg_names option_names)
-	FOREACH(arg_name ${arg_names})
-		SET(${prefix}_${arg_name})
-	ENDFOREACH(arg_name)
-	FOREACH(option ${option_names})
-		SET(${prefix}_${option} FALSE)
-	ENDFOREACH(option)
-
-	SET(current_arg_name DEFAULT_ARGS)
-	SET(current_arg_list)
-	FOREACH(arg ${ARGN})
-		LIST_CONTAINS(is_arg_name ${arg} ${arg_names})
-		IF (is_arg_name)
-			SET(${prefix}_${current_arg_name} ${current_arg_list})
-			SET(current_arg_name ${arg})
-			SET(current_arg_list)
-		ELSE (is_arg_name)
-			LIST_CONTAINS(is_option ${arg} ${option_names})
-			IF (is_option)
-				SET(${prefix}_${arg} TRUE)
-			ELSE (is_option)
-				SET(current_arg_list ${current_arg_list} ${arg})
-			ENDIF (is_option)
-		ENDIF (is_arg_name)
-	ENDFOREACH(arg)
-	SET(${prefix}_${current_arg_name} ${current_arg_list})
-ENDMACRO(PARSE_ARGUMENTS)
-
-MACRO(LIST_CONTAINS var value)
-	SET(${var})
-	FOREACH (value2 ${ARGN})
-		IF (${value} STREQUAL ${value2})
-			SET(${var} TRUE)
-		ENDIF (${value} STREQUAL ${value2})
-	ENDFOREACH (value2)
-ENDMACRO(LIST_CONTAINS)
-
-MACRO(LIST_FILTER)
-	PARSE_ARGUMENTS(LIST_FILTER "OUTPUT_VARIABLE" "" ${ARGV})
-	# Check arguments.
-	LIST(LENGTH LIST_FILTER_DEFAULT_ARGS LIST_FILTER_default_length)
-	IF(${LIST_FILTER_default_length} EQUAL 0)
-		MESSAGE(FATAL_ERROR "LIST_FILTER: missing list variable.")
-	ENDIF(${LIST_FILTER_default_length} EQUAL 0)
-
-	IF(${LIST_FILTER_default_length} EQUAL 1)
-		MESSAGE(FATAL_ERROR "LIST_FILTER: missing regular expression variable.")
-	ENDIF(${LIST_FILTER_default_length} EQUAL 1)
-
-	# Reset output variable
-	IF(NOT LIST_FILTER_OUTPUT_VARIABLE)
-		SET(LIST_FILTER_OUTPUT_VARIABLE "LIST_FILTER_internal_output")
-	ENDIF(NOT LIST_FILTER_OUTPUT_VARIABLE)
-	SET(${LIST_FILTER_OUTPUT_VARIABLE})
-
-	# Extract input list from arguments
-	LIST(GET LIST_FILTER_DEFAULT_ARGS 0 LIST_FILTER_input_list)
-	LIST(REMOVE_AT LIST_FILTER_DEFAULT_ARGS 0)
-	FOREACH(LIST_FILTER_item ${${LIST_FILTER_input_list}})
-		FOREACH(LIST_FILTER_regexp_var ${LIST_FILTER_DEFAULT_ARGS})
-			FOREACH(LIST_FILTER_regexp ${${LIST_FILTER_regexp_var}})
-				IF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
-					LIST(APPEND ${LIST_FILTER_OUTPUT_VARIABLE} ${LIST_FILTER_item})
-				ENDIF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
-			ENDFOREACH(LIST_FILTER_regexp ${${LIST_FILTER_regexp_var}})
-		ENDFOREACH(LIST_FILTER_regexp_var)
-	ENDFOREACH(LIST_FILTER_item)
-
-	# If OUTPUT_VARIABLE is not specified, overwrite the input list.
-	IF(${LIST_FILTER_OUTPUT_VARIABLE} STREQUAL "LIST_FILTER_internal_output")
-		SET(${LIST_FILTER_input_list} ${${LIST_FILTER_OUTPUT_VARIABLE}})
-	ENDIF(${LIST_FILTER_OUTPUT_VARIABLE} STREQUAL "LIST_FILTER_internal_output")
-ENDMACRO(LIST_FILTER)
-
 # Generic useful macro
 # -----------------------
 macro(set_install_prefix)
@@ -135,100 +58,6 @@ macro(configure_files_in_dir dir)
 		set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/target/${destinationfile}")
 	endforeach()
 endmacro(configure_files_in_dir)
-
-# Create custom target dedicated for HTML5 and DATA AGL target type
-macro(add_input_files INPUT_FILES)
-	if(NOT DEFINED XML_FILES)
-		set(ext_reg "xml$")
-		set(XML_LIST ${INPUT_FILES})
-		list_filter(XML_LIST ext_reg)
-		execute_process(
-			COMMAND which ${XML_CHECKER}
-			RESULT_VARIABLE XML_CHECKER_PRESENT
-			OUTPUT_QUIET ERROR_QUIET
-		)
-	endif()
-	if(NOT DEFINED LUA_LIST)
-		set(ext_reg "lua$")
-		set(LUA_LIST ${INPUT_FILES})
-		list_filter(LUA_LIST ext_reg)
-		execute_process(
-			COMMAND which ${LUA_CHECKER}
-			RESULT_VARIABLE LUA_CHECKER_PRESENT
-			OUTPUT_QUIET ERROR_QUIET
-		)
-	endif()
-	if(NOT DEFINED JSON_FILES)
-		set(ext_reg "json$")
-		set(JSON_LIST ${INPUT_FILES})
-		list_filter(JSON_LIST ext_reg)
-		execute_process(
-			COMMAND which ${JSON_CHECKER}
-			RESULT_VARIABLE JSON_CHECKER_PRESENT
-			OUTPUT_QUIET ERROR_QUIET
-		)
-	endif()
-
-	# These are v3.6 subcommand. Not used as default for now as
-	# many dev use Ubuntu 16.04 which have only 3.5 version
-	#list(FILTER XML_LIST INCLUDE REGEX "xml$")
-	#list(FILTER LUA_LIST INCLUDE REGEX "lua$")
-	#list(FILTER JSON_LIST INCLUDE REGEX "json$")
-
-	add_custom_target(${TARGET_NAME} ALL
-	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
-	)
-
-	if(XML_CHECKER_PRESENT EQUAL 0)
-		foreach(file ${XML_LIST})
-			add_custom_command(TARGET ${TARGET_NAME}
-				PRE_BUILD
-				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-				COMMAND ${XML_CHECKER} ${file}
-			)
-		endforeach()
-	elseif(XML_LIST)
-	add_custom_command(TARGET ${TARGET_NAME}
-	PRE_BUILD
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red "Warning: XML_CHECKER not found. Not verification made on files !")
-	endif()
-	if(LUA_CHECKER_PRESENT EQUAL 0)
-		foreach(file ${LUA_LIST})
-		add_custom_command(TARGET ${TARGET_NAME}
-			PRE_BUILD
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			COMMAND ${LUA_CHECKER} ${file}
-		)
-		endforeach()
-	elseif(LUA_LIST)
-		add_custom_command(TARGET ${TARGET_NAME}
-			PRE_BUILD
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red "Warning: LUA_CHECKER not found. Not verification made on files !")
-	endif()
-	if(JSON_CHECKER_PRESENT EQUAL 0)
-		foreach(file ${JSON_LIST})
-		add_custom_command(TARGET ${TARGET_NAME}
-			PRE_BUILD
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			COMMAND ${JSON_CHECKER} ${file}
-		)
-		endforeach()
-	elseif(JSON_LIST)
-	add_custom_command(TARGET ${TARGET_NAME}
-	PRE_BUILD
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red "Warning: JSON_CHECKER not found. Not verification made on files !")
-	endif()
-
-	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
-	DEPENDS ${INPUT_FILES}
-	COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
-	COMMAND touch ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
-	COMMAND cp -dr ${INPUT_FILES} ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}
-	)
-endmacro()
 
 # Set the name of the OPENAPI definition JSON file for binding v2
 macro(set_openapi_filename openapi_filename)
@@ -696,7 +525,7 @@ You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.
 		message ("${Yellow}.. Warning: RSYNC_TARGET not defined 'make widget-target-install' not instanciated${ColourReset}")
 		add_custom_target(widget-target-install
 			COMMENT "${Red}*** Fatal: RSYNC_TARGET RSYNC_PREFIX environment variables required with 'make widget-target-install'${ColourReset}"
-			COMMAND exit -1
+			COMMAND exit 1
 		)
 	else()
 		configure_files_in_dir(${TEMPLATE_DIR})
