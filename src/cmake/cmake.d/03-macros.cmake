@@ -125,10 +125,6 @@ macro(PROJECT_PKGDEP_ADD PKG_NAME)
 	set_property(GLOBAL APPEND PROPERTY PROJECT_PKG_DEPS ${PKG_NAME})
 endmacro(PROJECT_PKGDEP_ADD)
 
-macro(defstr name value)
-	add_definitions(-D${name}=${value})
-endmacro(defstr)
-
 macro(configure_files_in_dir dir)
 	file(GLOB filelist "${dir}/*in")
 	foreach(file ${filelist})
