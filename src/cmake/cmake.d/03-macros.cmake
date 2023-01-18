@@ -167,12 +167,145 @@ macro(make_prepare_package_test)
 	endif()
 endmacro(make_prepare_package_test)
 
+# app entry point
+macro(set_app_entry_point)
+	if(NOT WIDGET_ENTRY_POINT)
+		set(WIDGET_ENTRY_POINT lib)
+	endif()
+endmacro(set_app_entry_point)
+
+
+# app name
+macro(set_app_name)
+	if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
+		string(TOLOWER "${PROJECT_NAME}-${CMAKE_BUILD_TYPE}" WGT_NAME)
+	else()
+		string(TOLOWER "${PROJECT_NAME}" WGT_NAME)
+	endif()
+endmacro(set_app_name)
+
+
+macro(make_app_files_target)
+if(NOT make_app_files_target_done)
+set(make_app_files_target_done YES)
+	# checks
+	if(NOT EXISTS ${WIDGET_CONFIG_TEMPLATE})
+		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build widget file.
+You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.${ColourReset}")
+	endif()
+
+	set_app_name()
+	set_app_entry_point()
+
+	# the targets
+	set(widget_files_items)
+
+	# icon of widget
+	if(NOT DEFINED PROJECT_ICON)
+		set(PROJECT_ICON icon.png)
+		if( ${WIDGET_TYPE} MATCHES "agl.native")
+			set(ICON_PATH ${PKG_APP_TEMPLATE_DIR}/wgt/icon-native.png)
+		elseif( ${WIDGET_TYPE} MATCHES "agl.service")
+			set(ICON_PATH ${PKG_APP_TEMPLATE_DIR}/wgt/icon-service.png)
+		elseif( ${WIDGET_TYPE} MATCHES "x-executable")
+			set(ICON_PATH ${PKG_APP_TEMPLATE_DIR}/wgt/icon-qml.png)
+		elseif( ${WIDGET_TYPE} MATCHES "text/html")
+			set(ICON_PATH ${PKG_APP_TEMPLATE_DIR}/wgt/icon-html5.png)
+		endif()
+	elseif(EXISTS "${CMAKE_SOURCE_DIR}/${WIDGET_ICON}")
+		set(ICON_PATH "${CMAKE_SOURCE_DIR}/${WIDGET_ICON}")
+	elseif(EXISTS "${WIDGET_ICON}")
+		set(ICON_PATH "${WIDGET_ICON}")
+	else()
+		set(ICON_PATH ${PROJECT_APP_TEMPLATES_DIR}/wgt/icon-default.png)
+	endif()
+
+	# populate icon
+	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
+		COMMAND cp -d ${ICON_PATH} ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
+		DEPENDS ${PROJECT_PKG_BUILD_DIR}
+	)
+	list(APPEND widget_files_items ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON})
+
+	# populate wgt/etc
+	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/etc
+		COMMAND mkdir -p ${PROJECT_PKG_BUILD_DIR}/etc)
+	file(GLOB PROJECT_CONF_FILES "${TEMPLATE_DIR}/etc/*")
+	if(${PROJECT_CONF_FILES})
+		add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/etc
+			COMMAND cp -dr ${TEMPLATE_DIR}/etc/* ${PROJECT_PKG_BUILD_DIR}/etc
+			APPEND
+		)
+		list(APPEND widget_files_items ${PROJECT_PKG_BUILD_DIR}/etc)
+	endif(${PROJECT_CONF_FILES})
+
+	# instanciate config.xml
+	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/config.xml
+		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml
+			-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
+			-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+	)
+	list(APPEND widget_files_items ${PROJECT_PKG_BUILD_DIR}/config.xml)
+
+	make_prepare_package()
+	add_custom_target(widget_files DEPENDS prepare_package ${PROJECT_TARGETS} ${widget_files_items})
+endif()
+endmacro(make_app_files_target)
+
+
+macro(make_app_test_files_target)
+if(NOT make_app_test_files_target_done)
+set(make_app_test_files_target_done YES)
+	# default test template
+	if(NOT EXISTS ${TEST_WIDGET_CONFIG_TEMPLATE})
+		MESSAGE("${BoldBlue}-- Notice: Using default test widget configuration's file.
+-- If you want to use a customized test-config.xml template then specify TEST_WIDGET_CONFIG_TEMPLATE in your config.cmake file.${ColourReset}")
+
+		set(TEST_WIDGET_CONFIG_TEMPLATE "${PROJECT_APP_TEMPLATES_DIR}/test-wgt/test-config.xml.in"
+		    CACHE PATH "Path to the test widget config file template (test-config.xml.in)")
+	endif()
+
+	# the targets
+	set(test_widget_files_items)
+
+	# populate icon
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/${PROJECT_ICON}
+		COMMAND cp -d ${ICON_PATH} ${PROJECT_PKG_TEST_BUILD_DIR}/${PROJECT_ICON}
+		DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR}
+	)
+	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_BUILD_DIR}/${PROJECT_ICON})
+
+	# instanciate config.xml
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/config.xml
+		COMMAND ${CMAKE_COMMAND} -DINFILE=${TEST_WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_TEST_BUILD_DIR}/config.xml
+			-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
+			-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+	)
+	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_BUILD_DIR}/config.xml)
+
+	# add test launcher
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/bin
+		COMMAND mkdir -p ${PROJECT_PKG_TEST_BUILD_DIR}/bin
+	)
+	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/bin/launcher
+		COMMAND cp -d ${PROJECT_APP_TEMPLATES_DIR}/test-wgt/launcher.sh.in ${PROJECT_PKG_TEST_BUILD_DIR}/bin/launcher
+		DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR}/bin
+	)
+	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_BUILD_DIR}/bin/launcher)
+
+	make_prepare_package_test()
+	add_custom_target(test_widget_files DEPENDS prepare_package_test ${PROJECT_TARGETS} ${test_widget_files_items})
+endif()
+endmacro(make_app_test_files_target)
+
 # Pre-packaging
 macro(project_targets_populate)
 
 	add_custom_target(populate)
 	make_prepare_package()
 	make_prepare_package_test()
+	make_app_files_target()
+	make_app_test_files_target()
 
 	set(HASPKG NO)
 	set(HASPKGTST NO)
@@ -201,6 +334,7 @@ macro(project_targets_populate)
 			get_target_property(BD ${TARGET} BINARY_DIR)
 			get_target_property(SD ${TARGET} SOURCE_DIR)
 			get_target_property(OUT ${TARGET} OUTPUT_NAME)
+			get_target_property(IMPPATH ${TARGET} IMPORTED_LOCATION)
 
 			if(OUT MATCHES "NOTFOUND$")
 				set(OUT ${TARGET})
@@ -215,7 +349,6 @@ macro(project_targets_populate)
 				endif()
 			endif()
 
-			get_target_property(IMPPATH ${TARGET} IMPORTED_LOCATION)
 			if(${SUBTYPE} STREQUAL "LIBRARY")
 				set(HASPKG YES)
 				unset(BD)
@@ -233,9 +366,7 @@ macro(project_targets_populate)
 				endif()
 				list(APPEND BINDINGS_LIST "${P}${OUT}${S}")
 				generate_one_populate_target(${P}${OUT}${S} ${PACKAGE_LIBDIR})
-				SET_PROPERTY(TARGET ${TARGET} APPEND PROPERTY
-					LINK_FLAGS  ${BINDINGS_LINK_FLAG}
-				)
+				SET_PROPERTY(TARGET ${TARGET} APPEND PROPERTY LINK_FLAGS ${BINDINGS_LINK_FLAG})
 			elseif(${SUBTYPE} STREQUAL "BINDINGV2")
 				set(HASPKG YES)
 				if(NOT S)
@@ -243,9 +374,7 @@ macro(project_targets_populate)
 				endif()
 				afb_genskel("-2")
 				generate_one_populate_target(${P}${OUT}${S} ${PACKAGE_LIBDIR})
-				SET_PROPERTY(TARGET ${TARGET} APPEND PROPERTY
-					LINK_FLAGS  ${BINDINGS_LINK_FLAG}
-				)
+				SET_PROPERTY(TARGET ${TARGET} APPEND PROPERTY LINK_FLAGS ${BINDINGS_LINK_FLAG})
 			elseif(${SUBTYPE} STREQUAL "BINDINGV3")
 				set(HASPKG YES)
 				if(NOT S)
@@ -253,9 +382,7 @@ macro(project_targets_populate)
 				endif()
 				afb_genskel("-3")
 				generate_one_populate_target(${P}${OUT}${S} ${PACKAGE_LIBDIR})
-				SET_PROPERTY(TARGET ${TARGET} APPEND PROPERTY
-					LINK_FLAGS  ${BINDINGS_LINK_FLAG}
-				)
+				SET_PROPERTY(TARGET ${TARGET} APPEND PROPERTY LINK_FLAGS ${BINDINGS_LINK_FLAG})
 			elseif(${SUBTYPE} STREQUAL "EXECUTABLE")
 				set(HASPKG YES)
 				if(NOT S)
@@ -317,6 +444,7 @@ macro(project_targets_populate)
 	# targets
 	INSTALL(CODE "execute_process(COMMAND make populate)")
 	if(HASPKG)
+		add_dependencies(populate widget_files)
 		INSTALL(DIRECTORY ${PROJECT_PKG_BUILD_DIR}/
 			DESTINATION ${PKG_INSTALL_DIR}
 			USE_SOURCE_PERMISSIONS
@@ -332,132 +460,6 @@ macro(project_targets_populate)
 endmacro(project_targets_populate)
 
 
-
-# app entry point
-macro(set_app_entry_point)
-	if(NOT WIDGET_ENTRY_POINT)
-		set(WIDGET_ENTRY_POINT lib)
-	endif()
-endmacro(set_app_entry_point)
-
-
-# app name
-macro(set_app_name)
-	if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
-		string(TOLOWER "${PROJECT_NAME}-${CMAKE_BUILD_TYPE}" WGT_NAME)
-	else()
-		string(TOLOWER "${PROJECT_NAME}" WGT_NAME)
-	endif()
-endmacro(set_app_name)
-
-
-macro(make_app_files_target)
-
-	# checks
-	if(NOT EXISTS ${WIDGET_CONFIG_TEMPLATE})
-		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build widget file.
-You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.${ColourReset}")
-	endif()
-
-	set_app_name()
-	set_app_entry_point()
-
-	# the targets
-	set(widget_files_items)
-
-	# icon of widget
-	if(NOT DEFINED PROJECT_ICON)
-		set(PROJECT_ICON icon.png)
-		if( ${WIDGET_TYPE} MATCHES "agl.native")
-			set(ICON_PATH ${PKG_APP_TEMPLATE_DIR}/wgt/icon-native.png)
-		elseif( ${WIDGET_TYPE} MATCHES "agl.service")
-			set(ICON_PATH ${PKG_APP_TEMPLATE_DIR}/wgt/icon-service.png)
-		elseif( ${WIDGET_TYPE} MATCHES "x-executable")
-			set(ICON_PATH ${PKG_APP_TEMPLATE_DIR}/wgt/icon-qml.png)
-		elseif( ${WIDGET_TYPE} MATCHES "text/html")
-			set(ICON_PATH ${PKG_APP_TEMPLATE_DIR}/wgt/icon-html5.png)
-		endif()
-	elseif(EXISTS "${CMAKE_SOURCE_DIR}/${WIDGET_ICON}")
-		set(ICON_PATH "${CMAKE_SOURCE_DIR}/${WIDGET_ICON}")
-	elseif(EXISTS "${WIDGET_ICON}")
-		set(ICON_PATH "${WIDGET_ICON}")
-	else()
-		set(ICON_PATH ${PROJECT_APP_TEMPLATES_DIR}/wgt/icon-default.png)
-	endif()
-
-	# populate icon
-	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
-		COMMAND cp -d ${ICON_PATH} ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON}
-		DEPENDS ${PROJECT_PKG_BUILD_DIR}
-	)
-	list(APPEND widget_files_items ${PROJECT_PKG_BUILD_DIR}/${PROJECT_ICON})
-
-	# populate wgt/etc
-	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/etc
-		COMMAND mkdir -p ${PROJECT_PKG_BUILD_DIR}/etc)
-	file(GLOB PROJECT_CONF_FILES "${TEMPLATE_DIR}/etc/*")
-	if(${PROJECT_CONF_FILES})
-		add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/etc
-			COMMAND cp -dr ${TEMPLATE_DIR}/etc/* ${PROJECT_PKG_BUILD_DIR}/etc
-			APPEND
-		)
-		list(APPEND widget_files_items ${PROJECT_PKG_BUILD_DIR}/etc)
-	endif(${PROJECT_CONF_FILES})
-
-	# instanciate config.xml
-	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/config.xml
-		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml
-			-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-			-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
-	)
-	list(APPEND widget_files_items ${PROJECT_PKG_BUILD_DIR}/config.xml)
-
-	add_custom_target(widget_files  DEPENDS populate ${PROJECT_TARGETS} ${widget_files_items})
-
-endmacro(make_app_files_target)
-
-
-macro(make_app_test_files_target)
-	# default test template
-	if(NOT EXISTS ${TEST_WIDGET_CONFIG_TEMPLATE})
-		MESSAGE("${BoldBlue}-- Notice: Using default test widget configuration's file.
--- If you want to use a customized test-config.xml template then specify TEST_WIDGET_CONFIG_TEMPLATE in your config.cmake file.${ColourReset}")
-
-		set(TEST_WIDGET_CONFIG_TEMPLATE "${PROJECT_APP_TEMPLATES_DIR}/test-wgt/test-config.xml.in"
-		    CACHE PATH "Path to the test widget config file template (test-config.xml.in)")
-	endif()
-
-	# the targets
-	set(test_widget_files_items)
-
-	# populate icon
-	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/${PROJECT_ICON}
-		COMMAND cp -d ${ICON_PATH} ${PROJECT_PKG_TEST_BUILD_DIR}/${PROJECT_ICON}
-		DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR}
-	)
-	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_BUILD_DIR}/${PROJECT_ICON})
-
-	# instanciate config.xml
-	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/config.xml
-		COMMAND ${CMAKE_COMMAND} -DINFILE=${TEST_WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_TEST_BUILD_DIR}/config.xml
-			-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-			-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
-	)
-	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_BUILD_DIR}/config.xml)
-
-	# add test launcher
-	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/bin
-		COMMAND mkdir -p ${PROJECT_PKG_TEST_BUILD_DIR}/bin
-	)
-	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/bin/launcher
-		COMMAND cp -d ${PROJECT_APP_TEMPLATES_DIR}/test-wgt/launcher.sh.in ${PROJECT_PKG_TEST_BUILD_DIR}/bin/launcher
-		DEPENDS ${PROJECT_PKG_TEST_BUILD_DIR}/bin
-	)
-	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_BUILD_DIR}/bin/launcher)
-
-	add_custom_target(test_widget_files      DEPENDS populate ${PROJECT_TARGETS} ${test_widget_files_items})
-
-endmacro(make_app_test_files_target)
 
 macro(make_widget_target TARGET WIDGET DIR DEPEND)
 	# search widget forge
@@ -501,8 +503,8 @@ macro(wgt_package_build)
 		make_app_files_target()
 		make_app_test_files_target()
 
-		make_widget_target(widget ${WGT_NAME}.wgt ${PROJECT_PKG_BUILD_DIR} widget_files)
-		make_widget_target(test_widget ${WGT_NAME}-test.wgt ${PROJECT_PKG_TEST_BUILD_DIR} test_widget_files)
+		make_widget_target(widget ${WGT_NAME}.wgt ${PROJECT_PKG_BUILD_DIR} widget_files populate)
+		make_widget_target(test_widget ${WGT_NAME}-test.wgt ${PROJECT_PKG_TEST_BUILD_DIR} test_widget_files populate)
 
 		if(${BUILD_TEST_WGT})
 			add_dependencies(widget test_widget)
