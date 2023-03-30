@@ -451,6 +451,7 @@ macro(project_targets_populate)
 		)
 	endif(HASPKG)
 	if(HASPKGTST)
+		add_dependencies(populate test_widget_files)
 		INSTALL(DIRECTORY ${PROJECT_PKG_TEST_BUILD_DIR}/
 			DESTINATION ${PKG_TEST_INSTALL_DIR}
 			USE_SOURCE_PERMISSIONS
