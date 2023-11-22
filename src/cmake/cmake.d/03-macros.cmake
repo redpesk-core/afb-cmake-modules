@@ -189,7 +189,10 @@ macro(make_app_files_target)
 if(NOT make_app_files_target_done)
 set(make_app_files_target_done YES)
 	# checks
-	if(NOT EXISTS ${WIDGET_CONFIG_TEMPLATE})
+	if(MANIFEST_YAML_TEMPLATE AND NOT EXISTS ${MANIFEST_YAML_TEMPLATE})
+		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build application.
+You need a manifest.yml template: please set MANIFEST_YAML_TEMPLATE correctly.${ColourReset}")
+	elseif(WIDGET_CONFIG_TEMPLATE AND NOT EXISTS ${WIDGET_CONFIG_TEMPLATE})
 		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build widget file.
 You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.${ColourReset}")
 	endif()
@@ -240,12 +243,24 @@ You need a config.xml template: please specify WIDGET_CONFIG_TEMPLATE correctly.
 	endif(${PROJECT_CONF_FILES})
 
 	# instanciate config.xml
-	add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/config.xml
-		COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml
-			-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-			-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
-	)
-	list(APPEND widget_files_items ${PROJECT_PKG_BUILD_DIR}/config.xml)
+	if(MANIFEST_YAML_TEMPLATE)
+		add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/.rpconfig/manifest.yml
+			COMMAND mkdir ${PROJECT_PKG_BUILD_DIR}/.rpconfig
+			COMMAND ${CMAKE_COMMAND}
+				-DINFILE=${MANIFEST_YAML_TEMPLATE}
+				-DOUTFILE=${PROJECT_PKG_BUILD_DIR}/.rpconfig/manifest.yml
+				-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
+				-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		)
+		list(APPEND widget_files_items ${PROJECT_PKG_BUILD_DIR}/.rpconfig/manifest.yml)
+	else()
+		add_custom_command(OUTPUT ${PROJECT_PKG_BUILD_DIR}/config.xml
+			COMMAND ${CMAKE_COMMAND} -DINFILE=${WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_BUILD_DIR}/config.xml
+				-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
+				-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		)
+		list(APPEND widget_files_items ${PROJECT_PKG_BUILD_DIR}/config.xml)
+	endif()
 
 	make_prepare_package()
 	add_custom_target(widget_files DEPENDS prepare_package ${PROJECT_TARGETS} ${widget_files_items})
@@ -257,7 +272,10 @@ macro(make_app_test_files_target)
 if(NOT make_app_test_files_target_done)
 set(make_app_test_files_target_done YES)
 	# default test template
-	if(NOT EXISTS ${TEST_WIDGET_CONFIG_TEMPLATE})
+	if(TEST_MANIFEST_YAML_TEMPLATE AND NOT EXISTS ${TEST_MANIFEST_YAML_TEMPLATE})
+		MESSAGE(FATAL_ERROR "${Red}WARNING ! Missing mandatory files to build test.
+You need a manifest.yml template: please set TEST_MANIFEST_YAML_TEMPLATE correctly.${ColourReset}")
+	elseif(NOT EXISTS ${TEST_WIDGET_CONFIG_TEMPLATE})
 		MESSAGE("${BoldBlue}-- Notice: Using default test widget configuration's file.
 -- If you want to use a customized test-config.xml template then specify TEST_WIDGET_CONFIG_TEMPLATE in your config.cmake file.${ColourReset}")
 
@@ -276,12 +294,24 @@ set(make_app_test_files_target_done YES)
 	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_BUILD_DIR}/${PROJECT_ICON})
 
 	# instanciate config.xml
-	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/config.xml
-		COMMAND ${CMAKE_COMMAND} -DINFILE=${TEST_WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_TEST_BUILD_DIR}/config.xml
-			-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-			-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
-	)
-	list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_BUILD_DIR}/config.xml)
+	if(TEST_MANIFEST_YAML_TEMPLATE)
+		add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/.rpconfig/manifest.yml
+			COMMAND mkdir ${PROJECT_PKG_TEST_BUILD_DIR}/.rpconfig
+			COMMAND ${CMAKE_COMMAND}
+				-DINFILE=${TEST_MANIFEST_YAML_TEMPLATE}
+				-DOUTFILE=${PROJECT_PKG_TEST_BUILD_DIR}/.rpconfig/manifest.yml
+				-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
+				-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		)
+		list(APPEND widget_files_items ${PROJECT_PKG_TEST_BUILD_DIR}/.rpconfig/manifest.yml)
+	else()
+		add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/config.xml
+			COMMAND ${CMAKE_COMMAND} -DINFILE=${TEST_WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_TEST_BUILD_DIR}/config.xml
+				-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
+				-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
+		)
+		list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_BUILD_DIR}/config.xml)
+	endif()
 
 	# add test launcher
 	add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/bin
