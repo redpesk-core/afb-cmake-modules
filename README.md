@@ -1,2 +1,4 @@
-A mandatory set of cmake macros to build afb bindings
+An optional cmake based framework for building.
+
+See documentation in directory docs/dev\_guide
 
