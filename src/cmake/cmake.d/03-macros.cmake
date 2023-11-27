@@ -303,7 +303,7 @@ You need a manifest.yml template: please set TEST_MANIFEST_YAML_TEMPLATE correct
 				-DPROJECT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
 				-P ${PROJECT_APP_TEMPLATES_DIR}/cmake/configure_file.cmake
 		)
-		list(APPEND widget_files_items ${PROJECT_PKG_TEST_BUILD_DIR}/.rpconfig/manifest.yml)
+		list(APPEND test_widget_files_items ${PROJECT_PKG_TEST_BUILD_DIR}/.rpconfig/manifest.yml)
 	else()
 		add_custom_command(OUTPUT ${PROJECT_PKG_TEST_BUILD_DIR}/config.xml
 			COMMAND ${CMAKE_COMMAND} -DINFILE=${TEST_WIDGET_CONFIG_TEMPLATE} -DOUTFILE=${PROJECT_PKG_TEST_BUILD_DIR}/config.xml
