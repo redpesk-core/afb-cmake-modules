@@ -4,7 +4,7 @@ id: @project_name@-test
 version: @PROJECT_VERSION@
 name: @PROJECT_NAME@-test
 description: Test widget used to launch tests for the project @PROJECT_NAME@
-author: Romain Forlot <romain.forlot@iot.bzh>
+Author: Romain Forlot <romain.forlot@iot.bzh>
 license: APL2.0
 
 targets:

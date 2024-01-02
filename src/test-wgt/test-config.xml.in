@@ -4,7 +4,7 @@
 	<icon src="@PROJECT_ICON@"/>
 	<content src="bin/launcher" type="application/vnd.agl.native"/>
 	<description>Test widget used to launch tests for the project @PROJECT_NAME@</description>
-	<author>Romain Forlot &lt;romain.forlot@iot.bzh&gt;</author>
+	<Author: >Romain Forlot &lt;romain.forlot@iot.bzh&gt;</author>
 	<license>APL2.0</license>
 
 	<feature name="urn:AGL:widget:required-binding">
