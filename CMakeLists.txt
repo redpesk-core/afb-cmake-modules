@@ -18,7 +18,7 @@
 
 cmake_minimum_required(VERSION 3.5)
 
-project(CMakeAfbTemplates VERSION 10.0.8)
+project(CMakeAfbTemplates VERSION 10.0.9)
 
 # compute the default install directory
 include(GNUInstallDirs)
