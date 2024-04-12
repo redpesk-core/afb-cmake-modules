@@ -1,5 +1,8 @@
+set(AFBCMOD_ALLOW_BUILD_IN_SOURCE NO CACHE BOOL "Allows to build in source directory")
 function(prevent_in_source_build)
-	if(EXISTS ${CMAKE_SOURCE_DIR}/CMakeCache.txt
+	if(AFBCMOD_ALLOW_BUILD_IN_SOURCE)
+		message(STATUS "${BoldYellow}**** CAUTION, Building from the source directory is allowed ****${White}")
+	elseif(EXISTS ${CMAKE_SOURCE_DIR}/CMakeCache.txt
 	 OR EXISTS ${CMAKE_SOURCE_DIR}/CMakeFiles)
 		execute_process(
 			COMMAND rm -f CMakeCacheForScript.cmake cmake_install.cmake
