@@ -1,5 +1,5 @@
 ###########################################################################
-# Copyright 2015-2024 IoT.bzh Company
+# Copyright (C) 2015-2025 IoT.bzh Company
 #
 # Author: Fulup Ar Foll <fulup@iot.bzh>
 #          Romain Forlot <romain.forlot@iot.bzh>
